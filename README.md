@@ -26,6 +26,3 @@ _(utiliser la souris pour diriger le joueur popcorn - click au point de destinat
 - Ouvrir un autre navigateur et accéder à l'url : [http://localhost:8000/popbox](http://localhost:8000/popbox) qui simule un joueur type popbox
 _(utiliser la touche de direction HAUT et BAS pour déplacer le joueur popbox)_
 
-
-
-Mail professionnel du prof : mickael.lhoste@wordline.com 
