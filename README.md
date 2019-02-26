@@ -27,3 +27,5 @@ _(utiliser la souris pour diriger le joueur popcorn - click au point de destinat
 _(utiliser la touche de direction HAUT et BAS pour déplacer le joueur popbox)_
 
 
+
+Mail professionnel du prof : mickael.lhoste@wordline.com 
