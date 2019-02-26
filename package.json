@@ -1,28 +1,28 @@
 {
-  "name": "basic-car-game",
+  "name": "popup_game",
   "version": "1.0.0",
-  "description": "Simple multiplayer online car game made as a tutorial",
+  "description": "multiplayer online game type io",
   "main": "index.js",
   "scripts": {
-    "build": "webpack --progress --colors",
+    "build": "cd client_popcorn;echo 'build client popcorn';webpack --progress --color; cd ../client_ecran; echo 'build client ecran'; webpack --progress --color; cd ../client_popbox;echo 'build client popbox';webpack --progress --color; mv ../views/popbox.js ../public/; mv ../views/popcorn.js ../public/; mv ../views/ecran.js ../public/",
     "dev": "nodemon server/index.js --exec babel-node",
     "start": "nodemon server/index.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/gdomaradzki/simple-car-game.git"
+    "url": "git+https://github.com/Ibrah95/projet-tutore2019-code.git"
   },
   "keywords": [
     "Node.js",
     "Socket.io",
     "Phaser.js"
   ],
-  "author": "Gustavo Domaradzki",
+  "authors": "Solofo, Ibrahima, Chris, Morad, Antony",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/gdomaradzki/simple-car-game/issues"
+    "url": "https://github.com/Ibrah95/projet-tutore2019-code/issues"
   },
-  "homepage": "https://github.com/gdomaradzki/simple-car-game#readme",
+  "homepage": "https://github.com/Enjana-mavitrika/projet-tutore2019",
   "devDependencies": {
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.3",
@@ -36,6 +36,7 @@
   "dependencies": {
     "body-parser": "^1.18.2",
     "cors": "^2.8.4",
+    "ejs": "^2.6.1",
     "express": "^4.16.2",
     "nodemon": "^1.18.10",
     "socket.io": "^2.0.4"

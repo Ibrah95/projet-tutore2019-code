@@ -1,8 +1,0 @@
-Pour lancer le jeu 
-
-Il faut faire un 
-	$ npm i
-	$ npm audit fix
-	$ npm run build 
-	$ npm run dev 
-
