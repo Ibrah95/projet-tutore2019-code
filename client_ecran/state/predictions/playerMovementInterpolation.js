@@ -1,4 +1,4 @@
-const playerMovementInterpolation = otherPlayers => {
+const playerMovementInterpolation = (otherPlayers, game) => {
   for (let id in otherPlayers) {
     let player = otherPlayers[id]
     if (player.target_x !== undefined) {
@@ -19,10 +19,16 @@ const playerMovementInterpolation = otherPlayers => {
       // Interpolate the player's speed text position
       player.speedText.x += (player.speedText.target_x - player.speedText.x) * 0.30
       player.speedText.y += (player.speedText.target_y - player.speedText.y) * 0.30
-
       player.updatePlayerStatusText('speed', player.speedText.x, player.speedText.y, player.speedText)
+
+      // collide each otherPlayer
+      for (let subId in otherPlayers) {
+        console.log(`${player.playerName.name} collide with ${otherPlayers[subId].playerName.name} `)
+        game.physics.arcade.collide(player.sprite, otherPlayers[subId].sprite);
+      }
     }
   }
 }
+
 
 export default playerMovementInterpolation

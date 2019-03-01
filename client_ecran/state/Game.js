@@ -42,7 +42,7 @@ class Game extends Phaser.State {
 
   update () {
     // Interpolates the players movement
-    playerMovementInterpolation(otherPlayers)
+    playerMovementInterpolation(otherPlayers, this.game)
   }
 }
 

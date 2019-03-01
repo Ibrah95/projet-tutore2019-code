@@ -10,7 +10,7 @@ export default function (type, x, y, game, socket) {
     speed: 0,
     speedText: null,
     drive (game) {
-      
+
       // Only emit if the player is moving
       if (this.speed !== 0) {
         this.emitPlayerData()
@@ -26,7 +26,6 @@ export default function (type, x, y, game, socket) {
     } else {
       this.speed = 0
     }
-    game.physics.arcade.collide(this);
 
       // Brings the player's sprite to top
       game.world.bringToTop(this.sprite)
