@@ -1,5 +1,3 @@
 # POP GAME
 
-## ENVIRONNEMENT DE PROD
-
-Attention !!! Ne surtous pas commité dans cette branche
++ Ajout gestion de collision entre les popcorn et les popbox ( les faires reculer ou dévier)
