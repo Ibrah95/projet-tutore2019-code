@@ -1,0 +1,44 @@
+{
+  "name": "popup_game",
+  "version": "1.0.0",
+  "description": "multiplayer online game type io",
+  "main": "index.js",
+  "scripts": {
+    "build": "cd client_popcorn;echo 'build client popcorn';webpack --progress --color; cd ../client_ecran; echo 'build client ecran'; webpack --progress --color; cd ../client_popbox;echo 'build client popbox';webpack --progress --color; mv ../views/popbox.js ../public/; mv ../views/popcorn.js ../public/; mv ../views/ecran.js ../public/",
+    "dev": "nodemon server/index.js --exec babel-node",
+    "start": "nodemon server/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ibrah95/projet-tutore2019-code.git"
+  },
+  "keywords": [
+    "Node.js",
+    "Socket.io",
+    "Phaser.js"
+  ],
+  "authors": "Solofo, Ibrahima, Chris, Morad, Antony",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Ibrah95/projet-tutore2019-code/issues"
+  },
+  "homepage": "https://github.com/Enjana-mavitrika/projet-tutore2019",
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.3",
+    "babel-loader": "^7.1.2",
+    "babel-preset-env": "^1.7.0",
+    "babel-register": "^6.26.0",
+    "html-webpack-plugin": "^2.30.1",
+    "uglifyjs-webpack-plugin": "^1.1.6",
+    "webpack": "^3.10.0"
+  },
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "cors": "^2.8.4",
+    "ejs": "^2.6.1",
+    "express": "^4.16.2",
+    "nodemon": "^1.18.10",
+    "socket.io": "^2.0.4"
+  }
+}
