@@ -11,31 +11,39 @@ export default function (type, x, y, game, socket) {
     speedText: null,
     drive (game) {
 
-      // Only emit if the player is moving
-      if (this.speed !== 0) {
-        this.emitPlayerData()
-      }
+    this.sprite.body.onCollide = new Phaser.Signal();
+    this.sprite.body.onCollide.add((player1, player2) => {
+      console.log('collision')
+      this.emitPlayerDeletion();
+      // player2.kill()
+    }, game);
 
-    this.sprite.body.velocity.x = 0;
-    this.sprite.body.velocity.y = 0;
-    this.sprite.body.angularVelocity = 0;
-
-    if (game.input.mousePointer.isDown && game.input.activePointer.x !== this.sprite.body.x && game.input.activePointer.y !== this.sprite.body.y) {
-      this.speed = 1500
-      this.sprite.body.rotation = game.physics.arcade.moveToPointer(this.sprite, this.speed, game.input.activePointer, 0)
-    } else {
-      this.speed = 0
-    }
-
-      // Brings the player's sprite to top
-      game.world.bringToTop(this.sprite)
-
-      this.updatePlayerName()
-      this.updatePlayerStatusText('speed', this.sprite.body.x - 57, this.sprite.body.y - 39, this.speedText)
+    //   // Only emit if the player is moving
+    //   if (this.speed !== 0) {
+    //     this.emitPlayerData()
+    //   }
+    //
+    // this.sprite.body.velocity.x = 0;
+    // this.sprite.body.velocity.y = 0;
+    // this.sprite.body.angularVelocity = 0;
+    //
+    // if (game.input.mousePointer.isDown && game.input.activePointer.x !== this.sprite.body.x && game.input.activePointer.y !== this.sprite.body.y) {
+    //   this.speed = 1500
+    //   this.sprite.body.rotation = game.physics.arcade.moveToPointer(this.sprite, this.speed, game.input.activePointer, 0)
+    // } else {
+    //   this.speed = 0
+    // }
+    //
+    //   // Brings the player's sprite to top
+    //   game.world.bringToTop(this.sprite)
+    //
+    //   this.updatePlayerName()
+    //   this.updatePlayerStatusText('speed', this.sprite.body.x - 57, this.sprite.body.y - 39, this.speedText)
     },
     emitPlayerData () {
       // Emit the 'move-player' event, updating the player's data on the server
-      socket.emit('move-player', {
+      // const socket = io('localhost:8000')
+      this.socket.emit('move-player', {
         type: this.type,
         x: this.sprite.body.x,
         y: this.sprite.body.y,
@@ -50,6 +58,11 @@ export default function (type, x, y, game, socket) {
           x: this.speedText.x,
           y: this.speedText.y
         }
+      })
+    },
+    emitPlayerDeletion (socket) {
+      socket.emit('delete-player', {
+        id: this.playerName.text,
       })
     },
     updatePlayerName (name = this.socket.id, x = this.sprite.body.x - 57, y = this.sprite.body.y - 59) {

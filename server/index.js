@@ -13,37 +13,46 @@ io.on('connection', socket => {
   // When a player connects
   socket.on('new-player', state => {
     console.log('New player joined with state:', state)
-    players[socket.id] = state
+    const id = String(socket.id)
+    players[id] = state
     // Emit the update-players method in the client side
     io.emit('update-players', players)
   })
 
   socket.on('disconnect', state => {
-    delete players[socket.id]
+    const id = String(socket.id)
+    delete players[id]
+    io.emit('update-players', players)
+  })
+
+  // when a player is deleted
+  socket.on('delete-player', data => {
+    delete players[data.id]
     io.emit('update-players', players)
   })
 
   // When a player moves
   socket.on('move-player', data => {
-    console.log('move: \n', data)
+    // console.log('move: \n', data)
     const {type, x, y, angle, playerName, speed } = data
+    const id = String(socket.id)
 
     // If the player is invalid, return
-    if (players[socket.id] === undefined) {
+    if (players[id] === undefined) {
       return
     }
 
     // Update the player's data if he moved
-    players[socket.id].type = type
-    players[socket.id].x = x
-    players[socket.id].y = y
-    players[socket.id].angle = angle
-    players[socket.id].playerName = {
+    players[id].type = type
+    players[id].x = x
+    players[id].y = y
+    players[id].angle = angle
+    players[id].playerName = {
       name: playerName.name,
       x: playerName.x,
       y: playerName.y
     }
-    players[socket.id].speed = {
+    players[id].speed = {
       value: speed.value,
       x: speed.x,
       y: speed.y
@@ -51,5 +60,9 @@ io.on('connection', socket => {
 
     // Send the data back to the client
     io.emit('update-players', players)
+  })
+
+  socket.on('move-player-after-collision', data => {
+    console.log('move after collision\n', data);
   })
 })
