@@ -119,32 +119,41 @@ exports.default = function (type, x, y, game, socket) {
     speed: 0,
     speedText: null,
     drive: function drive(game) {
+      var _this = this;
 
-      // Only emit if the player is moving
-      if (this.speed !== 0) {
-        this.emitPlayerData();
-      }
+      this.sprite.body.onCollide = new Phaser.Signal();
+      this.sprite.body.onCollide.add(function (player1, player2) {
+        console.log('collision');
+        _this.emitPlayerDeletion();
+        // player2.kill()
+      }, game);
 
-      this.sprite.body.velocity.x = 0;
-      this.sprite.body.velocity.y = 0;
-      this.sprite.body.angularVelocity = 0;
-
-      if (game.input.mousePointer.isDown && game.input.activePointer.x !== this.sprite.body.x && game.input.activePointer.y !== this.sprite.body.y) {
-        this.speed = 1500;
-        this.sprite.body.rotation = game.physics.arcade.moveToPointer(this.sprite, this.speed, game.input.activePointer, 0);
-      } else {
-        this.speed = 0;
-      }
-
-      // Brings the player's sprite to top
-      game.world.bringToTop(this.sprite);
-
-      this.updatePlayerName();
-      this.updatePlayerStatusText('speed', this.sprite.body.x - 57, this.sprite.body.y - 39, this.speedText);
+      //   // Only emit if the player is moving
+      //   if (this.speed !== 0) {
+      //     this.emitPlayerData()
+      //   }
+      //
+      // this.sprite.body.velocity.x = 0;
+      // this.sprite.body.velocity.y = 0;
+      // this.sprite.body.angularVelocity = 0;
+      //
+      // if (game.input.mousePointer.isDown && game.input.activePointer.x !== this.sprite.body.x && game.input.activePointer.y !== this.sprite.body.y) {
+      //   this.speed = 1500
+      //   this.sprite.body.rotation = game.physics.arcade.moveToPointer(this.sprite, this.speed, game.input.activePointer, 0)
+      // } else {
+      //   this.speed = 0
+      // }
+      //
+      //   // Brings the player's sprite to top
+      //   game.world.bringToTop(this.sprite)
+      //
+      //   this.updatePlayerName()
+      //   this.updatePlayerStatusText('speed', this.sprite.body.x - 57, this.sprite.body.y - 39, this.speedText)
     },
     emitPlayerData: function emitPlayerData() {
       // Emit the 'move-player' event, updating the player's data on the server
-      socket.emit('move-player', {
+      // const socket = io('localhost:8000')
+      this.socket.emit('move-player', {
         type: this.type,
         x: this.sprite.body.x,
         y: this.sprite.body.y,
@@ -159,6 +168,11 @@ exports.default = function (type, x, y, game, socket) {
           x: this.speedText.x,
           y: this.speedText.y
         }
+      });
+    },
+    emitPlayerDeletion: function emitPlayerDeletion(socket) {
+      socket.emit('delete-player', {
+        id: this.playerName.text
       });
     },
     updatePlayerName: function updatePlayerName() {
@@ -329,7 +343,7 @@ var Game = function (_Phaser$State) {
     key: 'update',
     value: function update() {
       // Interpolates the players movement
-      (0, _playerMovementInterpolation2.default)(otherPlayers, this.game);
+      (0, _playerMovementInterpolation2.default)(otherPlayers, this.game, socket);
     }
   }]);
 
@@ -451,6 +465,24 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var updatePlayers = function updatePlayers(socket, otherPlayers, game) {
   socket.on('update-players', function (playersData) {
+    // if (playersData !== undefined) {
+    //   if (otherPlayers[playersData.playerName.name] !== undefined) {
+    //     otherPlayers[playersData.playerName.name].target_x = playersData.x
+    //     otherPlayers[playersData.playerName.name].target_y = playersData.y
+    //     otherPlayers[playersData.playerName.name].target_rotation = playersData.angle
+    //     otherPlayers[playersData.playerName.name].playerName.target_x = playersData.playerName.x
+    //     otherPlayers[playersData.playerName.name].playerName.target_y = playersData.playerName.y
+    //     otherPlayers[playersData.playerName.name].speedText.target_x = playersData.speed.x
+    //     otherPlayers[playersData.playerName.name].speedText.target_y = playersData.speed.y
+    //     otherPlayers[playersData.playerName.name].speed = playersData.speed.value
+    //   } else {
+    //     const newPlayer = player(playersData.type, playersData.x, playersData.y, game)
+    //     newPlayer.playerName = createText(game, newPlayer)
+    //     newPlayer.speedText = createText(game, newPlayer)
+    //     newPlayer.updatePlayerName(playersData.playerName.name, playersData.playerName.x, playersData.playerName.y)
+    //     otherPlayers[playersData.playerName.name] = newPlayer
+    //   }
+    // }
     var playersFound = {};
     // Iterate over all players
     for (var index in playersData) {
@@ -509,8 +541,8 @@ exports.default = updatePlayers;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-var playerMovementInterpolation = function playerMovementInterpolation(otherPlayers, game) {
-  for (var id in otherPlayers) {
+var playerMovementInterpolation = function playerMovementInterpolation(otherPlayers, game, socket) {
+  var _loop = function _loop(id) {
     var player = otherPlayers[id];
     if (player.target_x !== undefined) {
       // Interpolate the player's position
@@ -532,12 +564,37 @@ var playerMovementInterpolation = function playerMovementInterpolation(otherPlay
       player.speedText.y += (player.speedText.target_y - player.speedText.y) * 0.30;
       player.updatePlayerStatusText('speed', player.speedText.x, player.speedText.y, player.speedText);
 
+      // player.drive();
+
       // collide each otherPlayer
+
+      var _loop2 = function _loop2(subId) {
+        game.physics.arcade.collide(player.sprite, otherPlayers[subId].sprite, function (player1, player2) {
+          console.log(player.type !== otherPlayers[subId].type);
+          if (player.type !== otherPlayers[subId].type) {
+            if (otherPlayers[id].type === 'popcorn') {
+              otherPlayers[id].sprite.destroy();
+              otherPlayers[id].playerName.destroy();
+              otherPlayers[id].speedText.destroy();
+              otherPlayers[id].emitPlayerDeletion(socket);
+              delete otherPlayers[id];
+            }
+          }
+          // otherPlayers[id].sprite.body.x = player1.body.x;
+          // otherPlayers[id].sprite.body.y = player1.body.y;
+          // console.log(otherPlayers[id].sprite === player1);
+          // console.log(`otherPlayers[id].sprite.body.x = ${otherPlayers[id].sprite.body.x} \n player1.body.x = ${player1.body.x}`)
+        });
+      };
+
       for (var subId in otherPlayers) {
-        console.log(player.playerName.name + ' collide with ' + otherPlayers[subId].playerName.name + ' ');
-        game.physics.arcade.collide(player.sprite, otherPlayers[subId].sprite);
+        _loop2(subId);
       }
     }
+  };
+
+  for (var id in otherPlayers) {
+    _loop(id);
   }
 };
 

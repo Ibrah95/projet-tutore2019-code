@@ -92,6 +92,7 @@ export default function (x, y, game, socket) {
       this.updatePlayerStatusText('speed', this.sprite.body.x - 57, this.sprite.body.y - 39, this.speedText)
     },
     emitPlayerData () {
+      console.log('emit data')
       // Emit the 'move-player' event, updating the player's data on the server
       socket.emit('move-player', {
         type: this.type,

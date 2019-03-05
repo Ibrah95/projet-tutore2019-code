@@ -3,6 +3,24 @@ import { createText } from '../utils'
 
 const updatePlayers = (socket, otherPlayers, game) => {
   socket.on('update-players', playersData => {
+    // if (playersData !== undefined) {
+    //   if (otherPlayers[playersData.playerName.name] !== undefined) {
+    //     otherPlayers[playersData.playerName.name].target_x = playersData.x
+    //     otherPlayers[playersData.playerName.name].target_y = playersData.y
+    //     otherPlayers[playersData.playerName.name].target_rotation = playersData.angle
+    //     otherPlayers[playersData.playerName.name].playerName.target_x = playersData.playerName.x
+    //     otherPlayers[playersData.playerName.name].playerName.target_y = playersData.playerName.y
+    //     otherPlayers[playersData.playerName.name].speedText.target_x = playersData.speed.x
+    //     otherPlayers[playersData.playerName.name].speedText.target_y = playersData.speed.y
+    //     otherPlayers[playersData.playerName.name].speed = playersData.speed.value
+    //   } else {
+    //     const newPlayer = player(playersData.type, playersData.x, playersData.y, game)
+    //     newPlayer.playerName = createText(game, newPlayer)
+    //     newPlayer.speedText = createText(game, newPlayer)
+    //     newPlayer.updatePlayerName(playersData.playerName.name, playersData.playerName.x, playersData.playerName.y)
+    //     otherPlayers[playersData.playerName.name] = newPlayer
+    //   }
+    // }
     let playersFound = {}
     // Iterate over all players
     for (let index in playersData) {
