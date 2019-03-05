@@ -32,14 +32,11 @@ const playerMovementInterpolation = (otherPlayers, game, socket) => {
               otherPlayers[id].sprite.destroy()
               otherPlayers[id].playerName.destroy()
               otherPlayers[id].speedText.destroy()
+              // ask the server to delete the popcorn that collided with a popbox
               otherPlayers[id].emitPlayerDeletion(socket);
               delete otherPlayers[id]
             }
           }
-          // otherPlayers[id].sprite.body.x = player1.body.x;
-          // otherPlayers[id].sprite.body.y = player1.body.y;
-          // console.log(otherPlayers[id].sprite === player1);
-          // console.log(`otherPlayers[id].sprite.body.x = ${otherPlayers[id].sprite.body.x} \n player1.body.x = ${player1.body.x}`)
         });
       }
     }
