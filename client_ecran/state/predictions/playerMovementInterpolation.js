@@ -19,15 +19,13 @@ const playerMovementInterpolation = (otherPlayers, game, socket) => {
       // Interpolate the player's speed text position
       player.speedText.x += (player.speedText.target_x - player.speedText.x) * 0.30
       player.speedText.y += (player.speedText.target_y - player.speedText.y) * 0.30
-      player.updatePlayerStatusText('speed', player.speedText.x, player.speedText.y, player.speedText)
-
-      // player.drive();
+      player.updatePlayerStatusText(player.playerName.x, player.playerName.y + 60, player.speedText)
 
       // collide each otherPlayer
       for (let subId in otherPlayers) {
         game.physics.arcade.collide(player.sprite, otherPlayers[subId].sprite, function(player1, player2) {
-          console.log(player.type !== otherPlayers[subId].type)
           if (player.type !== otherPlayers[subId].type) {
+            // otherPlayers[id].emitNombreCapture(socket);
             if (otherPlayers[id].type === 'popcorn') {
               otherPlayers[id].sprite.destroy()
               otherPlayers[id].playerName.destroy()
@@ -35,11 +33,8 @@ const playerMovementInterpolation = (otherPlayers, game, socket) => {
               otherPlayers[id].emitPlayerDeletion(socket);
               delete otherPlayers[id]
             }
+            otherPlayers[subId].emitNombreCapture(socket);
           }
-          // otherPlayers[id].sprite.body.x = player1.body.x;
-          // otherPlayers[id].sprite.body.y = player1.body.y;
-          // console.log(otherPlayers[id].sprite === player1);
-          // console.log(`otherPlayers[id].sprite.body.x = ${otherPlayers[id].sprite.body.x} \n player1.body.x = ${player1.body.x}`)
         });
       }
     }

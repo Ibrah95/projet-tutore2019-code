@@ -9,6 +9,8 @@ export default function (x, y, game, socket) {
     playerName: null,
     speed: 0,
     speedText: null,
+    estCapturer: false,
+    nombreCapture: 0,
     drive (game) {
 
       // Only emit if the player is moving
@@ -37,6 +39,12 @@ export default function (x, y, game, socket) {
     emitPlayerData () {
       // Emit the 'move-player' event, updating the player's data on the server
       socket.emit('move-player', {
+        estCapturer: this.estCapturer,
+        nombreCapture: this.nombreCapture,
+        speedText: {
+          x: this.sprite.body.x,
+          y: this.sprite.body.y,
+        },
         type: this.type,
         x: this.sprite.body.x,
         y: this.sprite.body.y,

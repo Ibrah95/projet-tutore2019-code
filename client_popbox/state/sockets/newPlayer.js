@@ -1,6 +1,12 @@
 const newPlayer = (socket, player) => {
   socket.on('connect', () => {
     socket.emit('new-player', {
+      estCapturer: player.estCapturer,
+      nombreCapture: player.nombreCapture,
+      speedText: {
+        x: player.sprite.body.x,
+        y: player.sprite.body.y,
+      },
       type: player.type,
       x: player.sprite.body.x,
       y: player.sprite.body.y,

@@ -12,7 +12,7 @@ const players = {}
 io.on('connection', socket => {
   // When a player connects
   socket.on('new-player', state => {
-    console.log('New player joined with state:', state)
+    // console.log('New player joined with state:', state)
     const id = String(socket.id)
     players[id] = state
     // Emit the update-players method in the client side
@@ -27,14 +27,26 @@ io.on('connection', socket => {
 
   // when a player is deleted
   socket.on('delete-player', data => {
-    delete players[data.id]
+    players[data.id].estCapturer = true;
     io.emit('update-players', players)
+  })
+
+  // when a popbox caught a popcorn
+  socket.on('increment-nombreCapture', data => {
+    console.log('increment-nombre Capture')
+    console.log(data.id)
+    if (players[data.id] && players[data.id].type === 'popbox') {
+      console.log(`players[data.id] = ${players[data.id]}`);
+      players[data.id].nombreCapture++;
+      console.log(`players[data.id] = ${players[data.id]}`);
+      io.emit('update-players', players)
+    }
   })
 
   // When a player moves
   socket.on('move-player', data => {
     // console.log('move: \n', data)
-    const {type, x, y, angle, playerName, speed } = data
+    const {type, nombreCapture, estCapturer, x, y, angle, playerName, speed } = data
     const id = String(socket.id)
 
     // If the player is invalid, return
@@ -43,6 +55,8 @@ io.on('connection', socket => {
     }
 
     // Update the player's data if he moved
+    players[id].nombreCapture
+    players[id].estCapturer
     players[id].type = type
     players[id].x = x
     players[id].y = y
