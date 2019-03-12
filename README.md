@@ -1,8 +1,4 @@
-# POP UP GAME
 
-Lance le jeu comme d'hab
-
-
-## EXEMPLE TIMER pour débloquer Ibra 
-
-=> code commenté dans _client_ecran/state/Game.js_ cf timer / updateCounter() / tempsRestantEnSeconde / minutesRestant / secondesRestant
+## Nouvelles fonctionnalités
++ Ajout timer ecran geant 
++ Ajout gestion de collision entre les popcorn et les popbox ( les faires reculer ou dévier)

@@ -1,4 +1,4 @@
-const playerMovementInterpolation = (otherPlayers, game) => {
+const playerMovementInterpolation = (otherPlayers, game, socket) => {
   for (let id in otherPlayers) {
     let player = otherPlayers[id]
     if (player.target_x !== undefined) {
@@ -19,12 +19,23 @@ const playerMovementInterpolation = (otherPlayers, game) => {
       // Interpolate the player's speed text position
       player.speedText.x += (player.speedText.target_x - player.speedText.x) * 0.30
       player.speedText.y += (player.speedText.target_y - player.speedText.y) * 0.30
-      player.updatePlayerStatusText('speed', player.speedText.x, player.speedText.y, player.speedText)
+      player.updatePlayerStatusText(player.playerName.x, player.playerName.y + 60, player.speedText)
 
       // collide each otherPlayer
       for (let subId in otherPlayers) {
-        console.log(`${player.playerName.name} collide with ${otherPlayers[subId].playerName.name} `)
-        game.physics.arcade.collide(player.sprite, otherPlayers[subId].sprite);
+        game.physics.arcade.collide(player.sprite, otherPlayers[subId].sprite, function(player1, player2) {
+          if (player.type !== otherPlayers[subId].type) {
+            // otherPlayers[id].emitNombreCapture(socket);
+            if (otherPlayers[id].type === 'popcorn') {
+              otherPlayers[id].sprite.destroy()
+              otherPlayers[id].playerName.destroy()
+              otherPlayers[id].speedText.destroy()
+              otherPlayers[id].emitPlayerDeletion(socket);
+              delete otherPlayers[id]
+            }
+            otherPlayers[subId].emitNombreCapture(socket);
+          }
+        });
       }
     }
   }

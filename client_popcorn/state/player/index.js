@@ -9,6 +9,8 @@ export default function (x, y, game, socket) {
     playerName: null,
     speed: 0,
     speedText: null,
+    estCapturer: false,
+    nombreCapture: 0,
     drive (game) {
       /*
       Most of the driving logic was written by Daniel Wuggenig
@@ -16,7 +18,6 @@ export default function (x, y, game, socket) {
       I decided to use it since this is supposed to be an introduction to multiplayer
       online car game, his driving solution is simple and clean and fits perfectly
       */
-
       const KEYS = {
         W: Phaser.Keyboard.W,
         S: Phaser.Keyboard.S,
@@ -29,62 +30,18 @@ export default function (x, y, game, socket) {
         this.emitPlayerData()
       }
 
-    this.sprite.body.velocity.x = 0;
-    this.sprite.body.velocity.y = 0;
-    this.sprite.body.angularVelocity = 0;
+      this.sprite.body.velocity.x = 0;
+      this.sprite.body.velocity.y = 0;
+      this.sprite.body.angularVelocity = 0;
 
-    if (game.input.mousePointer.isDown && game.input.activePointer.x !== this.sprite.body.x && game.input.activePointer.y !== this.sprite.body.y) {
-      this.speed = 1500
-      this.sprite.body.rotation = game.physics.arcade.moveToPointer(this.sprite, this.speed, game.input.activePointer, 0)
-    } else {
-      this.speed = 0
-    }
-    game.physics.arcade.collide(this);
-    // if (game.input.keyboard.isDown(Phaser.Keyboard.UP))
-    // {
-    //     this.speed = 700
-    //     game.physics.arcade.velocityFromAngle(this.sprite.angle, this.speed, this.sprite.body.velocity);
-    // }
+      if (game.input.mousePointer.isDown && game.input.activePointer.x !== this.sprite.body.x && game.input.activePointer.y !== this.sprite.body.y) {
+        this.speed = 1500
+        this.sprite.body.rotation = game.physics.arcade.moveToPointer(this.sprite, this.speed, game.input.activePointer, 0)
+      } else {
+        this.speed = 0
+      }
+      game.physics.arcade.collide(this);
 
-    // if (game.input.keyboard.isDown(Phaser.Keyboard.LEFT)) {
-    //   this.sprite.body.velocity.x -= 1000
-    // } else if (game.input.keyboard.isDown(Phaser.Keyboard.RIGHT)) {
-    //   this.sprite.body.velocity.x += 1000
-    // }
-    // if (game.input.keyboard.isDown(Phaser.Keyboard.UP)) {
-    //   this.sprite.body.velocity.y -= 1000
-    // } else if (game.input.keyboard.isDown(Phaser.Keyboard.DOWN)) {
-    //   this.sprite.body.velocity.y += 1000
-    // }
-
-      // // Drive forward if W is pressed down
-      // if (isDown(game, KEYS.W) && this.speed <= 400) {
-      //   this.speed += 10
-      // } else {
-      //   if (this.speed >= 10) {
-      //     this.speed -= 10
-      //   }
-      // }
-      //
-      // // Drive backwards if S is pressed down
-      // if (isDown(game, KEYS.S) && this.speed >= -200) {
-      //   this.speed -= 5
-      // } else {
-      //   if (this.speed <= -5) {
-      //     this.speed += 5
-      //   }
-      // }
-      //
-      // // Steers the car
-      // if (isDown(game, KEYS.A)) {
-      //   this.sprite.body.angularVelocity = -5 * (this.speed / 1000)
-      // } else if (isDown(game, KEYS.D)) {
-      //   this.sprite.body.angularVelocity = 5 * (this.speed / 1000)
-      // } else {
-      //   this.sprite.body.angularVelocity = 0
-      // }
-
-      //
       // Brings the player's sprite to top
       game.world.bringToTop(this.sprite)
 
@@ -92,8 +49,15 @@ export default function (x, y, game, socket) {
       this.updatePlayerStatusText('speed', this.sprite.body.x - 57, this.sprite.body.y - 39, this.speedText)
     },
     emitPlayerData () {
+      console.log('emit data')
       // Emit the 'move-player' event, updating the player's data on the server
       socket.emit('move-player', {
+        estCapturer: this.estCapturer,
+        nombreCapture: this.nombreCapture,
+        speedText: {
+          x: this.sprite.body.x,
+          y: this.sprite.body.y,
+        },
         type: this.type,
         x: this.sprite.body.x,
         y: this.sprite.body.y,
