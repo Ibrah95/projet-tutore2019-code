@@ -284,6 +284,9 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var SERVER_IP = 'localhost:8000/';
 var socket = null;
 var otherPlayers = {};
+var tempsRestantEnSeconde = 2 * 60;
+var minutesRestant = Number.parseInt(tempsRestantEnSeconde / 60);
+var secondesRestant = Number.parseInt(tempsRestantEnSeconde % 60);
 
 var Game = function (_Phaser$State) {
   _inherits(Game, _Phaser$State);
@@ -318,6 +321,15 @@ var Game = function (_Phaser$State) {
       // update all players
       (0, _updatePlayers2.default)(socket, otherPlayers, this.game);
 
+      // CONFIGURATION DU TIMER (à modifier mais juste pour le test)
+      //  Create our Timer
+      var timer = this.game.time.create(false);
+      //  Set a TimerEvent to occur after 1 seconds
+      timer.loop(1000, updateCounter, this.game);
+      //  Start the timer running - this is important!
+      //  It won't start automatically, allowing you to hook it to button events and the like.
+      timer.start();
+
       // Configures the game camera
       this.game.camera.x = width / 2;
       this.game.camera.y = height / 2;
@@ -329,12 +341,27 @@ var Game = function (_Phaser$State) {
     key: 'update',
     value: function update() {
       // Interpolates the players movement
-      (0, _playerMovementInterpolation2.default)(otherPlayers, this.game);
+      (0, _playerMovementInterpolation2.default)(otherPlayers, this.game, socket);
+
+      // affichage TIMER
+      this.game.debug.text('TIMER :  ' + minutesRestant + ' min ' + secondesRestant + ' s', 32, 64);
     }
   }]);
 
   return Game;
 }(Phaser.State);
+
+function updateCounter() {
+
+  if (tempsRestantEnSeconde > 0) {
+    tempsRestantEnSeconde--;
+  } else {
+    tempsRestantEnSeconde = 2 * 60;
+  }
+
+  minutesRestant = Number.parseInt(tempsRestantEnSeconde / 60);
+  secondesRestant = Number.parseInt(tempsRestantEnSeconde % 60);
+}
 
 exports.default = Game;
 
