@@ -62,9 +62,18 @@ class Game extends Phaser.State {
 }
 
 function updateCounter() {
-  tempsRestantEnSeconde--;
+
+  if(tempsRestantEnSeconde > 0){
+	tempsRestantEnSeconde--;			
+  }
+  else{ // quand le timer arrive à zero il reprend à 5, enlever le else pour garder time à 0
+	tempsRestantEnSeconde = 5 * 60;
+  }	
+	
   minutesRestant = Number.parseInt(tempsRestantEnSeconde / 60);
-  secondesRestant = Number.parseInt(tempsRestantEnSeconde % 60);
+  secondesRestant = Number.parseInt(tempsRestantEnSeconde % 60); 
+  
+	
 }
 
 export default Game
