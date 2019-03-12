@@ -5,7 +5,7 @@ import createWorld from './world/createWorld'
 import player from './player'
 import newPlayer from './sockets/newPlayer'
 
-const SERVER_IP = '192.168.1.93:8000/'
+const SERVER_IP = 'localhost:8000/'
 let socket = null
 let otherPlayers = {}
 
