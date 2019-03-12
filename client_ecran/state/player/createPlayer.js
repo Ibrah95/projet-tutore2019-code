@@ -1,5 +1,4 @@
 const createPlayer = (type, x, y, game) => {
-  console.log(type);
   const sprite = game.add.sprite(x, y, type)
   game.physics.enable(sprite, Phaser.Physics.ARCADE);
   game.physics.startSystem(Phaser.Physics.ARCADE);

@@ -3,24 +3,6 @@ import { createText } from '../utils'
 
 const updatePlayers = (socket, otherPlayers, game) => {
   socket.on('update-players', playersData => {
-    // if (playersData !== undefined) {
-    //   if (otherPlayers[playersData.playerName.name] !== undefined) {
-    //     otherPlayers[playersData.playerName.name].target_x = playersData.x
-    //     otherPlayers[playersData.playerName.name].target_y = playersData.y
-    //     otherPlayers[playersData.playerName.name].target_rotation = playersData.angle
-    //     otherPlayers[playersData.playerName.name].playerName.target_x = playersData.playerName.x
-    //     otherPlayers[playersData.playerName.name].playerName.target_y = playersData.playerName.y
-    //     otherPlayers[playersData.playerName.name].speedText.target_x = playersData.speed.x
-    //     otherPlayers[playersData.playerName.name].speedText.target_y = playersData.speed.y
-    //     otherPlayers[playersData.playerName.name].speed = playersData.speed.value
-    //   } else {
-    //     const newPlayer = player(playersData.type, playersData.x, playersData.y, game)
-    //     newPlayer.playerName = createText(game, newPlayer)
-    //     newPlayer.speedText = createText(game, newPlayer)
-    //     newPlayer.updatePlayerName(playersData.playerName.name, playersData.playerName.x, playersData.playerName.y)
-    //     otherPlayers[playersData.playerName.name] = newPlayer
-    //   }
-    // }
     let playersFound = {}
     // Iterate over all players
     for (let index in playersData) {
@@ -28,29 +10,34 @@ const updatePlayers = (socket, otherPlayers, game) => {
       // In case a player hasn't been created yet
       // We make sure that we won't create a second instance of it
       if (otherPlayers[index] === undefined && index !== socket.id) {
-        console.log(data.type)
-        const newPlayer = player(data.type, data.x, data.y, game)
+        const newPlayer = player(data.type, data.nombreCapture, data.x, data.y, game)
         newPlayer.playerName = createText(game, newPlayer)
         newPlayer.speedText = createText(game, newPlayer)
         newPlayer.updatePlayerName(data.playerName.name, data.playerName.x, data.playerName.y)
+        newPlayer.updatePlayerStatusText(data.playerName.x, data.playerName.y + 60, newPlayer.speedText)
         otherPlayers[index] = newPlayer
+        playersFound[index] = true
       }
 
       playersFound[index] = true
+      // supprimer les popcorn capturé
+      if (data.estCapturer === true){
+        playersFound[index] = false;
+      }
 
       // Update players data
-      if (index !== socket.id) {
+      if (index !== socket.id && playersFound[index] === true) {
         // Update players target but not their real position
+        otherPlayers[index].type = data.type
+        otherPlayers[index].updatePlayerStatusText(data.playerName.x, data.playerName.y + 60, otherPlayers[index].speedText)
+        otherPlayers[index].nombreCapture = data.nombreCapture
         otherPlayers[index].target_x = data.x
         otherPlayers[index].target_y = data.y
         otherPlayers[index].target_rotation = data.angle
-
         otherPlayers[index].playerName.target_x = data.playerName.x
         otherPlayers[index].playerName.target_y = data.playerName.y
-
         otherPlayers[index].speedText.target_x = data.speed.x
         otherPlayers[index].speedText.target_y = data.speed.y
-
         otherPlayers[index].speed = data.speed.value
       }
     }
