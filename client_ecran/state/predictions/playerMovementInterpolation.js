@@ -30,6 +30,7 @@ const playerMovementInterpolation = (otherPlayers, game, socket) => {
               otherPlayers[id].sprite.destroy()
               otherPlayers[id].playerName.destroy()
               otherPlayers[id].speedText.destroy()
+              // ask the server to delete the popcorn that collided with a popbox
               otherPlayers[id].emitPlayerDeletion(socket);
               delete otherPlayers[id]
             }

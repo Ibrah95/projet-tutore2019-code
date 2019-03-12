@@ -9,6 +9,9 @@ import playerMovementInterpolation from './predictions/playerMovementInterpolati
 const SERVER_IP = 'localhost:8000/'
 let socket = null
 let otherPlayers = {}
+let tempsRestantEnSeconde = 5 * 60;
+let minutesRestant = Number.parseInt(tempsRestantEnSeconde / 60);
+let secondesRestant = Number.parseInt(tempsRestantEnSeconde % 60);
 
 class Game extends Phaser.State {
   constructor () {
@@ -32,6 +35,15 @@ class Game extends Phaser.State {
     // update all players
     updatePlayers(socket, otherPlayers, this.game)
 
+    // CONFIGURATION DU TIMER (à modifier mais juste pour le test)
+    //  Create our Timer
+    const timer = this.game.time.create(false);
+    //  Set a TimerEvent to occur after 1 seconds
+    timer.loop(1000, updateCounter, this.game);
+    //  Start the timer running - this is important!
+    //  It won't start automatically, allowing you to hook it to button events and the like.
+    timer.start();
+
     // Configures the game camera
     this.game.camera.x = width / 2
     this.game.camera.y = height / 2
@@ -43,7 +55,24 @@ class Game extends Phaser.State {
   update () {
     // Interpolates the players movement
     playerMovementInterpolation(otherPlayers, this.game, socket)
+
+    // affichage TIMER
+    this.game.debug.text(`TIMER :  ${minutesRestant} min ${secondesRestant} s` , 32, 64);
   }
+}
+
+function updateCounter() {
+
+  if(tempsRestantEnSeconde > 0){
+	tempsRestantEnSeconde--;
+  } else{ // quand le timer arrive à zero il reprend à 5, enlever le else pour garder time à 0
+	tempsRestantEnSeconde = 5 * 60;
+  }	
+	
+  minutesRestant = Number.parseInt(tempsRestantEnSeconde / 60);
+  secondesRestant = Number.parseInt(tempsRestantEnSeconde % 60); 
+  
+	
 }
 
 export default Game
