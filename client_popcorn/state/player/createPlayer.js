@@ -6,6 +6,7 @@ const createPlayer = (x, y, game) => {
   sprite.width = 50
   sprite.height = 50
   sprite.body.allowRotation = false
+  sprite.body.collideWorldBounds=true;
   return sprite
 }
 

@@ -4,6 +4,7 @@ import fileLoader from '../config/fileloader'
 import createWorld from './world/createWorld'
 import player from './player'
 import newPlayer from './sockets/newPlayer'
+import { WINDOW_HEIGHT,WINDOW_WIDTH } from './../config'
 
 const SERVER_IP = 'localhost:8000/'
 let socket = null
@@ -28,7 +29,7 @@ class Game extends Phaser.State {
     // Connects the player to the server
     socket = io(SERVER_IP)
     // Creates the player passing the X, Y, game and socket as arguments
-    this.player = player(Math.random() * width, Math.random() * height / 2, this.game, socket)
+    this.player = player((Math.random()* (300-100) +100 ), Math.random() * ((WINDOW_HEIGHT - 100) -100 ) + 100 , this.game, socket)
     // Creates the player name text
     this.player.playerName = createText(this.game, this.player.sprite.body)
     // Creates the player speed text

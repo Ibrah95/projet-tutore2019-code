@@ -1,5 +1,6 @@
 import createPlayer from './createPlayer'
 import { isDown } from '../utils'
+import { WINDOW_HEIGHT,WINDOW_WIDTH } from './../../config'
 
 export default function (x, y, game, socket) {
   const player = {
@@ -35,6 +36,26 @@ export default function (x, y, game, socket) {
       this.sprite.body.angularVelocity = 0;
 
       if (game.input.mousePointer.isDown && game.input.activePointer.x !== this.sprite.body.x && game.input.activePointer.y !== this.sprite.body.y) {
+        
+        if( this.sprite.body.x <= 100 ){
+          this.sprite.body.x += 50
+        }
+
+        if(this.sprite.body.y <= 100){
+          this.sprite.body.y += 50
+
+        }
+          console.log(`${WINDOW_HEIGHT} win_height `)
+          console.log(`${WINDOW_WIDTH} win_width `)
+          console.log(this.sprite.body.x)
+           console.log(this.sprite.body.y)
+
+        if(this.sprite.body.y >= 900 ){
+          this.sprite.body.y -= 50
+        }
+
+        
+
         this.speed = 1500
         this.sprite.body.rotation = game.physics.arcade.moveToPointer(this.sprite, this.speed, game.input.activePointer, 0)
       } else {
@@ -47,6 +68,10 @@ export default function (x, y, game, socket) {
 
       this.updatePlayerName()
       this.updatePlayerStatusText('speed', this.sprite.body.x - 57, this.sprite.body.y - 39, this.speedText)
+
+     
+
+
     },
     emitPlayerData () {
       console.log('emit data')

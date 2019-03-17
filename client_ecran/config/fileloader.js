@@ -6,6 +6,7 @@ const fileLoader = game => {
   game.load.image('asphalt', `${ASSETS_URL}/sprites/asphalt/bg_ecran.jpg`)
   game.load.image('popcorn', `${ASSETS_URL}/sprites/car/car.png`)
   game.load.image('popbox', `${ASSETS_URL}/sprites/car/popbox.png`)
+   game.load.image('timer', `${ASSETS_URL}/sprites/design/timer.png`)
 }
 
 export default fileLoader
