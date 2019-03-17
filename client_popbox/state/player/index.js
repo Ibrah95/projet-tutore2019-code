@@ -1,34 +1,51 @@
 import createPlayer from './createPlayer'
 import { isDown } from '../utils'
+import createJoystick from './createJoystick'
 
 export default function (x, y, game, socket) {
   const player = {
     socket,
     type: 'popbox',
     sprite: createPlayer(x, y, game),
+    joystick: createJoystick(x, y, game),
     playerName: null,
     speed: 0,
     speedText: null,
     estCapturer: false,
     nombreCapture: 0,
     drive (game) {
-
-      // Only emit if the player is moving
-      if (this.speed !== 0) {
+      if (this.joystick.isDown) {
+        this.sprite.body.velocity.set(0);
+        if (this.joystick.direction === Phaser.LEFT) {
+          this.sprite.body.velocity.x -= 1000;
+        } else if (this.joystick.direction === Phaser.RIGHT) {
+          this.sprite.body.velocity.x += 1000;
+        } else if (this.joystick.direction === Phaser.UP) {
+          this.sprite.body.velocity.y -= 1000 ;
+        } else if (this.joystick.direction === Phaser.DOWN) {
+          this.sprite.body.velocity.y += 1000;
+        }
         this.emitPlayerData()
+      } else {
+        this.sprite.body.velocity.set(0);
       }
 
-    this.sprite.body.velocity.x = 0;
-    this.sprite.body.velocity.y = 0;
-    this.sprite.body.angularVelocity = 0;
-
-    if (game.input.keyboard.isDown(Phaser.Keyboard.UP)) {
-      this.sprite.body.velocity.y -= 1000
-      this.emitPlayerData()
-    } else if (game.input.keyboard.isDown(Phaser.Keyboard.DOWN)) {
-      this.sprite.body.velocity.y += 1000
-      this.emitPlayerData()
-    }
+    //   // Only emit if the player is moving
+    //   if (this.speed !== 0) {
+    //     this.emitPlayerData()
+    //   }
+    //
+    // this.sprite.body.velocity.x = 0;
+    // this.sprite.body.velocity.y = 0;
+    // this.sprite.body.angularVelocity = 0;
+    //
+    // if (game.input.keyboard.isDown(Phaser.Keyboard.UP)) {
+    //   this.sprite.body.velocity.y -= 1000
+    //   this.emitPlayerData()
+    // } else if (game.input.keyboard.isDown(Phaser.Keyboard.DOWN)) {
+    //   this.sprite.body.velocity.y += 1000
+    //   this.emitPlayerData()
+    // }
 
       // Brings the player's sprite to top
       game.world.bringToTop(this.sprite)
