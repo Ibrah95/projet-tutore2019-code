@@ -272,7 +272,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var SERVER_IP = 'localhost:8000/';
 var socket = null;
 var otherPlayers = {};
-var tempsRestantEnSeconde = 2 * 60;
+var tempsRestantEnSeconde = 5 * 60;
 var minutesRestant = Number.parseInt(tempsRestantEnSeconde / 60);
 var secondesRestant = Number.parseInt(tempsRestantEnSeconde % 60);
 
@@ -332,7 +332,7 @@ var Game = function (_Phaser$State) {
       (0, _playerMovementInterpolation2.default)(otherPlayers, this.game, socket);
 
       // affichage TIMER
-      this.game.debug.text('TIMER :  ' + minutesRestant + ' min ' + secondesRestant + ' s', 32, 64)
+      this.game.debug.text('TIMER :  ' + minutesRestant + ' min ' + secondesRestant + ' s', 32, 64);
     }
   }]);
 
@@ -344,7 +344,8 @@ function updateCounter() {
   if (tempsRestantEnSeconde > 0) {
     tempsRestantEnSeconde--;
   } else {
-    tempsRestantEnSeconde = 2 * 60;
+    // quand le timer arrive à zero il reprend à 5, enlever le else pour garder time à 0
+    tempsRestantEnSeconde = 5 * 60;
   }
 
   minutesRestant = Number.parseInt(tempsRestantEnSeconde / 60);
@@ -370,7 +371,7 @@ var fileLoader = function fileLoader(game) {
   game.load.crossOrigin = 'Anonymous';
   game.stage.backgroundColor = '#1E1E1E';
   game.load.image('asphalt', _.ASSETS_URL + '/sprites/asphalt/bg_ecran.jpg');
-  game.load.image('popcorn', _.ASSETS_URL + '/sprites/car/car.png');
+  game.load.image('popcorn', _.ASSETS_URL + '/sprites/popcorn/pop_marley.png');
   game.load.image('popbox', _.ASSETS_URL + '/sprites/car/popbox.png');
 };
 
@@ -432,11 +433,11 @@ var createPlayer = function createPlayer(type, x, y, game) {
   sprite.body.bounce.setTo(1, 1);
   sprite.anchor.setTo(0.5, 0.5);
   if (type === 'popcorn') {
-    sprite.width = 50;
-    sprite.height = 50;
+    sprite.width = 80;
+    sprite.height = 80;
   } else {
-    sprite.width = 100;
-    sprite.height = 175;
+    sprite.width = 200;
+    sprite.height = 275;
   }
   sprite.body.allowRotation = false;
   return sprite;
@@ -561,6 +562,7 @@ var playerMovementInterpolation = function playerMovementInterpolation(otherPlay
               otherPlayers[id].sprite.destroy();
               otherPlayers[id].playerName.destroy();
               otherPlayers[id].speedText.destroy();
+              // ask the server to delete the popcorn that collided with a popbox
               otherPlayers[id].emitPlayerDeletion(socket);
               delete otherPlayers[id];
             }

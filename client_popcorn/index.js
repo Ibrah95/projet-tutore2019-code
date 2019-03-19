@@ -3,7 +3,7 @@ import Game from './state/Game'
 
 class App extends Phaser.Game {
   constructor () {
-    super(WINDOW_WIDTH, WINDOW_HEIGHT, Phaser.AUTO)
+    super(WINDOW_WIDTH - 30, WINDOW_HEIGHT - 150, Phaser.AUTO)
     this.state.add('Game', Game)
     this.state.start('Game')
   }
