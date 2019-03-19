@@ -54,8 +54,8 @@ export default function (x, y, game, socket) {
           this.sprite.body.y -= 50
         }
 
-        
-
+        if(this.sprite.body.x )
+          
         this.speed = 1500
         this.sprite.body.rotation = game.physics.arcade.moveToPointer(this.sprite, this.speed, game.input.activePointer, 0)
       } else {
@@ -68,9 +68,6 @@ export default function (x, y, game, socket) {
 
       this.updatePlayerName()
       this.updatePlayerStatusText('speed', this.sprite.body.x - 57, this.sprite.body.y - 39, this.speedText)
-
-     
-
 
     },
     emitPlayerData () {

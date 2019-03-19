@@ -9,7 +9,7 @@ const worldCreator = game => {
   // something else other than the browser
   game.stage.disableVisibilityChange = true
   // Here we set the bounds of our game world
-  game.world.setBounds(0, 0, width , height )
+  game.world.setBounds(0, 0, width, height)
   createMap(game)
 }
 

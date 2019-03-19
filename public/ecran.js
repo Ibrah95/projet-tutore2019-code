@@ -75,7 +75,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 var WINDOW_WIDTH = exports.WINDOW_WIDTH = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
 var WINDOW_HEIGHT = exports.WINDOW_HEIGHT = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
-var WORLD_SIZE = exports.WORLD_SIZE = { width: 24, height: 9 };
+var WORLD_SIZE = exports.WORLD_SIZE = { width: 1024, height: 900 };
 var ASSETS_URL = exports.ASSETS_URL = '../assets';
 
 /***/ }),
@@ -402,7 +402,7 @@ var worldCreator = function worldCreator(game) {
   // something else other than the browser
   game.stage.disableVisibilityChange = true;
   // Here we set the bounds of our game world
-  game.world.setBounds(0, 0, width, height);
+  game.world.setBounds(0, 0, 2000, 2000);
   createMap(game);
 };
 
