@@ -381,7 +381,7 @@ var fileLoader = function fileLoader(game) {
   game.load.crossOrigin = 'Anonymous';
   game.stage.backgroundColor = '#1E1E1E';
   game.load.image('asphalt', _.ASSETS_URL + '/sprites/asphalt/bg_ecran.jpg');
-  game.load.image('popcorn', _.ASSETS_URL + '/sprites/car/car.png');
+  game.load.image('popcorn', _.ASSETS_URL + '/sprites/popcorn/pop_marley.png');
   game.load.image('popbox', _.ASSETS_URL + '/sprites/car/popbox.png');
   game.load.image('timerlogo', _.ASSETS_URL + '/sprites/design/timerlogo.png');
 };
@@ -444,11 +444,11 @@ var createPlayer = function createPlayer(type, x, y, game) {
   sprite.body.bounce.setTo(1, 1);
   sprite.anchor.setTo(0.5, 0.5);
   if (type === 'popcorn') {
-    sprite.width = 50;
-    sprite.height = 50;
+    sprite.width = 80;
+    sprite.height = 80;
   } else {
-    sprite.width = 100;
-    sprite.height = 175;
+    sprite.width = 200;
+    sprite.height = 275;
   }
   sprite.body.allowRotation = false;
   return sprite;
