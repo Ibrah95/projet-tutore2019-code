@@ -6,11 +6,13 @@ import player from './player'
 import newPlayer from './sockets/newPlayer'
 import { WINDOW_HEIGHT,WINDOW_WIDTH } from './../config'
 
-const SERVER_IP = 'localhost:8000/'
+const SERVER_IP = '192.168.1.19:8000/'
 let socket = null
 let otherPlayers = {}
+let bmd = null
 let est_arriver= false
 let est_placer_sur_zone_fin = false;
+
 class Game extends Phaser.State {
   constructor () {
     super()
@@ -41,6 +43,15 @@ class Game extends Phaser.State {
     // update all players
     // updatePlayers(socket, otherPlayers, this.game)
 
+    // create load bar for bonus
+    bmd = this.game.add.bitmapData(200,50);
+    bmd.ctx.beginPath();
+    bmd.ctx.rect(0,0,200,50);
+    bmd.ctx.fillStyle = '#b90f28';
+    bmd.ctx.fill();
+    healthBar = this.game.add.sprite(50, 252,bmd);
+    healthBar.anchor.y = 0.5;
+
     // Configures the game camera
     this.game.camera.x = this.player.sprite.x - 800 / 2
     this.game.camera.y = this.player.sprite.y - 600 / 2
@@ -50,6 +61,12 @@ class Game extends Phaser.State {
   }
 
   update () {
+    this.player.drive(this.game)
+    
+    // active vibration for 100 ms
+    // if("vibrate" in window.navigator) {
+    //   window.navigator.vibrate(100);
+    // }
     socket.on('est-arriver', data => {
         // console.log('est entrer dans est-arriver')
         // console.log(`data id = ${data} et ${String(socket.id)}`)
@@ -89,12 +106,6 @@ class Game extends Phaser.State {
             est_placer_sur_zone_fin = true;
         }
     }
-
-    // Move the camera to follow the player
-    let cameraX = this.player.sprite.x - 800 / 2
-    let cameraY = this.player.sprite.y - 600 / 2
-    this.game.camera.x += (cameraX - this.game.camera.x) * 0.08
-    this.game.camera.y += (cameraY - this.game.camera.y) * 0.08
     // Interpolates the players movement
     // playerMovementInterpolation(otherPlayers)
     }

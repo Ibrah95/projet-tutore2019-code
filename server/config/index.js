@@ -9,10 +9,10 @@ app.use(express.static(path.join(__dirname, './../../public/')))
 app.use('/assets', express.static(path.join(__dirname, './../../public/assets/')))
 app.use('/vendor', express.static(path.join(__dirname, './../../vendor')))
 app.get('/popcorn', function(req, res) {
-    res.render('popcorn.ejs', {});
+    res.render('popcorn.ejs', {popmarley: 'POP MARLEY'});
 });
 app.get('/popbox', function(req, res) {
-    res.render('popbox.ejs', {});
+    res.render('popbox.ejs', {popbox: 'POP BOX'});
 });
 app.get('/ecran', function(req, res) {
   res.render('ecran.ejs', {});

@@ -26,11 +26,11 @@ export default function (x, y, game, socket) {
 
     },
     startPlayer() {
-      this.sprite.alpha = 1;
+      this.sprite.alpha = 0;
     },
     movePlayer(stick, force, forceX, forceY) {
-      this.sprite.body.velocity.x = stick.forceX * 1500;
-      this.sprite.body.velocity.y = stick.forceY * 1500;
+      this.sprite.body.velocity.x = stick.forceX * 1000;
+      this.sprite.body.velocity.y = stick.forceY * 1000;
       if( this.sprite.body.x <= 100 ){
           this.sprite.body.x += 50
         }
@@ -47,7 +47,7 @@ export default function (x, y, game, socket) {
     },
     stopPlayer() {
       this.sprite.body.velocity.set(0);
-      this.sprite.alpha = 0.5;
+      this.sprite.alpha = 0;
     },
     emitPlayerData () {
       // Emit the 'move-player' event, updating the player's data on the server
@@ -78,9 +78,10 @@ export default function (x, y, game, socket) {
       // Updates the player's name text and position
       this.playerName.text = String(name)
       this.playerName.x = x
-      this.playerName.y = y
+      this.playerName.y =
+      this.playerName.alpha = 0;
       // Bring the player's name to top
-      game.world.bringToTop(this.playerName)
+      //game.world.bringToTop(this.playerName)
     },
     updatePlayerStatusText (status, x, y, text) {
       // Capitalize the status text
@@ -92,7 +93,8 @@ export default function (x, y, game, socket) {
       text.x = x
       text.y = y
       text.text = `${capitalizedStatus}: ${parseInt(this.newText)}`
-      game.world.bringToTop(text)
+      text.alpha = 0;
+      //game.world.bringToTop(text)
     }
   }
   return player

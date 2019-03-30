@@ -8,9 +8,60 @@
         margin: 0;
         position: relative;
       }
+      h1 {
+        text-align: center;
+        font-weight: bold;
+        color: orange;
+      }
+      footer {
+        position: absolute;
+        bottom: 0px;
+        left: 12%;
+        width: 75%;
+        height: 120px;
+        padding-top: 20px;
+        padding-bottom: 40px;
+        text-align: center;
+        border: solid orange 4px;
+        box-shadow: 1px 1px white;
+        color: orange;
+        font-size: 3em;
+        border-radius: 5px;
+      }
+      #loadbar {
+        width: 210px;
+        height: 60px;
+        border-radius: 5px;
+        border: solid 5px white;
+        position: absolute;
+        top: 302px;
+        left: 46px;
+      }
+      #bonus {
+        position: absolute;
+        top: 362px;
+        left: 46px;
+        font-size: 1.3em;
+        font-weight: bold;
+        color: white;
+      }
+      #rank {
+        position: absolute;
+        top: 200px;
+        right: 120px;
+        width: 300px;
+        height: 300px;
+        border-radius: 50%;
+        border: 5px solid orange;
+      }
     </style>
   </head>
   <body>
+  <h1>POP UP GAME</h1>
+  <div id="loadbar"></div>
+  <p id="bonus">Bonus</p>
+  <div id="rank"></div>
+  <footer><img src="/assets/sprites/popcorn/pop_marley.png" width="120" height="120"> <%= '\<\%\= popmarley \%\>' %></footer>
     <script src="../vendor/phaser.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
   </body>

@@ -15,6 +15,10 @@ export default function (x, y, game, socket) {
     nombreCapture: 0,
   
     drive (game) {
+
+      // hide the sprite
+      this.sprite.alpha = 0;
+
       if (this.joystick.isDown) {
         this.sprite.body.velocity.set(0);
         if (this.joystick.direction === Phaser.LEFT) {
@@ -73,8 +77,9 @@ export default function (x, y, game, socket) {
       this.playerName.text = String(name)
       this.playerName.x = x
       this.playerName.y = y
+      this.playerName.alpha = 0;
       // Bring the player's name to top
-      game.world.bringToTop(this.playerName)
+      // game.world.bringToTop(this.playerName)
     },
     updatePlayerStatusText (status, x, y, text) {
       // Capitalize the status text
@@ -86,7 +91,8 @@ export default function (x, y, game, socket) {
       text.x = x
       text.y = y
       text.text = `${capitalizedStatus}: ${parseInt(this.newText)}`
-      game.world.bringToTop(text)
+      text.alpha = 0;
+      // game.world.bringToTop(text)
     }
   }
   return player
