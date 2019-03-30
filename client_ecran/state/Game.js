@@ -12,6 +12,8 @@ let otherPlayers = {}
 let tempsRestantEnSeconde = 5 * 60;
 let minutesRestant = Number.parseInt(tempsRestantEnSeconde / 60);
 let secondesRestant = Number.parseInt(tempsRestantEnSeconde % 60);
+let text=null
+let timerlogo=null
 
 class Game extends Phaser.State {
   constructor () {
@@ -45,11 +47,21 @@ class Game extends Phaser.State {
     timer.start();
 
     // Configures the game camera
-    this.game.camera.x = width / 2
+    this.game.camera.x = width / 2 
     this.game.camera.y = height / 2
 
     // Scale game to fit the entire window
     this.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL
+
+
+	
+    text=this.game.add.text((WORLD_SIZE.width/2)+140,160,`${minutesRestant} : ${secondesRestant}`,{fontSize: '43px', fill:'#AFF',align:'center'})
+
+
+    timerlogo = this.game.add.sprite((WORLD_SIZE.width/2)+60, 140, 'timerlogo')
+  
+    timerlogo.width = 80
+    timerlogo.height = 80
   }
 
   update () {
@@ -57,7 +69,8 @@ class Game extends Phaser.State {
     playerMovementInterpolation(otherPlayers, this.game, socket)
 
     // affichage TIMER
-    this.game.debug.text(`TIMER :  ${minutesRestant} min ${secondesRestant} s` , 32, 64);
+    //this.game.debug.text(`TIMER :  ${minutesRestant} min ${secondesRestant} s` , 32, 64);
+	text.setText(`${minutesRestant} : ${secondesRestant}`);
   }
 }
 
@@ -74,5 +87,8 @@ function updateCounter() {
   
 	
 }
+
+
+
 
 export default Game

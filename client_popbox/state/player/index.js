@@ -13,39 +13,29 @@ export default function (x, y, game, socket) {
     speedText: null,
     estCapturer: false,
     nombreCapture: 0,
+  
     drive (game) {
       if (this.joystick.isDown) {
         this.sprite.body.velocity.set(0);
         if (this.joystick.direction === Phaser.LEFT) {
-          this.sprite.body.velocity.x -= 1000;
+          // this.sprite.body.velocity.x -= 1000;
         } else if (this.joystick.direction === Phaser.RIGHT) {
-          this.sprite.body.velocity.x += 1000;
+          // this.sprite.body.velocity.x += 1000;
         } else if (this.joystick.direction === Phaser.UP) {
           this.sprite.body.velocity.y -= 1000 ;
+          if( this.sprite.body.y <= 100){
+            this.sprite.body.y += 50
+          }
         } else if (this.joystick.direction === Phaser.DOWN) {
           this.sprite.body.velocity.y += 1000;
+          if(this.sprite.body.y >= 700 ){
+            this.sprite.body.y -= 50
+          }
         }
         this.emitPlayerData()
       } else {
         this.sprite.body.velocity.set(0);
       }
-
-    //   // Only emit if the player is moving
-    //   if (this.speed !== 0) {
-    //     this.emitPlayerData()
-    //   }
-    //
-    // this.sprite.body.velocity.x = 0;
-    // this.sprite.body.velocity.y = 0;
-    // this.sprite.body.angularVelocity = 0;
-    //
-    // if (game.input.keyboard.isDown(Phaser.Keyboard.UP)) {
-    //   this.sprite.body.velocity.y -= 1000
-    //   this.emitPlayerData()
-    // } else if (game.input.keyboard.isDown(Phaser.Keyboard.DOWN)) {
-    //   this.sprite.body.velocity.y += 1000
-    //   this.emitPlayerData()
-    // }
 
       // Brings the player's sprite to top
       game.world.bringToTop(this.sprite)

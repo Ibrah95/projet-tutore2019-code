@@ -1,6 +1,7 @@
 import createPlayer from './createPlayer'
 import createJoystick from './createJoystick'
 import { isDown } from '../utils'
+import { WINDOW_HEIGHT,WINDOW_WIDTH } from './../../config'
 
 export default function (x, y, game, socket) {
   const player = {
@@ -17,11 +18,12 @@ export default function (x, y, game, socket) {
       this.joystick.onDown.add(this.startPlayer, this);
       this.joystick.onUpdate.add(this.movePlayer, this);
       this.joystick.onUp.add(this.stopPlayer, this);
-
+      game.physics.arcade.collide(this);
       // Brings the player's sprite to top
       game.world.bringToTop(this.sprite)
       this.updatePlayerName()
       this.updatePlayerStatusText('speed', this.sprite.body.x - 57, this.sprite.body.y - 39, this.speedText)
+
     },
     startPlayer() {
       this.sprite.alpha = 1;
@@ -29,6 +31,18 @@ export default function (x, y, game, socket) {
     movePlayer(stick, force, forceX, forceY) {
       this.sprite.body.velocity.x = stick.forceX * 1500;
       this.sprite.body.velocity.y = stick.forceY * 1500;
+      if( this.sprite.body.x <= 100 ){
+          this.sprite.body.x += 50
+        }
+
+        if(this.sprite.body.y <= 100){
+          this.sprite.body.y += 50
+
+        }
+
+        if(this.sprite.body.y >= 800 ){
+          this.sprite.body.y -= 50
+        }
       this.emitPlayerData();
     },
     stopPlayer() {
