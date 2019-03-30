@@ -4,6 +4,8 @@ const app = require('./config')
 const Server = http.Server(app)
 const PORT = process.env.PORT || 8000
 const io = require('socket.io')(Server)
+let comp1 =0
+let tabPosition = new Array(3).fill(0);
 
 Server.listen(PORT, () => console.log('Game server running on:', PORT))
 
@@ -17,6 +19,19 @@ io.on('connection', socket => {
     players[id] = state
     // Emit the update-players method in the client side
     io.emit('update-players', players)
+
+    let i = 0;
+    while (tabPosition[i] === 3) {
+      i++;
+    }
+    // calcule sa position 
+    // for(let i = 0; i < tabPosition.length; i++) {
+    //   if (tabPosition[i] < 3) {
+    tabPosition[i] += 1;
+    io.emit('update-position-player', {id: id, position: i});
+    //   }
+    // }
+    console.log(`tabPosition = ${tabPosition}`);
   })
 
   socket.on('disconnect', state => {
@@ -48,7 +63,11 @@ io.on('connection', socket => {
     // console.log('move: \n', data)
     const {type, nombreCapture, estCapturer, x, y, angle, playerName, speed } = data
     const id = String(socket.id)
-
+    if(type=== 'popcorn' && x > 1780 ){
+      console.log(`x = ${x} y=${y}`)
+      console.log(` id = ${id}`)
+      io.emit('est-arriver', id)
+    }
     // If the player is invalid, return
     if (players[id] === undefined) {
       return
@@ -78,5 +97,24 @@ io.on('connection', socket => {
 
   socket.on('move-player-after-collision', data => {
     console.log('move after collision\n', data);
+  })
+
+  // demander counter position 
+  socket.on('ask-counter-position', data => {
+    socket.emit('response-counter-position', tabPosition);
+  })
+
+  // GERER COMPTEUR POSITION POPBOX
+  socket.on('counter-position', data => {
+    console.log(`counter position : ${data.tabPosition}`);
+    if (tabPosition === null) {
+      tabPosition = data.tabPosition;
+    } else {
+      for (let i = 0; i < tabPosition.length; i++) {
+        //if (tabPosition[i] < 3)
+        tabPosition[i] += data.tabPosition[i];
+      }
+    }
+    socket.emit('counter-position-client', tabPosition);
   })
 })

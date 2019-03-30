@@ -11,6 +11,7 @@ export default function (x, y, game, socket) {
     speedText: null,
     estCapturer: false,
     nombreCapture: 0,
+  
     drive (game) {
 
       // Only emit if the player is moving
@@ -24,9 +25,16 @@ export default function (x, y, game, socket) {
 
     if (game.input.keyboard.isDown(Phaser.Keyboard.UP)) {
       this.sprite.body.velocity.y -= 1000
+      if( this.sprite.body.y <= 100){
+        this.sprite.body.y += 50
+      }
       this.emitPlayerData()
     } else if (game.input.keyboard.isDown(Phaser.Keyboard.DOWN)) {
       this.sprite.body.velocity.y += 1000
+      console.log(this.sprite.body.y)
+      if(this.sprite.body.y >= 700 ){
+          this.sprite.body.y -= 50
+        }
       this.emitPlayerData()
     }
 

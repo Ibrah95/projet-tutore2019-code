@@ -50,12 +50,12 @@ export default function (x, y, game, socket) {
           console.log(this.sprite.body.x)
            console.log(this.sprite.body.y)
 
-        if(this.sprite.body.y >= 900 ){
+        if(this.sprite.body.y >= 800 ){
           this.sprite.body.y -= 50
         }
 
         if(this.sprite.body.x )
-          
+
         this.speed = 1500
         this.sprite.body.rotation = game.physics.arcade.moveToPointer(this.sprite, this.speed, game.input.activePointer, 0)
       } else {

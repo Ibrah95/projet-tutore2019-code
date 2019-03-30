@@ -45,7 +45,7 @@ class Game extends Phaser.State {
     timer.start();
 
     // Configures the game camera
-    this.game.camera.x = width / 2
+    this.game.camera.x = width / 2 
     this.game.camera.y = height / 2
 
     // Scale game to fit the entire window
