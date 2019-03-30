@@ -1,4 +1,5 @@
 import createPlayer from './createPlayer'
+import createJoystick from './createJoystick'
 import { isDown } from '../utils'
 import { WINDOW_HEIGHT,WINDOW_WIDTH } from './../../config'
 
@@ -7,37 +8,30 @@ export default function (x, y, game, socket) {
     socket,
     type: 'popcorn',
     sprite: createPlayer(x, y, game),
+    joystick: createJoystick(x, y, game),
     playerName: null,
     speed: 0,
     speedText: null,
     estCapturer: false,
     nombreCapture: 0,
     drive (game) {
-      /*
-      Most of the driving logic was written by Daniel Wuggenig
-      https://www.anexia-it.com/blog/en/introduction-to-the-phaser-framework/
-      I decided to use it since this is supposed to be an introduction to multiplayer
-      online car game, his driving solution is simple and clean and fits perfectly
-      */
-      const KEYS = {
-        W: Phaser.Keyboard.W,
-        S: Phaser.Keyboard.S,
-        A: Phaser.Keyboard.A,
-        D: Phaser.Keyboard.D
-      }
+      this.joystick.onDown.add(this.startPlayer, this);
+      this.joystick.onUpdate.add(this.movePlayer, this);
+      this.joystick.onUp.add(this.stopPlayer, this);
+      game.physics.arcade.collide(this);
+      // Brings the player's sprite to top
+      game.world.bringToTop(this.sprite)
+      this.updatePlayerName()
+      this.updatePlayerStatusText('speed', this.sprite.body.x - 57, this.sprite.body.y - 39, this.speedText)
 
-      // Only emit if the player is moving
-      if (this.speed !== 0) {
-        this.emitPlayerData()
-      }
-
-      this.sprite.body.velocity.x = 0;
-      this.sprite.body.velocity.y = 0;
-      this.sprite.body.angularVelocity = 0;
-
-      if (game.input.mousePointer.isDown && game.input.activePointer.x !== this.sprite.body.x && game.input.activePointer.y !== this.sprite.body.y) {
-        
-        if( this.sprite.body.x <= 100 ){
+    },
+    startPlayer() {
+      this.sprite.alpha = 1;
+    },
+    movePlayer(stick, force, forceX, forceY) {
+      this.sprite.body.velocity.x = stick.forceX * 1500;
+      this.sprite.body.velocity.y = stick.forceY * 1500;
+      if( this.sprite.body.x <= 100 ){
           this.sprite.body.x += 50
         }
 
@@ -45,33 +39,17 @@ export default function (x, y, game, socket) {
           this.sprite.body.y += 50
 
         }
-          console.log(`${WINDOW_HEIGHT} win_height `)
-          console.log(`${WINDOW_WIDTH} win_width `)
-          console.log(this.sprite.body.x)
-           console.log(this.sprite.body.y)
 
         if(this.sprite.body.y >= 800 ){
           this.sprite.body.y -= 50
         }
-
-        if(this.sprite.body.x )
-
-        this.speed = 1500
-        this.sprite.body.rotation = game.physics.arcade.moveToPointer(this.sprite, this.speed, game.input.activePointer, 0)
-      } else {
-        this.speed = 0
-      }
-      game.physics.arcade.collide(this);
-
-      // Brings the player's sprite to top
-      game.world.bringToTop(this.sprite)
-
-      this.updatePlayerName()
-      this.updatePlayerStatusText('speed', this.sprite.body.x - 57, this.sprite.body.y - 39, this.speedText)
-
+      this.emitPlayerData();
+    },
+    stopPlayer() {
+      this.sprite.body.velocity.set(0);
+      this.sprite.alpha = 0.5;
     },
     emitPlayerData () {
-      console.log('emit data')
       // Emit the 'move-player' event, updating the player's data on the server
       socket.emit('move-player', {
         estCapturer: this.estCapturer,

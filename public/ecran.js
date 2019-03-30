@@ -275,6 +275,8 @@ var otherPlayers = {};
 var tempsRestantEnSeconde = 5 * 60;
 var minutesRestant = Number.parseInt(tempsRestantEnSeconde / 60);
 var secondesRestant = Number.parseInt(tempsRestantEnSeconde % 60);
+var text = null;
+var timerlogo = null;
 
 var Game = function (_Phaser$State) {
   _inherits(Game, _Phaser$State);
@@ -324,6 +326,13 @@ var Game = function (_Phaser$State) {
 
       // Scale game to fit the entire window
       this.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
+
+      text = this.game.add.text(_config.WORLD_SIZE.width / 2 + 140, 160, minutesRestant + ' : ' + secondesRestant, { fontSize: '43px', fill: '#AFF', align: 'center' });
+
+      timerlogo = this.game.add.sprite(_config.WORLD_SIZE.width / 2 + 60, 140, 'timerlogo');
+
+      timerlogo.width = 80;
+      timerlogo.height = 80;
     }
   }, {
     key: 'update',
@@ -332,7 +341,8 @@ var Game = function (_Phaser$State) {
       (0, _playerMovementInterpolation2.default)(otherPlayers, this.game, socket);
 
       // affichage TIMER
-      this.game.debug.text('TIMER :  ' + minutesRestant + ' min ' + secondesRestant + ' s', 32, 64);
+      //this.game.debug.text(`TIMER :  ${minutesRestant} min ${secondesRestant} s` , 32, 64);
+      text.setText(minutesRestant + ' : ' + secondesRestant);
     }
   }]);
 
@@ -373,7 +383,7 @@ var fileLoader = function fileLoader(game) {
   game.load.image('asphalt', _.ASSETS_URL + '/sprites/asphalt/bg_ecran.jpg');
   game.load.image('popcorn', _.ASSETS_URL + '/sprites/car/car.png');
   game.load.image('popbox', _.ASSETS_URL + '/sprites/car/popbox.png');
-  game.load.image('timer', _.ASSETS_URL + '/sprites/design/timer.png');
+  game.load.image('timerlogo', _.ASSETS_URL + '/sprites/design/timerlogo.png');
 };
 
 exports.default = fileLoader;
@@ -409,8 +419,8 @@ var worldCreator = function worldCreator(game) {
 var createMap = function createMap(game) {
   var groundTiles = [];
   var groundSprite = game.add.sprite(0, 0, 'asphalt');
-  groundSprite.width = 1920;
-  groundSprite.height = 1080;
+  /*groundSprite.width = 1920
+  groundSprite.height = 1080*/
   groundTiles.push(groundSprite);
 };
 
@@ -563,6 +573,7 @@ var playerMovementInterpolation = function playerMovementInterpolation(otherPlay
               otherPlayers[id].sprite.destroy();
               otherPlayers[id].playerName.destroy();
               otherPlayers[id].speedText.destroy();
+              // ask the server to delete the popcorn that collided with a popbox
               otherPlayers[id].emitPlayerDeletion(socket);
               delete otherPlayers[id];
             }

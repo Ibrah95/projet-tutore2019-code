@@ -16,8 +16,8 @@ const worldCreator = game => {
 const createMap = game => {
   let groundTiles = []
   const groundSprite = game.add.sprite(0, 0, 'asphalt')
-  groundSprite.width = 1920
-  groundSprite.height = 1080
+  /*groundSprite.width = 1920
+  groundSprite.height = 1080*/
   groundTiles.push(groundSprite)
 }
 
