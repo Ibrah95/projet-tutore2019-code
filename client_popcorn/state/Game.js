@@ -12,6 +12,7 @@ let otherPlayers = {}
 let bmd = null
 let est_arriver= false
 let est_placer_sur_zone_fin = false;
+let rang = 0;
 
 class Game extends Phaser.State {
   constructor () {
@@ -61,18 +62,20 @@ class Game extends Phaser.State {
   }
 
   update () {
+    // gerer le déplacement du popcorn
     this.player.drive(this.game)
-    
-    // active vibration for 100 ms
-    // if("vibrate" in window.navigator) {
-    //   window.navigator.vibrate(100);
-    // }
+
+    // gerer la capture du popcorn
+    socket.on('notifier-capture', data => {
+      if (data === String(socket.id)) {
+        window.alert('Vous avez été capturé !!');
+      }
+    })
+    // gerer l'arrivé du popcorn à la zone de fin
     socket.on('est-arriver', data => {
-        // console.log('est entrer dans est-arriver')
-        // console.log(`data id = ${data} et ${String(socket.id)}`)
-        if(data === String(socket.id)){
+        if(data.id === String(socket.id)){
             est_arriver = true;
-            window.alert('Félicitation vous êtes arrivé')
+            rang = data.rang;
         }
     })
     console.log(`est_arriver = ${est_arriver}`);
@@ -84,6 +87,7 @@ class Game extends Phaser.State {
             socket.emit('move-player', {
                 estCapturer: this.player.estCapturer,
                 nombreCapture: this.player.nombreCapture,
+                position: this.player.position,
                 speedText: {
                   x: this.player.sprite.body.x,
                   y: this.player.sprite.body.y,
@@ -104,6 +108,12 @@ class Game extends Phaser.State {
                 }
             })
             est_placer_sur_zone_fin = true;
+            if("vibrate" in window.navigator) {
+              window.navigator.vibrate(500);
+            }
+            setTimeout(()=>{
+              window.alert(`Félicitation vous êtes arrivé à la ${rang} ${(rang === 1) ? 'ère' : 'ème'} place`);
+            }, 800);
         }
     }
     // Interpolates the players movement

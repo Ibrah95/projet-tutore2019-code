@@ -6,11 +6,11 @@ const createPlayer = (type, x, y, game) => {
 	sprite.body.bounce.setTo(1, 1);
   sprite.anchor.setTo(0.5, 0.5)
   if (type === 'popcorn') {
-    sprite.width = 80
-    sprite.height = 80
+    sprite.width = 35
+    sprite.height = 35
   } else {
-    sprite.width = 200
-    sprite.height = 275
+    sprite.width = 50
+    sprite.height = 100
   }
   sprite.body.allowRotation = false
   return sprite

@@ -14,6 +14,7 @@ export default function (x, y, game, socket) {
     speedText: null,
     estCapturer: false,
     nombreCapture: 0,
+    position: 0,
     drive (game) {
       this.joystick.onDown.add(this.startPlayer, this);
       this.joystick.onUpdate.add(this.movePlayer, this);
@@ -37,7 +38,6 @@ export default function (x, y, game, socket) {
 
         if(this.sprite.body.y <= 100){
           this.sprite.body.y += 50
-
         }
 
         if(this.sprite.body.y >= 800 ){
@@ -54,6 +54,7 @@ export default function (x, y, game, socket) {
       socket.emit('move-player', {
         estCapturer: this.estCapturer,
         nombreCapture: this.nombreCapture,
+        position: this.position,
         speedText: {
           x: this.sprite.body.x,
           y: this.sprite.body.y,
@@ -78,7 +79,7 @@ export default function (x, y, game, socket) {
       // Updates the player's name text and position
       this.playerName.text = String(name)
       this.playerName.x = x
-      this.playerName.y =
+      this.playerName.y = y
       this.playerName.alpha = 0;
       // Bring the player's name to top
       //game.world.bringToTop(this.playerName)

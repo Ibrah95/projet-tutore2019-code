@@ -327,9 +327,9 @@ var Game = function (_Phaser$State) {
       // Scale game to fit the entire window
       this.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
 
-      text = this.game.add.text(_config.WORLD_SIZE.width / 2 + 140, 160, minutesRestant + ' : ' + secondesRestant, { fontSize: '43px', fill: '#AFF', align: 'center' });
+      text = this.game.add.text(_config.WORLD_SIZE.width / 2 + 140, 50, minutesRestant + ' : ' + secondesRestant, { fontSize: '43px', fill: '#AFF', align: 'center' });
 
-      timerlogo = this.game.add.sprite(_config.WORLD_SIZE.width / 2 + 60, 140, 'timerlogo');
+      timerlogo = this.game.add.sprite(_config.WORLD_SIZE.width / 2 + 60, 50, 'timerlogo');
 
       timerlogo.width = 80;
       timerlogo.height = 80;
@@ -444,11 +444,11 @@ var createPlayer = function createPlayer(type, x, y, game) {
   sprite.body.bounce.setTo(1, 1);
   sprite.anchor.setTo(0.5, 0.5);
   if (type === 'popcorn') {
-    sprite.width = 80;
-    sprite.height = 80;
+    sprite.width = 35;
+    sprite.height = 35;
   } else {
-    sprite.width = 200;
-    sprite.height = 275;
+    sprite.width = 50;
+    sprite.height = 100;
   }
   sprite.body.allowRotation = false;
   return sprite;

@@ -6,7 +6,7 @@ import player from './player'
 import newPlayer from './sockets/newPlayer'
 import { WINDOW_HEIGHT,WINDOW_WIDTH } from './../config'
 
-const SERVER_IP = '192.168.0.13:8000/'
+const SERVER_IP = '192.168.1.19:8000/'
 let socket = null
 let otherPlayers = {}
 let bmd = null
@@ -32,46 +32,7 @@ class Game extends Phaser.State {
     createWorld(this.game)
     // Connects the player to the server
     socket = io(SERVER_IP)
-    // Creates the player passing the X, Y, game and socket as arguments
-    //this.player = player(width / 2, Math.random() * height, this.game, socket)
-
-    //fonction pour apparition random :
-    // random = Math.floor( Math.random()* Math.floor(3) ) //random de 0 à 2
-   
-    // console.log(`${random} =random`)
-    // recuperer tableau de position des popbox sur les colonnes
-    
-    // socket.on('counter-position-client', data => {
-    //     console.log('entrer dans counter-position');
-    //     console.log(data);
-    //     tabPosition = data.tabPosition;
-    // })
-
-    // // if(random == 0 ) {
-    // let i = 0
-    // while (tabPosition[i] === 3) {
-    //     i++;
-    // }
-    // // comp1 += 1
     this.player = player( 200 , Math.random() * ((WINDOW_HEIGHT - 100) -100 ) + 100 , this.game, socket)
-    // tabPosition[i] += 1;
-    // console.log(`tabPosition = ${tabPosition}`);
-    // this.emitCounterPosition(tabPosition);
-    // }
-
-    // else if(random == 1) {
-    //         this.player = player( 1200 , Math.random() * ((WINDOW_HEIGHT - 100) -100 ) + 100 , this.game, socket)
-           
-    //         comp2 = comp2 + 1
-    //         console.log(`${comp2} = comp2`)
-    // }
-
-    // else if(random == 2){
-    //         this.player = player( 1700, Math.random() * ((WINDOW_HEIGHT - 100) -100 ) + 100 , this.game, socket)
-           
-    //         comp3= comp3 +1
-    //     	console.log(`${comp3} = comp3`)
-    // }
 
 
 
@@ -110,7 +71,11 @@ class Game extends Phaser.State {
         }
     })
 
-    this.player.sprite.x = 200 + 200 * position;
+    // mettre à jour sa position
+    this.player.sprite.x = 400 + 300 * position;
+    if (this.player.position === 0 && position !== 0) {
+      this.player.position = position;
+    }
 
     // Move the camera to follow the player
     // let cameraX = this.player.sprite.x - 800 / 2

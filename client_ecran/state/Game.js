@@ -47,19 +47,19 @@ class Game extends Phaser.State {
     timer.start();
 
     // Configures the game camera
-    this.game.camera.x = width / 2 
+    this.game.camera.x = width / 2
     this.game.camera.y = height / 2
 
     // Scale game to fit the entire window
     this.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL
 
 
-	
-    text=this.game.add.text((WORLD_SIZE.width/2)+140,160,`${minutesRestant} : ${secondesRestant}`,{fontSize: '43px', fill:'#AFF',align:'center'})
+
+    text=this.game.add.text((WORLD_SIZE.width/2)+140,50,`${minutesRestant} : ${secondesRestant}`,{fontSize: '43px', fill:'#AFF',align:'center'})
 
 
-    timerlogo = this.game.add.sprite((WORLD_SIZE.width/2)+60, 140, 'timerlogo')
-  
+    timerlogo = this.game.add.sprite((WORLD_SIZE.width/2)+60, 50, 'timerlogo')
+
     timerlogo.width = 80
     timerlogo.height = 80
   }
@@ -80,12 +80,12 @@ function updateCounter() {
 	tempsRestantEnSeconde--;
   } else{ // quand le timer arrive à zero il reprend à 5, enlever le else pour garder time à 0
 	tempsRestantEnSeconde = 5 * 60;
-  }	
-	
+  }
+
   minutesRestant = Number.parseInt(tempsRestantEnSeconde / 60);
-  secondesRestant = Number.parseInt(tempsRestantEnSeconde % 60); 
-  
-	
+  secondesRestant = Number.parseInt(tempsRestantEnSeconde % 60);
+
+
 }
 
 

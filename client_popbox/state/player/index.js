@@ -13,7 +13,7 @@ export default function (x, y, game, socket) {
     speedText: null,
     estCapturer: false,
     nombreCapture: 0,
-  
+    position: 0,
     drive (game) {
 
       // hide the sprite
@@ -52,6 +52,7 @@ export default function (x, y, game, socket) {
       socket.emit('move-player', {
         estCapturer: this.estCapturer,
         nombreCapture: this.nombreCapture,
+        position: this.position,
         speedText: {
           x: this.sprite.body.x,
           y: this.sprite.body.y,
