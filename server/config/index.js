@@ -11,8 +11,8 @@ app.use('/vendor', express.static(path.join(__dirname, './../../vendor')))
 app.get('/popcorn', function(req, res) {
   let custom_popcorn = 'POP CORN';
   let splited_custom_name = req.query.pop_name.split('_');
-  if (splited_custom_name.length === 2) {
-    custom_popcorn = `${splited_custom_name[0].toUpperCase()} ${splited_custom_name[1].toUpperCase()}`
+  if (splited_custom_name && splited_custom_name.length === 2) {
+    custom_popcorn = `${splited_custom_name[0].toUpperCase()} ${splited_custom_name[1].toUpperCase()}`;
   }
   res.render('popcorn.ejs', {custom_popcorn, custom_name: req.query.pop_name});
 });
