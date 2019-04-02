@@ -9,11 +9,12 @@ import playerMovementInterpolation from './predictions/playerMovementInterpolati
 const SERVER_IP = 'localhost:8000/'
 let socket = null
 let otherPlayers = {}
-let tempsRestantEnSeconde = 5 * 60;
+let tempsRestantEnSeconde = 30; // 5 * 60;
 let minutesRestant = Number.parseInt(tempsRestantEnSeconde / 60);
 let secondesRestant = Number.parseInt(tempsRestantEnSeconde % 60);
-let text=null
-let timerlogo=null
+let text = null;
+let timerlogo = null;
+let tempsEcouler = false;
 
 class Game extends Phaser.State {
   constructor () {
@@ -60,27 +61,36 @@ class Game extends Phaser.State {
 
     timerlogo = this.game.add.sprite((WORLD_SIZE.width/2)+60, 50, 'timerlogo')
 
-    timerlogo.width = 80
-    timerlogo.height = 80
+    timerlogo.width = 50
+    timerlogo.height = 50
   }
 
   update () {
     // Interpolates the players movement
     playerMovementInterpolation(otherPlayers, this.game, socket)
 
+    socket.on('notification-temps-ecouler', data =>{
+      console.log('entrer dans notification')
+       window.alert(`TEMPS ECOULER !!!\n\n NOMBRE POPCORN ARRIVÉ : ${data.nombre_de_popcorn_arriver} \n NOMBRE DE POPCORN CAPTURÉ : ${data.nombre_de_popcorn_capturer}`);
+    })
+
     // affichage TIMER
     //this.game.debug.text(`TIMER :  ${minutesRestant} min ${secondesRestant} s` , 32, 64);
-	text.setText(`${minutesRestant} : ${secondesRestant}`);
+	   text.setText(`${minutesRestant} : ${secondesRestant}`);
   }
 }
 
 function updateCounter() {
 
+if (!tempsEcouler) {
   if(tempsRestantEnSeconde > 0){
-	tempsRestantEnSeconde--;
+	   tempsRestantEnSeconde--;
   } else{ // quand le timer arrive à zero il reprend à 5, enlever le else pour garder time à 0
-	tempsRestantEnSeconde = 5 * 60;
+	  // tempsRestantEnSeconde = 5 * 60;
+    tempsEcouler = true;
+    socket.emit('temps-ecouler', true);
   }
+}
 
   minutesRestant = Number.parseInt(tempsRestantEnSeconde / 60);
   secondesRestant = Number.parseInt(tempsRestantEnSeconde % 60);

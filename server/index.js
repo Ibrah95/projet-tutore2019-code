@@ -8,6 +8,8 @@ let tabPosition = new Array(5).fill(0);
 let dernier_rang = 0;
 let nombre_popcorn = 0;
 let nombre_popbox = 0;
+let nombre_de_popcorn_capturer = 0;
+let nombre_de_popcorn_arriver = 0;
 
 Server.listen(PORT, () => console.log('Game server running on:', PORT))
 
@@ -51,6 +53,7 @@ io.on('connection', socket => {
   // when a player is deleted
   socket.on('delete-player', data => {
     players[data.id].estCapturer = true;
+    nombre_de_popcorn_capturer++;
     // notifier le joueur captuerer
     io.emit('notifier-capture', data.id);
     io.emit('update-players', players)
@@ -71,10 +74,11 @@ io.on('connection', socket => {
   // When a player moves
   socket.on('move-player', data => {
     // console.log('move: \n', data)
-    const {type, position, nombreCapture, estCapturer, x, y, angle, playerName, speed } = data
+    const {type, customName, position, nombreCapture, estCapturer, x, y, angle, playerName, speed } = data
     const id = String(socket.id)
     if(type=== 'popcorn' && x > 1780 && players[id] !== undefined){
       const rang = ++dernier_rang;
+      nombre_de_popcorn_arriver++;
       io.emit('est-arriver', { id: id, rang: rang })
       delete players[id];
     } else {
@@ -88,6 +92,7 @@ io.on('connection', socket => {
       players[id].estCapturer
       players[id].type = type
       players[id].position = position
+      players[id].customName = customName
       players[id].x = x
       players[id].y = y
       players[id].angle = angle
@@ -109,6 +114,16 @@ io.on('connection', socket => {
 
   socket.on('move-player-after-collision', data => {
     console.log('move after collision\n', data);
+  })
+
+  // gerer fin timer
+  socket.on('temps-ecouler', data => {
+    console.log('temps ecouler');
+    console.log(data);
+    if (data) {
+      console.log('est entrer dans notif')
+      io.emit('notification-temps-ecouler', {nombre_de_popcorn_arriver, nombre_de_popcorn_capturer});
+    }
   })
 
   // demander counter position

@@ -3,10 +3,11 @@ import createJoystick from './createJoystick'
 import { isDown } from '../utils'
 import { WINDOW_HEIGHT,WINDOW_WIDTH } from './../../config'
 
-export default function (x, y, game, socket) {
+export default function (x, y, customName, game, socket) {
   const player = {
     socket,
     type: 'popcorn',
+    customName: customName,
     sprite: createPlayer(x, y, game),
     joystick: createJoystick(x, y, game),
     playerName: null,
@@ -55,6 +56,7 @@ export default function (x, y, game, socket) {
         estCapturer: this.estCapturer,
         nombreCapture: this.nombreCapture,
         position: this.position,
+        customName: this.customName,
         speedText: {
           x: this.sprite.body.x,
           y: this.sprite.body.y,

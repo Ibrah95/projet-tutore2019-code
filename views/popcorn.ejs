@@ -61,7 +61,10 @@
   <div id="loadbar"></div>
   <p id="bonus">Bonus</p>
   <div id="rank"></div>
-  <footer><img src="/assets/sprites/popcorn/pop_marley.png" width="120" height="120"> <%= popmarley %></footer>
+  <span id="custom_name" style="display:none;"><%= custom_name %></span>
+  <footer><img src="/assets/sprites/popcorn/<%= custom_name %>.png" width="120" height="120">
+    <%= custom_popcorn %>
+  </footer>
     <script src="../vendor/phaser.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
   <script type="text/javascript" src="popcorn.js"></script></body>

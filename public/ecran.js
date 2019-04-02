@@ -110,16 +110,17 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-exports.default = function (type, nombreCapture, x, y, game, socket) {
+exports.default = function (type, customName, nombreCapture, x, y, game, socket) {
   var player = {
     socket: socket,
     type: type,
-    sprite: (0, _createPlayer2.default)(type, x, y, game),
+    sprite: (0, _createPlayer2.default)(type, customName, x, y, game),
     playerName: null,
     speed: 0,
     speedText: null,
     estCapturer: false,
     nombreCapture: nombreCapture,
+    customName: customName,
     drive: function drive(game) {},
     emitPlayerData: function emitPlayerData() {
       // Emit the 'move-player' event, updating the player's data on the server
@@ -272,11 +273,12 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var SERVER_IP = 'localhost:8000/';
 var socket = null;
 var otherPlayers = {};
-var tempsRestantEnSeconde = 5 * 60;
+var tempsRestantEnSeconde = 30; // 5 * 60;
 var minutesRestant = Number.parseInt(tempsRestantEnSeconde / 60);
 var secondesRestant = Number.parseInt(tempsRestantEnSeconde % 60);
 var text = null;
 var timerlogo = null;
+var tempsEcouler = false;
 
 var Game = function (_Phaser$State) {
   _inherits(Game, _Phaser$State);
@@ -331,14 +333,19 @@ var Game = function (_Phaser$State) {
 
       timerlogo = this.game.add.sprite(_config.WORLD_SIZE.width / 2 + 60, 50, 'timerlogo');
 
-      timerlogo.width = 80;
-      timerlogo.height = 80;
+      timerlogo.width = 50;
+      timerlogo.height = 50;
     }
   }, {
     key: 'update',
     value: function update() {
       // Interpolates the players movement
       (0, _playerMovementInterpolation2.default)(otherPlayers, this.game, socket);
+
+      socket.on('notification-temps-ecouler', function (data) {
+        console.log('entrer dans notification');
+        window.alert('TEMPS ECOULER !!!\n\n NOMBRE POPCORN ARRIV\xC9 : ' + data.nombre_de_popcorn_arriver + ' \n NOMBRE DE POPCORN CAPTUR\xC9 : ' + data.nombre_de_popcorn_capturer);
+      });
 
       // affichage TIMER
       //this.game.debug.text(`TIMER :  ${minutesRestant} min ${secondesRestant} s` , 32, 64);
@@ -351,11 +358,15 @@ var Game = function (_Phaser$State) {
 
 function updateCounter() {
 
-  if (tempsRestantEnSeconde > 0) {
-    tempsRestantEnSeconde--;
-  } else {
-    // quand le timer arrive à zero il reprend à 5, enlever le else pour garder time à 0
-    tempsRestantEnSeconde = 5 * 60;
+  if (!tempsEcouler) {
+    if (tempsRestantEnSeconde > 0) {
+      tempsRestantEnSeconde--;
+    } else {
+      // quand le timer arrive à zero il reprend à 5, enlever le else pour garder time à 0
+      // tempsRestantEnSeconde = 5 * 60;
+      tempsEcouler = true;
+      socket.emit('temps-ecouler', true);
+    }
   }
 
   minutesRestant = Number.parseInt(tempsRestantEnSeconde / 60);
@@ -381,7 +392,24 @@ var fileLoader = function fileLoader(game) {
   game.load.crossOrigin = 'Anonymous';
   game.stage.backgroundColor = '#1E1E1E';
   game.load.image('asphalt', _.ASSETS_URL + '/sprites/asphalt/bg_ecran.jpg');
-  game.load.image('popcorn', _.ASSETS_URL + '/sprites/popcorn/pop_marley.png');
+
+  // charger les personnages popcorn
+  game.load.image('pop_marley', _.ASSETS_URL + '/sprites/popcorn/pop_marley.png');
+  game.load.image('bat_pop', _.ASSETS_URL + '/sprites/popcorn/bat_pop.png');
+  game.load.image('pop_soldat', _.ASSETS_URL + '/sprites/popcorn/pop_soldat.png');
+  game.load.image('caramba_pop', _.ASSETS_URL + '/sprites/popcorn/caramba_pop.png');
+  game.load.image('pop_vador', _.ASSETS_URL + '/sprites/popcorn/pop_vador.png');
+  game.load.image('gentle_pop', _.ASSETS_URL + '/sprites/popcorn/gentle_pop.png');
+  game.load.image('pop_blood', _.ASSETS_URL + '/sprites/popcorn/pop_blood.png');
+  game.load.image('pop_boy', _.ASSETS_URL + '/sprites/popcorn/pop_boy.png');
+  game.load.image('pop_kent', _.ASSETS_URL + '/sprites/popcorn/pop_kent.png');
+  game.load.image('pop_carrey', _.ASSETS_URL + '/sprites/popcorn/pop_carrey.png');
+  game.load.image('pop_minator', _.ASSETS_URL + '/sprites/popcorn/pop_minator.png');
+  game.load.image('pop_ninja', _.ASSETS_URL + '/sprites/popcorn/pop_ninja.png');
+  game.load.image('saint_patrick_pop', _.ASSETS_URL + '/sprites/popcorn/saint_patrick_pop.png');
+  game.load.image('santa_pop', _.ASSETS_URL + '/sprites/popcorn/santa_pop.png');
+  game.load.image('thug_pop', _.ASSETS_URL + '/sprites/popcorn/thug_pop.png');
+
   game.load.image('popbox', _.ASSETS_URL + '/sprites/car/popbox.png');
   game.load.image('timerlogo', _.ASSETS_URL + '/sprites/design/timerlogo.png');
 };
@@ -436,16 +464,18 @@ exports.default = worldCreator;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-var createPlayer = function createPlayer(type, x, y, game) {
-  var sprite = game.add.sprite(x, y, type);
+var createPlayer = function createPlayer(type, customName, x, y, game) {
+  var sprite = null;
+  if (type === 'popcorn') sprite = game.add.sprite(x, y, customName);else sprite = game.add.sprite(x, y, type);
+
   game.physics.enable(sprite, Phaser.Physics.ARCADE);
   game.physics.startSystem(Phaser.Physics.ARCADE);
   sprite.body.collideWorldBounds = true;
   sprite.body.bounce.setTo(1, 1);
   sprite.anchor.setTo(0.5, 0.5);
   if (type === 'popcorn') {
-    sprite.width = 35;
-    sprite.height = 35;
+    sprite.width = 40;
+    sprite.height = 40;
   } else {
     sprite.width = 50;
     sprite.height = 100;
@@ -484,7 +514,8 @@ var updatePlayers = function updatePlayers(socket, otherPlayers, game) {
       // In case a player hasn't been created yet
       // We make sure that we won't create a second instance of it
       if (otherPlayers[index] === undefined && index !== socket.id) {
-        var newPlayer = (0, _player2.default)(data.type, data.nombreCapture, data.x, data.y, game);
+        console.log('data custom Name = ' + data.customName);
+        var newPlayer = (0, _player2.default)(data.type, data.customName, data.nombreCapture, data.x, data.y, game);
         newPlayer.playerName = (0, _utils.createText)(game, newPlayer);
         newPlayer.speedText = (0, _utils.createText)(game, newPlayer);
         newPlayer.updatePlayerName(data.playerName.name, data.playerName.x, data.playerName.y);

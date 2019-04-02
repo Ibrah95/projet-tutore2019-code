@@ -32,8 +32,13 @@ class Game extends Phaser.State {
     createWorld(this.game)
     // Connects the player to the server
     socket = io(SERVER_IP)
+
+    // recuperer le type de POPCORN
+    const customName = document.getElementById('custom_name').textContent;
+    console.log(customName);
+
     // Creates the player passing the X, Y, game and socket as arguments
-    this.player = player((Math.random()* (300-100) +100 ), Math.random() * ((WINDOW_HEIGHT - 100) -100 ) + 100 , this.game, socket)
+    this.player = player((Math.random()* (300-100) +100 ), Math.random() * ((WINDOW_HEIGHT - 100) -100 ) + 100 , customName, this.game, socket)
     // Creates the player name text
     this.player.playerName = createText(this.game, this.player.sprite.body)
     // Creates the player speed text
@@ -68,7 +73,12 @@ class Game extends Phaser.State {
     // gerer la capture du popcorn
     socket.on('notifier-capture', data => {
       if (data === String(socket.id)) {
-        window.alert('Vous avez été capturé !!');
+        if("vibrate" in window.navigator) {
+          window.navigator.vibrate(500);
+        }
+        setTimeout(() => {
+          window.alert('Vous avez été capturé !!');
+        }, 800);
       }
     })
     // gerer l'arrivé du popcorn à la zone de fin
@@ -88,6 +98,7 @@ class Game extends Phaser.State {
                 estCapturer: this.player.estCapturer,
                 nombreCapture: this.player.nombreCapture,
                 position: this.player.position,
+                customName: this.player.customName,
                 speedText: {
                   x: this.player.sprite.body.x,
                   y: this.player.sprite.body.y,
