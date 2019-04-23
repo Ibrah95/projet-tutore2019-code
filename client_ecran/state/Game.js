@@ -6,10 +6,10 @@ import player from './player'
 import updatePlayers from './sockets/updatePlayers'
 import playerMovementInterpolation from './predictions/playerMovementInterpolation'
 
-const SERVER_IP = 'localhost:8000/'
+const SERVER_IP = '192.168.1.2:8000/'
 let socket = null
 let otherPlayers = {}
-let tempsRestantEnSeconde = 30; // 5 * 60;
+let tempsRestantEnSeconde = 3 * 60;
 let minutesRestant = Number.parseInt(tempsRestantEnSeconde / 60);
 let secondesRestant = Number.parseInt(tempsRestantEnSeconde % 60);
 let text = null;

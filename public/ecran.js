@@ -270,10 +270,10 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var SERVER_IP = 'localhost:8000/';
+var SERVER_IP = '192.168.1.2:8000/';
 var socket = null;
 var otherPlayers = {};
-var tempsRestantEnSeconde = 30; // 5 * 60;
+var tempsRestantEnSeconde = 3 * 60;
 var minutesRestant = Number.parseInt(tempsRestantEnSeconde / 60);
 var secondesRestant = Number.parseInt(tempsRestantEnSeconde % 60);
 var text = null;
@@ -474,11 +474,11 @@ var createPlayer = function createPlayer(type, customName, x, y, game) {
   sprite.body.bounce.setTo(1, 1);
   sprite.anchor.setTo(0.5, 0.5);
   if (type === 'popcorn') {
-    sprite.width = 40;
-    sprite.height = 40;
+    sprite.width = 60;
+    sprite.height = 60;
   } else {
-    sprite.width = 50;
-    sprite.height = 100;
+    sprite.width = 70;
+    sprite.height = 110;
   }
   sprite.body.allowRotation = false;
   return sprite;
