@@ -3,7 +3,7 @@ import { ASSETS_URL } from '.'
 const fileLoader = game => {
   game.load.crossOrigin = 'Anonymous'
   game.stage.backgroundColor = '#1E1E1E'
-  game.load.image('asphalt', `${ASSETS_URL}/sprites/asphalt/bg_ecran.jpg`)
+  game.load.image('asphalt', `${ASSETS_URL}/sprites/asphalt/new_bg.png`)
 
   // charger les personnages popcorn
   game.load.image('pop_marley', `${ASSETS_URL}/sprites/popcorn/pop_marley.png`)

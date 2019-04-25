@@ -3,10 +3,11 @@ import { createText } from './utils'
 import fileLoader from '../config/fileloader'
 import createWorld from './world/createWorld'
 import player from './player'
+import createIA from './ia/create'
 import updatePlayers from './sockets/updatePlayers'
 import playerMovementInterpolation from './predictions/playerMovementInterpolation'
 
-const SERVER_IP = '192.168.1.2:8000/'
+const SERVER_IP = 'localhost:8000/'
 let socket = null
 let otherPlayers = {}
 let tempsRestantEnSeconde = 3 * 60;
@@ -15,6 +16,8 @@ let secondesRestant = Number.parseInt(tempsRestantEnSeconde % 60);
 let text = null;
 let timerlogo = null;
 let tempsEcouler = false;
+
+let listPopbox = []; // tableau contenant les popbox manipuler par l'IA
 
 class Game extends Phaser.State {
   constructor () {
@@ -37,6 +40,9 @@ class Game extends Phaser.State {
 
     // update all players
     updatePlayers(socket, otherPlayers, this.game)
+
+    // creer les popbox manipuler par l'IA
+    listPopbox = createIA(this.game);
 
     // CONFIGURATION DU TIMER (à modifier mais juste pour le test)
     //  Create our Timer
@@ -66,11 +72,10 @@ class Game extends Phaser.State {
   }
 
   update () {
-    // Interpolates the players movement
-    playerMovementInterpolation(otherPlayers, this.game, socket)
+    // Interpolates the players movement et gerer les collisions
+    playerMovementInterpolation(otherPlayers, listPopbox, this.game, socket)
 
     socket.on('notification-temps-ecouler', data =>{
-      console.log('entrer dans notification')
        window.alert(`TEMPS ECOULER !!!\n\n NOMBRE POPCORN ARRIVÉ : ${data.nombre_de_popcorn_arriver} \n NOMBRE DE POPCORN CAPTURÉ : ${data.nombre_de_popcorn_capturer}`);
     })
 

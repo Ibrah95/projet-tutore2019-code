@@ -75,8 +75,11 @@ Object.defineProperty(exports, "__esModule", {
 });
 var WINDOW_WIDTH = exports.WINDOW_WIDTH = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
 var WINDOW_HEIGHT = exports.WINDOW_HEIGHT = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
-var WORLD_SIZE = exports.WORLD_SIZE = { width: 2048, height: 900 };
+var WORLD_SIZE = exports.WORLD_SIZE = { width: 2048, height: 1000 };
 var ASSETS_URL = exports.ASSETS_URL = '../assets';
+var LIMIT_TOP = exports.LIMIT_TOP = 100;
+var LIMIT_BOTTOM = exports.LIMIT_BOTTOM = 1100;
+var LIMIT_LEFT = exports.LIMIT_LEFT = 100;
 
 /***/ }),
 /* 1 */
@@ -181,7 +184,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var SERVER_IP = '192.168.1.2:8000/'; //'192.168.1.2:8080/'
+var SERVER_IP = 'localhost:8000/'; //'192.168.1.2:8080/'
 var socket = null;
 var otherPlayers = {};
 var bmd = null;
@@ -425,15 +428,16 @@ exports.default = function (x, y, customName, game, socket) {
     movePlayer: function movePlayer(stick, force, forceX, forceY) {
       this.sprite.body.velocity.x = stick.forceX * 1000;
       this.sprite.body.velocity.y = stick.forceY * 1000;
-      if (this.sprite.body.x <= 100) {
+      console.log(this.sprite.body.y);
+      if (this.sprite.body.x <= _config.LIMIT_LEFT) {
         this.sprite.body.x += 50;
       }
 
-      if (this.sprite.body.y <= 100) {
+      if (this.sprite.body.y <= _config.LIMIT_TOP) {
         this.sprite.body.y += 50;
       }
 
-      if (this.sprite.body.y >= 800) {
+      if (this.sprite.body.y >= _config.LIMIT_BOTTOM) {
         this.sprite.body.y -= 50;
       }
       this.emitPlayerData();

@@ -77,6 +77,11 @@ var WINDOW_WIDTH = exports.WINDOW_WIDTH = window.innerWidth || document.document
 var WINDOW_HEIGHT = exports.WINDOW_HEIGHT = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
 var WORLD_SIZE = exports.WORLD_SIZE = { width: 1024, height: 900 };
 var ASSETS_URL = exports.ASSETS_URL = '../assets';
+var NBR_POPBOX_COLONNE = exports.NBR_POPBOX_COLONNE = 2;
+var POS_Y_POPBOX = exports.POS_Y_POPBOX = 400;
+var NBR_POPBOX_LIGNE = exports.NBR_POPBOX_LIGNE = 4;
+var DIST_LIGNE = exports.DIST_LIGNE = 400;
+var DIST_COLONNE = exports.DIST_COLONNE = 250;
 
 /***/ }),
 /* 1 */
@@ -254,11 +259,15 @@ var _player = __webpack_require__(2);
 
 var _player2 = _interopRequireDefault(_player);
 
-var _updatePlayers = __webpack_require__(8);
+var _create = __webpack_require__(8);
+
+var _create2 = _interopRequireDefault(_create);
+
+var _updatePlayers = __webpack_require__(9);
 
 var _updatePlayers2 = _interopRequireDefault(_updatePlayers);
 
-var _playerMovementInterpolation = __webpack_require__(9);
+var _playerMovementInterpolation = __webpack_require__(10);
 
 var _playerMovementInterpolation2 = _interopRequireDefault(_playerMovementInterpolation);
 
@@ -270,7 +279,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var SERVER_IP = '192.168.1.2:8000/';
+var SERVER_IP = 'localhost:8000/';
 var socket = null;
 var otherPlayers = {};
 var tempsRestantEnSeconde = 3 * 60;
@@ -279,6 +288,8 @@ var secondesRestant = Number.parseInt(tempsRestantEnSeconde % 60);
 var text = null;
 var timerlogo = null;
 var tempsEcouler = false;
+
+var listPopbox = []; // tableau contenant les popbox manipuler par l'IA
 
 var Game = function (_Phaser$State) {
   _inherits(Game, _Phaser$State);
@@ -313,6 +324,9 @@ var Game = function (_Phaser$State) {
       // update all players
       (0, _updatePlayers2.default)(socket, otherPlayers, this.game);
 
+      // creer les popbox manipuler par l'IA
+      listPopbox = (0, _create2.default)(this.game);
+
       // CONFIGURATION DU TIMER (à modifier mais juste pour le test)
       //  Create our Timer
       var timer = this.game.time.create(false);
@@ -339,11 +353,10 @@ var Game = function (_Phaser$State) {
   }, {
     key: 'update',
     value: function update() {
-      // Interpolates the players movement
-      (0, _playerMovementInterpolation2.default)(otherPlayers, this.game, socket);
+      // Interpolates the players movement et gerer les collisions
+      (0, _playerMovementInterpolation2.default)(otherPlayers, listPopbox, this.game, socket);
 
       socket.on('notification-temps-ecouler', function (data) {
-        console.log('entrer dans notification');
         window.alert('TEMPS ECOULER !!!\n\n NOMBRE POPCORN ARRIV\xC9 : ' + data.nombre_de_popcorn_arriver + ' \n NOMBRE DE POPCORN CAPTUR\xC9 : ' + data.nombre_de_popcorn_capturer);
       });
 
@@ -391,7 +404,7 @@ var _ = __webpack_require__(0);
 var fileLoader = function fileLoader(game) {
   game.load.crossOrigin = 'Anonymous';
   game.stage.backgroundColor = '#1E1E1E';
-  game.load.image('asphalt', _.ASSETS_URL + '/sprites/asphalt/bg_ecran.jpg');
+  game.load.image('asphalt', _.ASSETS_URL + '/sprites/asphalt/new_bg.png');
 
   // charger les personnages popcorn
   game.load.image('pop_marley', _.ASSETS_URL + '/sprites/popcorn/pop_marley.png');
@@ -497,6 +510,55 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _config = __webpack_require__(0);
+
+// LES FONCTIONS UTILITAIRES
+
+var createPopbox = function createPopbox(x, y, game) {
+  var sprite = sprite = game.add.sprite(x, y, 'popbox');
+  game.physics.enable(sprite, Phaser.Physics.ARCADE);
+  game.physics.startSystem(Phaser.Physics.ARCADE);
+  sprite.body.collideWorldBounds = true;
+  sprite.body.bounce.setTo(1, 1);
+  sprite.anchor.setTo(0.5, 0.5);
+  sprite.width = 70;
+  sprite.height = 110;
+  sprite.body.allowRotation = false;
+  return sprite;
+};
+
+// LA FONCTION PRINCIPALE
+
+var createIA = function createIA(game) {
+  var listPopbox = [];
+  // creer les popbox par colonne et par ligne
+  for (var i = 0; i < _config.NBR_POPBOX_LIGNE; i++) {
+    for (var j = 0; j < _config.NBR_POPBOX_COLONNE; j++) {
+      // calculer positions popbox
+      var posX = _config.DIST_LIGNE + _config.DIST_LIGNE * i;
+      var posY = _config.POS_Y_POPBOX + _config.DIST_COLONNE * j;
+      var popbox = createPopbox(posX, posY, game);
+      // ajouter popbox dans la liste des popbox pour pouvoir les manipuler
+      listPopbox.push(popbox);
+    }
+  }
+
+  return listPopbox;
+};
+
+exports.default = createIA;
+
+/***/ }),
+/* 9 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
 var _player = __webpack_require__(2);
 
 var _player2 = _interopRequireDefault(_player);
@@ -514,7 +576,6 @@ var updatePlayers = function updatePlayers(socket, otherPlayers, game) {
       // In case a player hasn't been created yet
       // We make sure that we won't create a second instance of it
       if (otherPlayers[index] === undefined && index !== socket.id) {
-        console.log('data custom Name = ' + data.customName);
         var newPlayer = (0, _player2.default)(data.type, data.customName, data.nombreCapture, data.x, data.y, game);
         newPlayer.playerName = (0, _utils.createText)(game, newPlayer);
         newPlayer.speedText = (0, _utils.createText)(game, newPlayer);
@@ -562,7 +623,7 @@ var updatePlayers = function updatePlayers(socket, otherPlayers, game) {
 exports.default = updatePlayers;
 
 /***/ }),
-/* 9 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -571,7 +632,7 @@ exports.default = updatePlayers;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-var playerMovementInterpolation = function playerMovementInterpolation(otherPlayers, game, socket) {
+var playerMovementInterpolation = function playerMovementInterpolation(otherPlayers, listPopbox, game, socket) {
   var _loop = function _loop(id) {
     var player = otherPlayers[id];
     if (player.target_x !== undefined) {
@@ -594,27 +655,24 @@ var playerMovementInterpolation = function playerMovementInterpolation(otherPlay
       player.speedText.y += (player.speedText.target_y - player.speedText.y) * 0.30;
       player.updatePlayerStatusText(player.playerName.x, player.playerName.y + 60, player.speedText);
 
-      // collide each otherPlayer
-
-      var _loop2 = function _loop2(subId) {
-        game.physics.arcade.collide(player.sprite, otherPlayers[subId].sprite, function (player1, player2) {
-          if (player.type !== otherPlayers[subId].type) {
-            // otherPlayers[id].emitNombreCapture(socket);
-            if (otherPlayers[id].type === 'popcorn') {
-              otherPlayers[id].sprite.destroy();
-              otherPlayers[id].playerName.destroy();
-              otherPlayers[id].speedText.destroy();
-              // ask the server to delete the popcorn that collided with a popbox
-              otherPlayers[id].emitPlayerDeletion(socket);
-              delete otherPlayers[id];
-            }
-            otherPlayers[subId].emitNombreCapture(socket);
+      // gerer collision avec les popbox IA
+      for (var popboxIA in listPopbox) {
+        game.physics.arcade.collide(player.sprite, listPopbox[popboxIA], function (player1, player2) {
+          if (player.type === 'popcorn') {
+            player.sprite.destroy();
+            player.playerName.destroy();
+            player.speedText.destroy();
+            // ask the server to delete the popcorn that collided with a popbox
+            player.emitPlayerDeletion(socket);
+            delete otherPlayers[id];
           }
+          player.emitNombreCapture(socket);
         });
-      };
+      }
 
+      // collide each otherPlayer
       for (var subId in otherPlayers) {
-        _loop2(subId);
+        game.physics.arcade.collide(player.sprite, otherPlayers[subId].sprite, function (player1, player2) {});
       }
     }
   };

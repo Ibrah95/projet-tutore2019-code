@@ -1,7 +1,13 @@
 import createPlayer from './createPlayer'
 import createJoystick from './createJoystick'
 import { isDown } from '../utils'
-import { WINDOW_HEIGHT,WINDOW_WIDTH } from './../../config'
+import {
+  WINDOW_HEIGHT,
+  WINDOW_WIDTH,
+  LIMIT_TOP,
+  LIMIT_LEFT,
+  LIMIT_BOTTOM
+} from './../../config'
 
 export default function (x, y, customName, game, socket) {
   const player = {
@@ -33,15 +39,16 @@ export default function (x, y, customName, game, socket) {
     movePlayer(stick, force, forceX, forceY) {
       this.sprite.body.velocity.x = stick.forceX * 1000;
       this.sprite.body.velocity.y = stick.forceY * 1000;
-      if( this.sprite.body.x <= 100 ){
+      
+      if( this.sprite.body.x <= LIMIT_LEFT ){
           this.sprite.body.x += 50
         }
 
-        if(this.sprite.body.y <= 100){
+        if(this.sprite.body.y <= LIMIT_TOP){
           this.sprite.body.y += 50
         }
 
-        if(this.sprite.body.y >= 800 ){
+        if(this.sprite.body.y >= LIMIT_BOTTOM ){
           this.sprite.body.y -= 50
         }
       this.emitPlayerData();

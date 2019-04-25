@@ -1,4 +1,4 @@
-const playerMovementInterpolation = (otherPlayers, game, socket) => {
+const playerMovementInterpolation = (otherPlayers, listPopbox, game, socket) => {
   for (let id in otherPlayers) {
     let player = otherPlayers[id]
     if (player.target_x !== undefined) {
@@ -21,22 +21,24 @@ const playerMovementInterpolation = (otherPlayers, game, socket) => {
       player.speedText.y += (player.speedText.target_y - player.speedText.y) * 0.30
       player.updatePlayerStatusText(player.playerName.x, player.playerName.y + 60, player.speedText)
 
+      // gerer collision avec les popbox IA
+      for (let popboxIA in listPopbox) {
+        game.physics.arcade.collide(player.sprite, listPopbox[popboxIA], function(player1, player2) {
+          if (player.type === 'popcorn') {
+            player.sprite.destroy()
+            player.playerName.destroy()
+            player.speedText.destroy()
+            // ask the server to delete the popcorn that collided with a popbox
+            player.emitPlayerDeletion(socket);
+            delete otherPlayers[id];
+          }
+          player.emitNombreCapture(socket);
+        });
+      }
+
       // collide each otherPlayer
       for (let subId in otherPlayers) {
-        game.physics.arcade.collide(player.sprite, otherPlayers[subId].sprite, function(player1, player2) {
-          if (player.type !== otherPlayers[subId].type) {
-            // otherPlayers[id].emitNombreCapture(socket);
-            if (otherPlayers[id].type === 'popcorn') {
-              otherPlayers[id].sprite.destroy()
-              otherPlayers[id].playerName.destroy()
-              otherPlayers[id].speedText.destroy()
-              // ask the server to delete the popcorn that collided with a popbox
-              otherPlayers[id].emitPlayerDeletion(socket);
-              delete otherPlayers[id]
-            }
-            otherPlayers[subId].emitNombreCapture(socket);
-          }
-        });
+        game.physics.arcade.collide(player.sprite, otherPlayers[subId].sprite, function(player1, player2) {});
       }
     }
   }
