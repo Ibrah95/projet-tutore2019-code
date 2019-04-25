@@ -428,7 +428,7 @@ exports.default = function (x, y, customName, game, socket) {
     movePlayer: function movePlayer(stick, force, forceX, forceY) {
       this.sprite.body.velocity.x = stick.forceX * 1000;
       this.sprite.body.velocity.y = stick.forceY * 1000;
-      console.log(this.sprite.body.y);
+
       if (this.sprite.body.x <= _config.LIMIT_LEFT) {
         this.sprite.body.x += 50;
       }
