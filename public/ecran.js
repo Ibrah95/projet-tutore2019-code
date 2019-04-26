@@ -263,11 +263,15 @@ var _create = __webpack_require__(8);
 
 var _create2 = _interopRequireDefault(_create);
 
-var _updatePlayers = __webpack_require__(9);
+var _movement = __webpack_require__(9);
+
+var _movement2 = _interopRequireDefault(_movement);
+
+var _updatePlayers = __webpack_require__(10);
 
 var _updatePlayers2 = _interopRequireDefault(_updatePlayers);
 
-var _playerMovementInterpolation = __webpack_require__(10);
+var _playerMovementInterpolation = __webpack_require__(11);
 
 var _playerMovementInterpolation2 = _interopRequireDefault(_playerMovementInterpolation);
 
@@ -288,7 +292,11 @@ var secondesRestant = Number.parseInt(tempsRestantEnSeconde % 60);
 var text = null;
 var timerlogo = null;
 var tempsEcouler = false;
-
+var tempsIA = false;
+var tempsrestantIA = 2;
+var direction = 1;
+var direction2 = -1;
+var vitesse = 0.5;
 var listPopbox = []; // tableau contenant les popbox manipuler par l'IA
 
 var Game = function (_Phaser$State) {
@@ -336,6 +344,10 @@ var Game = function (_Phaser$State) {
       //  It won't start automatically, allowing you to hook it to button events and the like.
       timer.start();
 
+      var timerIA = this.game.time.create(false);
+      timerIA.loop(1000, updateCounterIA, this.game);
+      timerIA.start();
+
       // Configures the game camera
       this.game.camera.x = width / 2;
       this.game.camera.y = height / 2;
@@ -355,6 +367,12 @@ var Game = function (_Phaser$State) {
     value: function update() {
       // Interpolates the players movement et gerer les collisions
       (0, _playerMovementInterpolation2.default)(otherPlayers, listPopbox, this.game, socket);
+      var retour = (0, _movement2.default)(listPopbox, this.game, tempsIA, direction, vitesse, direction2);
+      tempsIA = false;
+
+      vitesse = retour.vitesse;
+      direction = retour.direction;
+      direction2 = retour.direction2;
 
       socket.on('notification-temps-ecouler', function (data) {
         window.alert('TEMPS ECOULER !!!\n\n NOMBRE POPCORN ARRIV\xC9 : ' + data.nombre_de_popcorn_arriver + ' \n NOMBRE DE POPCORN CAPTUR\xC9 : ' + data.nombre_de_popcorn_capturer);
@@ -384,6 +402,21 @@ function updateCounter() {
 
   minutesRestant = Number.parseInt(tempsRestantEnSeconde / 60);
   secondesRestant = Number.parseInt(tempsRestantEnSeconde % 60);
+}
+
+function updateCounterIA() {
+
+  if (!tempsIA) {
+
+    if (tempsrestantIA > 0) {
+      tempsrestantIA--;
+    } else {
+      // quand le timer arrive à zero il reprend à 5, enlever le else pour garder time à 0
+      // tempsRestantEnSeconde = 5 * 60;
+      tempsrestantIA = 2;
+      tempsIA = true;
+    }
+  }
 }
 
 exports.default = Game;
@@ -556,6 +589,82 @@ exports.default = createIA;
 
 
 Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+var _config = __webpack_require__(0);
+
+var movementIA = function movementIA(listPopbox, game, tempsIA, direction, vitesse, direction2) {
+
+	console.log(tempsIA);
+
+	if (tempsIA == true) {
+		direction = ChangeDirection(direction); // change la direction 
+		direction2 = ChangeDirection(direction2);
+		console.log(direction);
+		console.log(direction2);
+		vitesse = ChangeVitesse(vitesse);
+		console.log(vitesse);
+	}
+
+	if (listPopbox[0].position.y <= 220) {
+		direction = 1;
+		listPopbox[0].position.y += direction * vitesse;
+	}
+
+	if (listPopbox[0].position.y >= 500) {
+		direction = -1;
+		listPopbox[0].position.y += direction * vitesse;
+	}
+
+	if (listPopbox[1].position.y <= 570) {
+		direction2 = 1;
+		listPopbox[1].position.y += direction2 * vitesse;
+	}
+	if (listPopbox[1].position.y >= 950) {
+		direction2 = -1;
+		listPopbox[1].position.y += direction2 * vitesse;
+	}
+
+	listPopbox[0].position.y += direction * vitesse;
+	listPopbox[1].position.y += direction2 * vitesse;
+
+	return { direction: direction, vitesse: vitesse, direction2: direction2 };
+};
+
+var ChangeDirection = function ChangeDirection(direction) {
+
+	//random integer from 0 to 10 
+	var random = Math.floor(Math.random() * 12);
+
+	if (random % 2 == 0) {
+		console.log('PAIR');
+		direction = -1;
+	} else {
+		console.log('IMPAIR');
+
+		direction = 1;
+	}
+
+	return direction;
+};
+
+var ChangeVitesse = function ChangeVitesse(vitesse) {
+	var random = Math.random() * (5.0 - 2.0) + 2.0; // vitesse comprise entre 1.5 et 5.0
+	vitesse = random;
+	return vitesse;
+};
+
+exports.default = movementIA;
+
+/***/ }),
+/* 10 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
@@ -623,7 +732,7 @@ var updatePlayers = function updatePlayers(socket, otherPlayers, game) {
 exports.default = updatePlayers;
 
 /***/ }),
-/* 10 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";

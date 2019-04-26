@@ -4,6 +4,7 @@ import fileLoader from '../config/fileloader'
 import createWorld from './world/createWorld'
 import player from './player'
 import createIA from './ia/create'
+import movementIA from './ia/movement'
 import updatePlayers from './sockets/updatePlayers'
 import playerMovementInterpolation from './predictions/playerMovementInterpolation'
 
@@ -16,7 +17,11 @@ let secondesRestant = Number.parseInt(tempsRestantEnSeconde % 60);
 let text = null;
 let timerlogo = null;
 let tempsEcouler = false;
-
+let tempsIA = false
+let tempsrestantIA = 2;
+let direction = 1
+let direction2 = -1
+let vitesse = 0.5
 let listPopbox = []; // tableau contenant les popbox manipuler par l'IA
 
 class Game extends Phaser.State {
@@ -43,7 +48,10 @@ class Game extends Phaser.State {
 
     // creer les popbox manipuler par l'IA
     listPopbox = createIA(this.game);
+    
 
+
+   
     // CONFIGURATION DU TIMER (à modifier mais juste pour le test)
     //  Create our Timer
     const timer = this.game.time.create(false);
@@ -52,6 +60,13 @@ class Game extends Phaser.State {
     //  Start the timer running - this is important!
     //  It won't start automatically, allowing you to hook it to button events and the like.
     timer.start();
+
+
+   const timerIA = this.game.time.create(false);
+   timerIA.loop(1000,updateCounterIA, this.game);
+   timerIA.start();
+
+
 
     // Configures the game camera
     this.game.camera.x = width / 2
@@ -74,6 +89,12 @@ class Game extends Phaser.State {
   update () {
     // Interpolates the players movement et gerer les collisions
     playerMovementInterpolation(otherPlayers, listPopbox, this.game, socket)
+    const retour = movementIA(listPopbox,this.game,tempsIA,direction,vitesse,direction2)
+    tempsIA = false;
+
+    vitesse = retour.vitesse
+    direction = retour.direction
+    direction2 = retour.direction2
 
     socket.on('notification-temps-ecouler', data =>{
        window.alert(`TEMPS ECOULER !!!\n\n NOMBRE POPCORN ARRIVÉ : ${data.nombre_de_popcorn_arriver} \n NOMBRE DE POPCORN CAPTURÉ : ${data.nombre_de_popcorn_capturer}`);
@@ -83,6 +104,7 @@ class Game extends Phaser.State {
     //this.game.debug.text(`TIMER :  ${minutesRestant} min ${secondesRestant} s` , 32, 64);
 	   text.setText(`${minutesRestant} : ${secondesRestant}`);
   }
+ 
 }
 
 function updateCounter() {
@@ -102,6 +124,26 @@ if (!tempsEcouler) {
 
 
 }
+
+function updateCounterIA() {
+
+if (!tempsIA) {
+
+  if(tempsrestantIA > 0){
+     tempsrestantIA--;
+
+  } else{ // quand le timer arrive à zero il reprend à 5, enlever le else pour garder time à 0
+    // tempsRestantEnSeconde = 5 * 60;
+    tempsrestantIA = 2;
+    tempsIA = true;
+  }
+  
+}
+
+
+
+}
+
 
 
 
