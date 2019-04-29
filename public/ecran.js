@@ -297,6 +297,8 @@ var tempsrestantIA = 2;
 var direction = 1;
 var direction2 = -1;
 var vitesse = 0.5;
+var vitesseAlea = [];
+var directionAlea = []; //tab avec des direction àleatoire
 var listPopbox = []; // tableau contenant les popbox manipuler par l'IA
 
 var Game = function (_Phaser$State) {
@@ -335,6 +337,10 @@ var Game = function (_Phaser$State) {
       // creer les popbox manipuler par l'IA
       listPopbox = (0, _create2.default)(this.game);
 
+      /*vitesseAlea = ChangeVitesse(vitesseAlea,listPopbox)
+       directionAlea = ChangeDirection(directionAlea,listPopbox);
+      */
+
       // CONFIGURATION DU TIMER (à modifier mais juste pour le test)
       //  Create our Timer
       var timer = this.game.time.create(false);
@@ -367,12 +373,11 @@ var Game = function (_Phaser$State) {
     value: function update() {
       // Interpolates the players movement et gerer les collisions
       (0, _playerMovementInterpolation2.default)(otherPlayers, listPopbox, this.game, socket);
-      var retour = (0, _movement2.default)(listPopbox, this.game, tempsIA, direction, vitesse, direction2);
+      var retour = (0, _movement2.default)(listPopbox, this.game, tempsIA, directionAlea, vitesseAlea);
       tempsIA = false;
 
-      vitesse = retour.vitesse;
-      direction = retour.direction;
-      direction2 = retour.direction2;
+      vitesseAlea = retour.vitesseAlea;
+      directionAlea = retour.directionAlea;
 
       socket.on('notification-temps-ecouler', function (data) {
         window.alert('TEMPS ECOULER !!!\n\n NOMBRE POPCORN ARRIV\xC9 : ' + data.nombre_de_popcorn_arriver + ' \n NOMBRE DE POPCORN CAPTUR\xC9 : ' + data.nombre_de_popcorn_capturer);
@@ -594,65 +599,73 @@ Object.defineProperty(exports, "__esModule", {
 
 var _config = __webpack_require__(0);
 
-var movementIA = function movementIA(listPopbox, game, tempsIA, direction, vitesse, direction2) {
+var movementIA = function movementIA(listPopbox, game, tempsIA, directionAlea, vitesseAlea) {
 
-	console.log(tempsIA);
-
+	//console.log(tempsIA)
 	if (tempsIA == true) {
-		direction = ChangeDirection(direction); // change la direction 
-		direction2 = ChangeDirection(direction2);
-		console.log(direction);
-		console.log(direction2);
-		vitesse = ChangeVitesse(vitesse);
-		console.log(vitesse);
+		directionAlea = ChangeDirection(listPopbox); // change la direction 
+		//console.log(directionAlea)
+
+		vitesseAlea = ChangeVitesse(listPopbox);
+		//console.log(vitesseAlea)
 	}
 
-	if (listPopbox[0].position.y <= 220) {
-		direction = 1;
-		listPopbox[0].position.y += direction * vitesse;
-	}
+	for (var i = 0; i < listPopbox.length; i++) {
 
-	if (listPopbox[0].position.y >= 500) {
-		direction = -1;
-		listPopbox[0].position.y += direction * vitesse;
-	}
+		if (listPopbox[i].position.y <= 220) {
+			directionAlea[i] = 1;
+			listPopbox[i].position.y += directionAlea[i] * vitesseAlea[i];
+		}
 
-	if (listPopbox[1].position.y <= 570) {
-		direction2 = 1;
-		listPopbox[1].position.y += direction2 * vitesse;
-	}
-	if (listPopbox[1].position.y >= 950) {
-		direction2 = -1;
-		listPopbox[1].position.y += direction2 * vitesse;
-	}
+		if (listPopbox[i].position.y >= 500) {
+			directionAlea[i] = -1;
+			listPopbox[i].position.y += directionAlea[i] * vitesseAlea[i];
+		}
+		if (listPopbox[i].position.y <= 570) {
+			directionAlea[i] = 1;
+			listPopbox[i].position.y += directionAlea[i] * vitesseAlea[i];
+		}
+		if (listPopbox[i].position.y >= 950) {
+			directionAlea[i] = -1;
+			listPopbox[i].position.y += directionAlea[i] * vitesseAlea[i];
+		}
 
-	listPopbox[0].position.y += direction * vitesse;
-	listPopbox[1].position.y += direction2 * vitesse;
+		listPopbox[i].position.y += directionAlea[i] * vitesseAlea[i];
+		listPopbox[i].position.y += directionAlea[i] * vitesseAlea[i];
+	}
+	//listPopbox[0].position.y += -1 * 0.5
 
-	return { direction: direction, vitesse: vitesse, direction2: direction2 };
+	return { directionAlea: directionAlea, vitesseAlea: vitesseAlea };
 };
 
-var ChangeDirection = function ChangeDirection(direction) {
+var ChangeDirection = function ChangeDirection(listPopbox) {
+	var directionAlea = [];
+	var random = void 0;
+	for (var i = 0; i < listPopbox.length; i++) {
+		random = Math.floor(Math.random() * 12); //random integer from 0 to 11 
 
-	//random integer from 0 to 10 
-	var random = Math.floor(Math.random() * 12);
 
-	if (random % 2 == 0) {
-		console.log('PAIR');
-		direction = -1;
-	} else {
-		console.log('IMPAIR');
+		if (random % 2 == 0) {
+			//console.log('PAIR')
+			directionAlea[i] = -1;
+		} else {
+			//console.log('IMPAIR')
 
-		direction = 1;
+			directionAlea[i] = 1;
+		}
 	}
-
-	return direction;
+	return directionAlea;
 };
 
-var ChangeVitesse = function ChangeVitesse(vitesse) {
-	var random = Math.random() * (5.0 - 2.0) + 2.0; // vitesse comprise entre 1.5 et 5.0
-	vitesse = random;
-	return vitesse;
+var ChangeVitesse = function ChangeVitesse(listPopbox) {
+	var vitesseAlea = [];
+	var random = void 0;
+	for (var i = 0; i < listPopbox.length; i++) {
+
+		random = Math.random() * (5.0 - 2.0) + 2.0; // vitesse comprise entre 1.5 et 5.0
+		vitesseAlea[i] = random;
+	}
+	return vitesseAlea;
 };
 
 exports.default = movementIA;

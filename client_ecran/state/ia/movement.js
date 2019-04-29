@@ -4,74 +4,79 @@ import {
   LIMIT_TOP,
   LIMIT_LEFT,
   LIMIT_BOTTOM
-} from './../../config'
+} from '../../config'
 
-const movementIA = (listPopbox,game,tempsIA,direction,vitesse,direction2) => {
+const movementIA = (listPopbox,game,tempsIA,directionAlea,vitesseAlea) => {
+
+			
 		
-		console.log(tempsIA)
-		
+		//console.log(tempsIA)
 		if(tempsIA == true){
-		direction = ChangeDirection(direction) // change la direction 
-		direction2= ChangeDirection(direction2)
-		console.log(direction)
-		console.log(direction2)
-		vitesse = ChangeVitesse(vitesse)
-		console.log(vitesse)
-		}
-
-		if(listPopbox[0].position.y <= 220 ){
-			direction = 1
-			listPopbox[0].position.y += direction * vitesse
-			
-		}
-
-		if(listPopbox[0].position.y >= 500  ){
-			direction = -1
-			listPopbox[0].position.y += direction * vitesse
-			
+		directionAlea = ChangeDirection(listPopbox) // change la direction 
+		//console.log(directionAlea)
+		
+		vitesseAlea = ChangeVitesse(listPopbox)
+		//console.log(vitesseAlea)
 		}
 		
-		if(listPopbox[1].position.y <= 570){
-			direction2 = 1
-			listPopbox[1].position.y += direction2 * vitesse
-		}
-		if( listPopbox[1].position.y >= 950){
-			direction2 = -1
-			listPopbox[1].position.y += direction2 * vitesse
+		for( let i = 0; i < listPopbox.length; i++){
+
+		if(listPopbox[i].position.y <= 220 ){
+			directionAlea[i] = 1
+			listPopbox[i].position.y += directionAlea[i] * vitesseAlea[i]
 		}
 
-		listPopbox[0].position.y += direction * vitesse
-		listPopbox[1].position.y += direction2 * vitesse
-
-		return {direction,vitesse,direction2}
-		
+		if(listPopbox[i].position.y >= 500  ){
+			directionAlea[i] = -1
+			listPopbox[i].position.y += directionAlea[i] * vitesseAlea[i]
+		}
+		if(listPopbox[i].position.y <= 570){
+			directionAlea[i]  = 1
+			listPopbox[i].position.y += directionAlea[i]  * vitesseAlea[i]
+		}
+		if( listPopbox[i].position.y >= 950){
+			directionAlea[i]  = -1
+			listPopbox[i].position.y += directionAlea[i]  * vitesseAlea[i]
+		}
+       
+		listPopbox[i].position.y += directionAlea[i] * vitesseAlea[i]
+		listPopbox[i].position.y += directionAlea[i]  * vitesseAlea[i]
+	}
+				//listPopbox[0].position.y += -1 * 0.5
+			
+			return {directionAlea,vitesseAlea}
 }
 
-const ChangeDirection=(direction) => {
+const ChangeDirection=(listPopbox) => {
+	const directionAlea=[]
+	let random 
+	for(let i = 0; i < listPopbox.length; i++){
+		random = Math.floor(Math.random()*12); //random integer from 0 to 11 
 
-	//random integer from 0 to 10 
-	let random = Math.floor(Math.random()*12);
-	
 
-	if ( random%2 == 0){
-		console.log('PAIR')
-			direction = -1
+		if ( random%2 == 0){
+		//console.log('PAIR')
+			directionAlea[i] = -1
 			
-	}else {
-		console.log('IMPAIR')
+		}else {
+			//console.log('IMPAIR')
 		
-			direction = 1
-			
+			directionAlea[i] = 1
 		}
 
-	
-return direction
+	}
+return directionAlea
 }
 
-const ChangeVitesse=(vitesse) =>{
-	let random = Math.random() * (5.0 - 2.0) + 2.0; // vitesse comprise entre 1.5 et 5.0
-	vitesse = random
-	return vitesse
+const ChangeVitesse=(listPopbox) =>{
+	const vitesseAlea=[]
+	let random 
+   for (let i = 0; i < listPopbox.length ; i++){
+
+   	 random = Math.random() * (5.0 - 2.0) + 2.0; // vitesse comprise entre 1.5 et 5.0
+   	 vitesseAlea[i] = random
+   }
+	return vitesseAlea
 }
 
 

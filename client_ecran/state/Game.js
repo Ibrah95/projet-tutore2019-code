@@ -5,6 +5,8 @@ import createWorld from './world/createWorld'
 import player from './player'
 import createIA from './ia/create'
 import movementIA from './ia/movement'
+import ChangeDirection from './ia/movement'
+import ChangeVitesse from './ia/movement'
 import updatePlayers from './sockets/updatePlayers'
 import playerMovementInterpolation from './predictions/playerMovementInterpolation'
 
@@ -22,6 +24,8 @@ let tempsrestantIA = 2;
 let direction = 1
 let direction2 = -1
 let vitesse = 0.5
+let vitesseAlea = [];
+let directionAlea = []; //tab avec des direction àleatoire
 let listPopbox = []; // tableau contenant les popbox manipuler par l'IA
 
 class Game extends Phaser.State {
@@ -49,8 +53,10 @@ class Game extends Phaser.State {
     // creer les popbox manipuler par l'IA
     listPopbox = createIA(this.game);
     
+   /*vitesseAlea = ChangeVitesse(vitesseAlea,listPopbox)
+    directionAlea = ChangeDirection(directionAlea,listPopbox);
 
-
+*/
    
     // CONFIGURATION DU TIMER (à modifier mais juste pour le test)
     //  Create our Timer
@@ -89,12 +95,12 @@ class Game extends Phaser.State {
   update () {
     // Interpolates the players movement et gerer les collisions
     playerMovementInterpolation(otherPlayers, listPopbox, this.game, socket)
-    const retour = movementIA(listPopbox,this.game,tempsIA,direction,vitesse,direction2)
+    const retour = movementIA(listPopbox,this.game,tempsIA,directionAlea,vitesseAlea)
     tempsIA = false;
 
-    vitesse = retour.vitesse
-    direction = retour.direction
-    direction2 = retour.direction2
+    vitesseAlea = retour.vitesseAlea
+    directionAlea = retour.directionAlea
+
 
     socket.on('notification-temps-ecouler', data =>{
        window.alert(`TEMPS ECOULER !!!\n\n NOMBRE POPCORN ARRIVÉ : ${data.nombre_de_popcorn_arriver} \n NOMBRE DE POPCORN CAPTURÉ : ${data.nombre_de_popcorn_capturer}`);
