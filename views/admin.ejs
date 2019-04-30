@@ -12,32 +12,24 @@
   </head>
   <body>
 
-    <h1>PAGE D'ADMINISTRATION POP UP GAME</h1>
-    <div style="color: blue; border: 2px solid blue;">
-      <p>
-        NOMBRE DE VAGUE : <strong><%= nbrVague %></strong>
-      </p>
-      <p>
-        NOMBRE DE JOUEUR PAR VAGUE : <strong><%= nbrJoueurParVague %></strong>
-      </p>
-    </div>
-    <% if (updated) { %>
-      <p style="color:green; border: 1px solid green">La configuration du jeu est réinitialiser !</p>
-    <% }  %>
-    <form action="/admin" method="get">
+    <h1>PAGE DE CONFIGURATION DE POP UP GAME</h1>
+
+
+    <form action="/ecran_inscrit" method="get" id="config-form">
       <div>
-        <label>nombre de vague : <input type="number" name="nbr_vague" min="1" max="8" /></label>
+        <label>nombre de vague : <input type="number" name="nbr_vague" min="1" max="8" id="nbr-vague" /></label>
       </div>
       <div>
-        <label>nombre de joueur par vague : <input type="number" name="nbr_joueur_par_vague" min="2" max="25" /></label>
+        <label>nombre de joueur par vague : <input type="number" name="nbr_joueur_par_vague" min="2" max="25" id="nbr-joueur-vague" /></label>
       </div>
+
       <div>
-        <label>mot de passe admin* : <input type="password" name="mdp" required /></label>
-      </div>
-      <div>
-        <input type="submit" value="valider" />
+        <input type="submit" value="LANCER LE JEU" />
       </div>
     </form>
+
+    <% /* SCRIPT POUR ENREGISTRER LES CONFIG */ %>
+    <script src="/js/admin.js"></script>
 
   </body>
 </html>

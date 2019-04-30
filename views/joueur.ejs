@@ -13,12 +13,15 @@
   <body>
 
     <h1>Bienvenue sur POP UP GAME, <%= pseudo %></h1>
-    <h2>Vous êtes dans la VAGUE <%= vague %></h2>
+    <h2>Vous êtes dans la VAGUE <span id="vague"><%= vague %></span></h2>
 
     <h2>
       Votre perso : <br/>
+      <p id="pop-name"><%= popName %></p>
       <img alt="perso" src="/assets/sprites/popcorn/<%= popName %>.png" width="100" height="100"/>
     </h2>
 
+    <% /* SCRIPT POUR CHARGER LA MANETTE */ %>
+    <script src="/js/joueur.js"></script>
   </body>
 </html>

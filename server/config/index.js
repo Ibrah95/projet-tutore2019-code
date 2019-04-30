@@ -9,9 +9,11 @@ const path = require('path')
 let NBR_VAGUE = 2;
 let NBR_JOUEUR_PAR_VAGUE = 2;
 let subscribedPlayers = []; // les joueurs inscrits sur le jeu
+let pseudoJoueurParVague = [];
 let vagueCounter = new Array(NBR_VAGUE).fill(0); // compteur pour gerer les vagues
 let takenPseudos = {}; // dictionnaire contenant les pseudos déjà pris
 let takenPopcorn = {}; // tableau contenant le nombre de fois chaque popcorn a été pris
+let vagueCourant = 0; // numero de vague en cours
 
 app.use(express.static(path.join(__dirname, './../../public/')))
 app.use('/assets', express.static(path.join(__dirname, './../../public/assets/')))
@@ -21,25 +23,47 @@ app.get('/', function(req, res) {
     res.render('inscription.ejs');
 });
 
+// API POUR RECUPERER LA VAGUE EN COURS
+app.get('/get_vague_en_cours', function(req, res) {
+    res.json({ vague: vagueCourant});
+});
+
+app.get('/chargement_vague', function(req, res) {
+    const vague = req.query.vague
+    res.render('chargement_vague.ejs', { vague });
+});
+
+app.put('/update_vague_courant', function(req, res) {
+  const vague = req.query.vague
+  vagueCourant = Number.parseInt(vague); // mettre à jour vague courant
+  res.json({ retour: true });
+});
+
+app.get('/ecran_inscrit', function(req, res) {
+  const mdp = req.query.mdp
+  const nbrVague = Number.parseInt(req.query.nbr_vague);
+  const nbrJoueurParVague = Number.parseInt(req.query.nbr_joueur_par_vague);
+
+  // reinitialiser les Config par defaut
+  NBR_VAGUE = nbrVague;
+  NBR_JOUEUR_PAR_VAGUE = nbrJoueurParVague;
+  subscribedPlayers = [];
+  vagueCounter = new Array(NBR_VAGUE).fill(0);
+  takenPseudos = {};
+  takenPopcorn = {};
+  pseudoJoueurParVague = [];
+  vagueCourant = 0;
+
+  res.render('ecran_inscrit.ejs', { NBR_VAGUE });
+});
+
+// API pour récuperer les joueurs inscrit dans chaque vague
+app.get('/get_inscrits', function(req, res) {
+  res.json({ vagues: pseudoJoueurParVague });
+});
+
 app.get('/admin', function(req, res) {
-    // proteger cette route avec un mdp pour eviter les petit malins
-    let updated = false;
-    const mdp = req.query.mdp
-    const nbrVague = Number.parseInt(req.query.nbr_vague);
-    const nbrJoueurParVague = Number.parseInt(req.query.nbr_joueur_par_vague);
-
-    if (mdp === 'popUp#Mdp') {
-      // reinitialiser les Config par defaut
-      NBR_VAGUE = nbrVague;
-      NBR_JOUEUR_PAR_VAGUE = nbrJoueurParVague;
-      subscribedPlayers = [];
-      vagueCounter = new Array(NBR_VAGUE).fill(0);
-      takenPseudos = {};
-      takenPopcorn = {};
-      updated = true;
-    }
-
-    res.render('admin.ejs', { updated, nbrVague: NBR_VAGUE, nbrJoueurParVague: NBR_JOUEUR_PAR_VAGUE  });
+    res.render('admin.ejs', { nbrVague: NBR_VAGUE, nbrJoueurParVague: NBR_JOUEUR_PAR_VAGUE  });
 });
 
 app.get('/check_pseudo_disponible', function(req, res) {
@@ -94,6 +118,10 @@ app.get('/inscription', function(req, res) {
 
   // enregistrer nouveau joueur
   subscribedPlayers.push({ vague, pseudo, popName });
+  if (pseudoJoueurParVague[vague - 1] === undefined) {
+    pseudoJoueurParVague[vague - 1] = [];
+  }
+  pseudoJoueurParVague[vague - 1].push(pseudo);
 
   console.log(subscribedPlayers);
 
