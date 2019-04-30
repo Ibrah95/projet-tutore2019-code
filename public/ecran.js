@@ -82,6 +82,9 @@ var POS_Y_POPBOX = exports.POS_Y_POPBOX = 400;
 var NBR_POPBOX_LIGNE = exports.NBR_POPBOX_LIGNE = 4;
 var DIST_LIGNE = exports.DIST_LIGNE = 400;
 var DIST_COLONNE = exports.DIST_COLONNE = 250;
+var LIMIT_TOP = exports.LIMIT_TOP = 100;
+var LIMIT_BOTTOM = exports.LIMIT_BOTTOM = 1100;
+var LIMIT_LEFT = exports.LIMIT_LEFT = 100;
 
 /***/ }),
 /* 1 */
@@ -297,8 +300,8 @@ var tempsrestantIA = 2;
 var direction = 1;
 var direction2 = -1;
 var vitesse = 0.5;
-var vitesseAlea = [];
-var directionAlea = []; //tab avec des direction àleatoire
+var vitesseAlea = new Array(_config.NBR_POPBOX_LIGNE * _config.NBR_POPBOX_COLONNE).fill(0);
+var directionAlea = new Array(_config.NBR_POPBOX_LIGNE * _config.NBR_POPBOX_COLONNE).fill(0);; //tab avec des direction àleatoire
 var listPopbox = []; // tableau contenant les popbox manipuler par l'IA
 
 var Game = function (_Phaser$State) {
@@ -337,9 +340,8 @@ var Game = function (_Phaser$State) {
       // creer les popbox manipuler par l'IA
       listPopbox = (0, _create2.default)(this.game);
 
-      /*vitesseAlea = ChangeVitesse(vitesseAlea,listPopbox)
-       directionAlea = ChangeDirection(directionAlea,listPopbox);
-      */
+      // vitesseAlea = ChangeVitesse(listPopbox);
+      // directionAlea = ChangeDirection(listPopbox);
 
       // CONFIGURATION DU TIMER (à modifier mais juste pour le test)
       //  Create our Timer
@@ -594,78 +596,81 @@ exports.default = createIA;
 
 
 Object.defineProperty(exports, "__esModule", {
-	value: true
+  value: true
 });
 
 var _config = __webpack_require__(0);
 
 var movementIA = function movementIA(listPopbox, game, tempsIA, directionAlea, vitesseAlea) {
 
-	//console.log(tempsIA)
-	if (tempsIA == true) {
-		directionAlea = ChangeDirection(listPopbox); // change la direction 
-		//console.log(directionAlea)
+  //console.log(tempsIA)
+  if (tempsIA == true) {
+    directionAlea = ChangeDirection(listPopbox); // change la direction
+    //console.log(directionAlea)
 
-		vitesseAlea = ChangeVitesse(listPopbox);
-		//console.log(vitesseAlea)
-	}
+    vitesseAlea = ChangeVitesse(listPopbox);
+    //console.log(vitesseAlea)
+  }
 
-	for (var i = 0; i < listPopbox.length; i++) {
+  for (var i = 0; i < listPopbox.length; i++) {
+    if (i % 2 === 0) {
+      // pair (correspond aux popbox sur la rangé supérieur)
+      if (listPopbox[i].position.y <= _config.LIMIT_TOP) {
+        directionAlea[i] = 1;
+        listPopbox[i].position.y += directionAlea[i] * vitesseAlea[i];
+      }
+      if (listPopbox[i].position.y >= _config.LIMIT_BOTTOM / 2 - 40) {
+        directionAlea[i] = -1;
+        listPopbox[i].position.y += directionAlea[i] * vitesseAlea[i];
+      }
+    } else {
+      // impair (correspond aux popbox sur la rangé inférieur)
+      if (listPopbox[i].position.y <= _config.LIMIT_BOTTOM / 2 - 40) {
+        directionAlea[i] = 1;
+        listPopbox[i].position.y += directionAlea[i] * vitesseAlea[i];
+      }
+      if (listPopbox[i].position.y >= _config.LIMIT_BOTTOM) {
+        directionAlea[i] = -1;
+        listPopbox[i].position.y += directionAlea[i] * vitesseAlea[i];
+      }
+    }
 
-		if (listPopbox[i].position.y <= 220) {
-			directionAlea[i] = 1;
-			listPopbox[i].position.y += directionAlea[i] * vitesseAlea[i];
-		}
+    listPopbox[i].position.y += directionAlea[i] * vitesseAlea[i];
+  }
 
-		if (listPopbox[i].position.y >= 500) {
-			directionAlea[i] = -1;
-			listPopbox[i].position.y += directionAlea[i] * vitesseAlea[i];
-		}
-		if (listPopbox[i].position.y <= 570) {
-			directionAlea[i] = 1;
-			listPopbox[i].position.y += directionAlea[i] * vitesseAlea[i];
-		}
-		if (listPopbox[i].position.y >= 950) {
-			directionAlea[i] = -1;
-			listPopbox[i].position.y += directionAlea[i] * vitesseAlea[i];
-		}
+  //listPopbox[0].position.y += -1 * 0.5
 
-		listPopbox[i].position.y += directionAlea[i] * vitesseAlea[i];
-		listPopbox[i].position.y += directionAlea[i] * vitesseAlea[i];
-	}
-	//listPopbox[0].position.y += -1 * 0.5
-
-	return { directionAlea: directionAlea, vitesseAlea: vitesseAlea };
+  return { directionAlea: directionAlea, vitesseAlea: vitesseAlea };
 };
 
 var ChangeDirection = function ChangeDirection(listPopbox) {
-	var directionAlea = [];
-	var random = void 0;
-	for (var i = 0; i < listPopbox.length; i++) {
-		random = Math.floor(Math.random() * 12); //random integer from 0 to 11 
+  var directionAlea = [];
+  var random = void 0;
+  for (var i = 0; i < listPopbox.length; i++) {
+    random = Math.floor(Math.random() * 12); //random integer from 0 to 11
 
 
-		if (random % 2 == 0) {
-			//console.log('PAIR')
-			directionAlea[i] = -1;
-		} else {
-			//console.log('IMPAIR')
+    if (random % 2 == 0) {
+      //console.log('PAIR')
+      directionAlea[i] = -1;
+    } else {
+      //console.log('IMPAIR')
 
-			directionAlea[i] = 1;
-		}
-	}
-	return directionAlea;
+      directionAlea[i] = 1;
+    }
+  }
+  return directionAlea;
 };
 
 var ChangeVitesse = function ChangeVitesse(listPopbox) {
-	var vitesseAlea = [];
-	var random = void 0;
-	for (var i = 0; i < listPopbox.length; i++) {
+  var vitesseAlea = [];
+  var random = void 0;
+  for (var i = 0; i < listPopbox.length; i++) {
 
-		random = Math.random() * (5.0 - 2.0) + 2.0; // vitesse comprise entre 1.5 et 5.0
-		vitesseAlea[i] = random;
-	}
-	return vitesseAlea;
+    random = Math.random() * (10.0 - 5.0) + 5.0; // vitesse comprise entre 1.5 et 5.0
+    vitesseAlea[i] = random;
+  }
+  return vitesseAlea;
 };
 
 exports.default = movementIA;
@@ -780,14 +785,15 @@ var playerMovementInterpolation = function playerMovementInterpolation(otherPlay
       // gerer collision avec les popbox IA
       for (var popboxIA in listPopbox) {
         game.physics.arcade.collide(player.sprite, listPopbox[popboxIA], function (player1, player2) {
-          if (player.type === 'popcorn') {
-            player.sprite.destroy();
-            player.playerName.destroy();
-            player.speedText.destroy();
-            // ask the server to delete the popcorn that collided with a popbox
-            player.emitPlayerDeletion(socket);
-            delete otherPlayers[id];
-          }
+          //if (player.type === 'popcorn') {
+          player.sprite.destroy();
+          player.playerName.destroy();
+          player.speedText.destroy();
+          // ask the server to delete the popcorn that collided with a popbox
+          player.emitPlayerDeletion(socket);
+          delete otherPlayers[id];
+          console.log('collision');
+          //}
           player.emitNombreCapture(socket);
         });
       }

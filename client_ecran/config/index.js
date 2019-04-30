@@ -7,3 +7,6 @@ export const POS_Y_POPBOX = 400;
 export const NBR_POPBOX_LIGNE = 4;
 export const DIST_LIGNE = 400;
 export const DIST_COLONNE = 250;
+export const LIMIT_TOP = 100;
+export const LIMIT_BOTTOM = 1100;
+export const LIMIT_LEFT = 100;

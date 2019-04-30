@@ -24,14 +24,15 @@ const playerMovementInterpolation = (otherPlayers, listPopbox, game, socket) => 
       // gerer collision avec les popbox IA
       for (let popboxIA in listPopbox) {
         game.physics.arcade.collide(player.sprite, listPopbox[popboxIA], function(player1, player2) {
-          if (player.type === 'popcorn') {
+          //if (player.type === 'popcorn') {
             player.sprite.destroy()
             player.playerName.destroy()
             player.speedText.destroy()
             // ask the server to delete the popcorn that collided with a popbox
             player.emitPlayerDeletion(socket);
             delete otherPlayers[id];
-          }
+            console.log('collision');
+          //}
           player.emitNombreCapture(socket);
         });
       }
