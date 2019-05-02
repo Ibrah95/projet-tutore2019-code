@@ -75,15 +75,15 @@ Object.defineProperty(exports, "__esModule", {
 });
 var WINDOW_WIDTH = exports.WINDOW_WIDTH = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
 var WINDOW_HEIGHT = exports.WINDOW_HEIGHT = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
-var WORLD_SIZE = exports.WORLD_SIZE = { width: 1024, height: 900 };
+var WORLD_SIZE = exports.WORLD_SIZE = { width: 2024, height: 1000 };
 var ASSETS_URL = exports.ASSETS_URL = '../assets';
 var NBR_POPBOX_COLONNE = exports.NBR_POPBOX_COLONNE = 2;
-var POS_Y_POPBOX = exports.POS_Y_POPBOX = 400;
-var NBR_POPBOX_LIGNE = exports.NBR_POPBOX_LIGNE = 4;
-var DIST_LIGNE = exports.DIST_LIGNE = 400;
-var DIST_COLONNE = exports.DIST_COLONNE = 250;
-var LIMIT_TOP = exports.LIMIT_TOP = 100;
-var LIMIT_BOTTOM = exports.LIMIT_BOTTOM = 1100;
+var POS_Y_POPBOX = exports.POS_Y_POPBOX = WORLD_SIZE.height / 2 + 200;
+var NBR_POPBOX_LIGNE = exports.NBR_POPBOX_LIGNE = 7;
+var DIST_LIGNE = exports.DIST_LIGNE = 450;
+var DIST_COLONNE = exports.DIST_COLONNE = 300;
+var LIMIT_TOP = exports.LIMIT_TOP = 200;
+var LIMIT_BOTTOM = exports.LIMIT_BOTTOM = 2000;
 var LIMIT_LEFT = exports.LIMIT_LEFT = 100;
 
 /***/ }),
@@ -266,15 +266,19 @@ var _create = __webpack_require__(8);
 
 var _create2 = _interopRequireDefault(_create);
 
-var _movement = __webpack_require__(9);
+var _createEnemies = __webpack_require__(9);
+
+var _createEnemies2 = _interopRequireDefault(_createEnemies);
+
+var _movement = __webpack_require__(10);
 
 var _movement2 = _interopRequireDefault(_movement);
 
-var _updatePlayers = __webpack_require__(10);
+var _updatePlayers = __webpack_require__(11);
 
 var _updatePlayers2 = _interopRequireDefault(_updatePlayers);
 
-var _playerMovementInterpolation = __webpack_require__(11);
+var _playerMovementInterpolation = __webpack_require__(12);
 
 var _playerMovementInterpolation2 = _interopRequireDefault(_playerMovementInterpolation);
 
@@ -303,6 +307,10 @@ var vitesse = 0.5;
 var vitesseAlea = new Array(_config.NBR_POPBOX_LIGNE * _config.NBR_POPBOX_COLONNE).fill(0);
 var directionAlea = new Array(_config.NBR_POPBOX_LIGNE * _config.NBR_POPBOX_COLONNE).fill(0);; //tab avec des direction àleatoire
 var listPopbox = []; // tableau contenant les popbox manipuler par l'IA
+var listEnemy = []; // tableau contenant les enemis
+var music = null; // music pendant le jeu
+var isGameStarted = false;
+var bird = void 0;
 
 var Game = function (_Phaser$State) {
   _inherits(Game, _Phaser$State);
@@ -340,6 +348,12 @@ var Game = function (_Phaser$State) {
       // creer les popbox manipuler par l'IA
       listPopbox = (0, _create2.default)(this.game);
 
+      // creer les enemies manipuler par l'IA
+      // listEnemy = createEnemies(this.game);
+      bird = this.game.add.sprite(500, 500, 'bird');
+      bird.animations.add('run');
+      bird.animations.play('run', 14, true);
+
       // vitesseAlea = ChangeVitesse(listPopbox);
       // directionAlea = ChangeDirection(listPopbox);
 
@@ -363,40 +377,59 @@ var Game = function (_Phaser$State) {
       // Scale game to fit the entire window
       this.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
 
-      text = this.game.add.text(_config.WORLD_SIZE.width / 2 + 140, 50, minutesRestant + ' : ' + secondesRestant, { fontSize: '43px', fill: '#AFF', align: 'center' });
+      // timer du jeu
+      text = this.game.add.text(_config.WORLD_SIZE.width / 2 + 80 * 4, 50, minutesRestant + ' : ' + secondesRestant, { font: "100px Courier Black", fill: "#FF8C00" });
+      text.stroke = "#FFFFFF";
+      text.strokeThickness = 20;
+      //  Apply the shadow to the Stroke and the Fill (this is the default)
+      text.setShadow(2, 2, "#333333", 2, true, true);
 
-      timerlogo = this.game.add.sprite(_config.WORLD_SIZE.width / 2 + 60, 50, 'timerlogo');
-
-      timerlogo.width = 50;
-      timerlogo.height = 50;
+      // ajouter music du jeu
+      music = this.game.add.audio('music');
+      //  Being mp3 files these take time to decode, so we can't play them instantly
+      //  Using setDecodedCallback we can be notified when they're ALL ready for use.
+      //  The audio files could decode in ANY order, we can never be sure which it'll be.
+      this.game.sound.setDecodedCallback(music, start, this);
+      this.game.sound.play('music', 1, true);
     }
   }, {
     key: 'update',
     value: function update() {
-      // Interpolates the players movement et gerer les collisions
-      (0, _playerMovementInterpolation2.default)(otherPlayers, listPopbox, this.game, socket);
-      var retour = (0, _movement2.default)(listPopbox, this.game, tempsIA, directionAlea, vitesseAlea);
-      tempsIA = false;
-
-      vitesseAlea = retour.vitesseAlea;
-      directionAlea = retour.directionAlea;
-
+      if (isGameStarted) {
+        // Interpolates the players movement et gerer les collisions
+        (0, _playerMovementInterpolation2.default)(otherPlayers, listPopbox, this.game, socket);
+        var retour = (0, _movement2.default)(listPopbox, this.game, tempsIA, directionAlea, vitesseAlea);
+        tempsIA = false;
+        vitesseAlea = retour.vitesseAlea;
+        directionAlea = retour.directionAlea;
+      }
       socket.on('notification-temps-ecouler', function (data) {
         window.alert('TEMPS ECOULER !!!\n\n NOMBRE POPCORN ARRIV\xC9 : ' + data.nombre_de_popcorn_arriver + ' \n NOMBRE DE POPCORN CAPTUR\xC9 : ' + data.nombre_de_popcorn_capturer);
       });
-
+    }
+  }, {
+    key: 'render',
+    value: function render() {
       // affichage TIMER
       //this.game.debug.text(`TIMER :  ${minutesRestant} min ${secondesRestant} s` , 32, 64);
-      text.setText(minutesRestant + ' : ' + secondesRestant);
+      text.setText('0' + minutesRestant + ' : ' + (secondesRestant < 10 ? '0' : '') + secondesRestant);
     }
   }]);
 
   return Game;
 }(Phaser.State);
 
+// start game when music plays
+
+
+function start() {
+  isGameStarted = true;
+  music.play();
+}
+
 function updateCounter() {
 
-  if (!tempsEcouler) {
+  if (!tempsEcouler && isGameStarted) {
     if (tempsRestantEnSeconde > 0) {
       tempsRestantEnSeconde--;
     } else {
@@ -444,12 +477,12 @@ var _ = __webpack_require__(0);
 var fileLoader = function fileLoader(game) {
   game.load.crossOrigin = 'Anonymous';
   game.stage.backgroundColor = '#1E1E1E';
-  game.load.image('asphalt', _.ASSETS_URL + '/sprites/asphalt/new_bg.png');
+  game.load.image('asphalt', _.ASSETS_URL + '/sprites/asphalt/ground_' + localStorage.getItem('stage') + '.jpg');
 
   // charger les personnages popcorn
   game.load.image('pop_marley', _.ASSETS_URL + '/sprites/popcorn/pop_marley.png');
   game.load.image('bat_pop', _.ASSETS_URL + '/sprites/popcorn/bat_pop.png');
-  game.load.image('pop_soldat', _.ASSETS_URL + '/sprites/popcorn/pop_soldat.png');
+  game.load.spritesheet('pop_soldat', _.ASSETS_URL + '/sprites/popcorn/pop_soldat.png', 300, 300, 2);
   game.load.image('caramba_pop', _.ASSETS_URL + '/sprites/popcorn/caramba_pop.png');
   game.load.image('pop_vador', _.ASSETS_URL + '/sprites/popcorn/pop_vador.png');
   game.load.image('gentle_pop', _.ASSETS_URL + '/sprites/popcorn/gentle_pop.png');
@@ -463,8 +496,14 @@ var fileLoader = function fileLoader(game) {
   game.load.image('santa_pop', _.ASSETS_URL + '/sprites/popcorn/santa_pop.png');
   game.load.image('thug_pop', _.ASSETS_URL + '/sprites/popcorn/thug_pop.png');
 
-  game.load.image('popbox', _.ASSETS_URL + '/sprites/car/popbox.png');
-  game.load.image('timerlogo', _.ASSETS_URL + '/sprites/design/timerlogo.png');
+  // charger les obstacles
+  game.load.image('popbox', _.ASSETS_URL + '/sprites/popbox/popbox2.png');
+
+  // charger les énemies
+  game.load.spritesheet('bird', _.ASSETS_URL + '/sprites/enemies/birds_1.png', 183, 168, 14);
+
+  // charger les musiques selons le level d'avancement
+  game.load.audio('music', [_.ASSETS_URL + '/audio/music_1.mp3', _.ASSETS_URL + '/audio/music_1.ogg']);
 };
 
 exports.default = fileLoader;
@@ -498,11 +537,21 @@ var worldCreator = function worldCreator(game) {
 };
 
 var createMap = function createMap(game) {
+  // let groundTiles = []
+  // const groundSprite = game.add.sprite(0, 0, 'asphalt')
+  // /*groundSprite.width = 1920
+  // groundSprite.height = 1080*/
+  // groundTiles.push(groundSprite)
+
   var groundTiles = [];
-  var groundSprite = game.add.sprite(0, 0, 'asphalt');
-  /*groundSprite.width = 1920
-  groundSprite.height = 1080*/
-  groundTiles.push(groundSprite);
+  for (var i = 0; i <= width / 64; i++) {
+    for (var j = 0; j <= height / 64; j++) {
+      var groundSprite = game.add.sprite(i * 400, j * 400, 'asphalt');
+      groundSprite.width = 400;
+      groundSprite.height = 400;
+      groundTiles.push(groundSprite);
+    }
+  }
 };
 
 exports.default = worldCreator;
@@ -526,14 +575,18 @@ var createPlayer = function createPlayer(type, customName, x, y, game) {
   sprite.body.collideWorldBounds = true;
   sprite.body.bounce.setTo(1, 1);
   sprite.anchor.setTo(0.5, 0.5);
-  if (type === 'popcorn') {
-    sprite.width = 60;
-    sprite.height = 60;
-  } else {
-    sprite.width = 70;
-    sprite.height = 110;
-  }
+  sprite.width = 150;
+  sprite.height = 150;
+  // if (type === 'popcorn') {
+  //   sprite.width = 100
+  //   sprite.height = 100
+  // } else {
+  //   sprite.width = 70
+  //   sprite.height = 110
+  // }
   sprite.body.allowRotation = false;
+  sprite.animations.add('run');
+  sprite.animations.play('run', 2, true);
   return sprite;
 };
 
@@ -559,10 +612,14 @@ var createPopbox = function createPopbox(x, y, game) {
   game.physics.enable(sprite, Phaser.Physics.ARCADE);
   game.physics.startSystem(Phaser.Physics.ARCADE);
   sprite.body.collideWorldBounds = true;
+  sprite.body.checkCollision.up = true;
+  sprite.body.checkCollision.up = true;
+  sprite.body.checkCollision.up = true;
+  sprite.body.checkCollision.up = true;
   sprite.body.bounce.setTo(1, 1);
   sprite.anchor.setTo(0.5, 0.5);
-  sprite.width = 70;
-  sprite.height = 110;
+  sprite.width = 200;
+  sprite.height = 200;
   sprite.body.allowRotation = false;
   return sprite;
 };
@@ -590,6 +647,71 @@ exports.default = createIA;
 
 /***/ }),
 /* 9 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _config = __webpack_require__(0);
+
+// LES FONCTIONS UTILITAIRES
+
+var create = function create(x, y, game) {
+  var count = 0;
+  var length = 400 / 20;
+  var points = [];
+
+  for (var i = 0; i < 20; i++) {
+    points.push(new Phaser.Point(i * length, 0));
+  }
+  var rope = game.add.rope(x, y, 'snake', null, points);
+  rope.scale.set(0.8);
+  game.physics.enable(rope, Phaser.Physics.ARCADE);
+  game.physics.startSystem(Phaser.Physics.ARCADE);
+  rope.body.collideWorldBounds = true;
+  rope.body.checkCollision.up = true;
+  rope.body.checkCollision.up = true;
+  rope.body.checkCollision.up = true;
+  rope.body.checkCollision.up = true;
+  rope.body.bounce.setTo(1, 1);
+  rope.anchor.setTo(0.5, 0.5);
+  rope.updateAnimation = function () {
+    count += 0.1;
+    for (var _i = 0; _i < this.points.length; _i++) {
+      this.points[_i].y = Math.sin(_i * 0.5 + count) * 20;
+    }
+  };
+
+  return rope;
+};
+
+// LA FONCTION PRINCIPALE
+
+var createEnemies = function createEnemies(game) {
+  var listEnemy = [];
+  // creer les popbox par colonne et par ligne
+  for (var i = 0; i < _config.NBR_POPBOX_LIGNE; i++) {
+    for (var j = 0; j < _config.NBR_POPBOX_COLONNE; j++) {
+      // calculer positions popbox
+      var posX = _config.DIST_LIGNE + _config.DIST_LIGNE * i;
+      var posY = _config.POS_Y_POPBOX + _config.DIST_COLONNE * j;
+      var enemy = create(posX, posY, game);
+      // ajouter popbox dans la liste des popbox pour pouvoir les manipuler
+      listEnemy.push(enemy);
+    }
+  }
+
+  return listEnemy;
+};
+
+exports.default = createEnemies;
+
+/***/ }),
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -667,7 +789,7 @@ var ChangeVitesse = function ChangeVitesse(listPopbox) {
   var random = void 0;
   for (var i = 0; i < listPopbox.length; i++) {
 
-    random = Math.random() * (10.0 - 5.0) + 5.0; // vitesse comprise entre 1.5 et 5.0
+    random = Math.random() * (20.0 - 15.0) + 15.0; // vitesse comprise entre 1.5 et 5.0
     vitesseAlea[i] = random;
   }
   return vitesseAlea;
@@ -676,7 +798,7 @@ var ChangeVitesse = function ChangeVitesse(listPopbox) {
 exports.default = movementIA;
 
 /***/ }),
-/* 10 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -750,7 +872,7 @@ var updatePlayers = function updatePlayers(socket, otherPlayers, game) {
 exports.default = updatePlayers;
 
 /***/ }),
-/* 11 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";

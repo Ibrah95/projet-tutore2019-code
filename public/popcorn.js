@@ -77,8 +77,8 @@ var WINDOW_WIDTH = exports.WINDOW_WIDTH = window.innerWidth || document.document
 var WINDOW_HEIGHT = exports.WINDOW_HEIGHT = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
 var WORLD_SIZE = exports.WORLD_SIZE = { width: 2048, height: 1000 };
 var ASSETS_URL = exports.ASSETS_URL = '../assets';
-var LIMIT_TOP = exports.LIMIT_TOP = 100;
-var LIMIT_BOTTOM = exports.LIMIT_BOTTOM = 1100;
+var LIMIT_TOP = exports.LIMIT_TOP = 200;
+var LIMIT_BOTTOM = exports.LIMIT_BOTTOM = 2000;
 var LIMIT_LEFT = exports.LIMIT_LEFT = 100;
 
 /***/ }),
@@ -429,6 +429,11 @@ exports.default = function (x, y, customName, game, socket) {
       this.sprite.body.velocity.x = stick.forceX * 1000;
       this.sprite.body.velocity.y = stick.forceY * 1000;
 
+      console.log('position y');
+      console.log(this.sprite.body.y);
+      console.log('LIMIT BOTTOM');
+      console.log(_config.LIMIT_BOTTOM);
+
       if (this.sprite.body.x <= _config.LIMIT_LEFT) {
         this.sprite.body.x += 50;
       }
@@ -438,6 +443,7 @@ exports.default = function (x, y, customName, game, socket) {
       }
 
       if (this.sprite.body.y >= _config.LIMIT_BOTTOM) {
+        console.log('entrer dans limit bottom');
         this.sprite.body.y -= 50;
       }
       this.emitPlayerData();
@@ -535,7 +541,7 @@ var createPlayer = function createPlayer(x, y, game) {
   sprite.width = 50;
   sprite.height = 50;
   sprite.body.allowRotation = false;
-  sprite.body.collideWorldBounds = true;
+  sprite.body.collideWorldBounds = false;
   sprite.alpha = 0.0;
   return sprite;
 };

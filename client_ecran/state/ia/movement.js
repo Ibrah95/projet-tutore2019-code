@@ -75,7 +75,7 @@ const ChangeVitesse=(listPopbox) =>{
   let random
   for (let i = 0; i < listPopbox.length ; i++){
 
-    random = Math.random() * (10.0 - 5.0) + 5.0; // vitesse comprise entre 1.5 et 5.0
+    random = Math.random() * (20.0 - 15.0) + 15.0; // vitesse comprise entre 1.5 et 5.0
     vitesseAlea[i] = random
   }
   return vitesseAlea
