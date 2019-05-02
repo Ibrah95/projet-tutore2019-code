@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+
+* {
+  box-sizing: border-box;
+}
+
+.row::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+
+[class*="col-"] {
+  /*float: left;*/
+  padding: 15px;
+  margin:auto;
+}
+
+html {
+  font-family: "verdana", sans-serif;
+}
+
+.header {
+  background-color: red;
+  color: #ffffff;
+  padding: 10px;
+  text-align: center;
+}
+
+
+input[type="radio"] {
+}
+
+
+
+.footer {
+  background-color: #0099cc;
+  color: #ffffff;
+  text-align: center;
+  font-size: 12px;
+  padding: 5px;
+  font-style: italic;
+}
+
+/* For mobile phones: */
+[class*="col-"] {
+  width: 100%;
+}
+
+@media only screen and (min-width: 600px) {
+  /* For tablets: */
+  .col-s-1 {width: 8.33%;}
+  .col-s-2 {width: 16.66%;}
+  .col-s-3 {width: 25%;}
+  .col-s-4 {width: 33.33%;}
+  .col-s-5 {width: 41.66%;}
+  .col-s-6 {width: 50%;}
+  .col-s-7 {width: 58.33%;}
+  .col-s-8 {width: 66.66%;}
+  .col-s-9 {width: 75%;}
+  .col-s-10 {width: 83.33%;}
+  .col-s-11 {width: 91.66%;}
+  .col-s-12 {width: 100%;}
+}
+@media only screen and (min-width: 768px) {
+  /* For desktop: */
+  .col-1 {width: 8.33%;}
+  .col-2 {width: 16.66%;}
+  .col-3 {width: 25%;}
+  .col-4 {width: 33.33%;}
+  .col-5 {width: 41.66%;}
+  .col-6 {width: 40%;}
+  .col-7 {width: 58.33%;}
+  .col-8 {width: 66.66%;}
+  .col-9 {width: 75%;}
+  .col-10 {width: 83.33%;}
+  .col-11 {width: 91.66%;}
+  .col-12 {width: 100%;}
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>BIENVENUE DANS POP'UP GAME</h1>
+</div>
+
+<div class="row">
+
+
+  <div class="col-6 col-s-9">
+
+  		<form method="get" action="/inscription">
+
+          <fieldset>
+             <legend><h2>INSCRIPTION</h2></legend>
+              <p>Inscrivez-vous ici en donnant votre pseudo et en choisissant votre personnage.</p>
+              <p>
+             <label for="pseudo">Votre pseudo :</label>
+             <input type="text" name="pseudo" id="pseudo" required/>
+             <span id="pseudo-help" style="display:none; color:red;">Ce pseudo est déjà pris !</span>
+
+             <br />
+             Choisissez votre personnage :
+             <br />
+
+             <input type="radio" value="bat_pop" name="pop_name" id="bat_pop"/>
+             <label for="bat_pop"> <img src="/assets/sprites/popcorn/bat_pop.png"/ width="75px" height="75px"/>  </label>
+
+             <input type="radio" value="caramba_pop" name="pop_name" id="caramba_pop"/>
+             <label for="caramba_pop"> <img src="/assets/sprites/popcorn/caramba_pop.png"/ width="75px" height="75px"/>  </label>
+
+             <input type="radio" value="gentle_pop" name="pop_name" id="gentle_pop"/>
+             <label for="gentle_pop"> <img src="/assets/sprites/popcorn/gentle_pop.png"/ width="75px" height="75px"/>  </label>
+
+             <input type="radio" value="pop_blood_gang" name="pop_name" id="pop_blood_gang"/>
+             <label for="pop_blood_gang"> <img src="/assets/sprites/popcorn/pop_blood_gang.png"/ width="75px" height="75px"/>  </label>
+
+             <input type="radio" name="pop_name" value="pop_boy" id="pop_boy"/>
+             <label for="pop_boy"> <img src="/assets/sprites/popcorn/pop_boy.png"/ width="75px" height="75px"/>  </label>
+
+
+
+             <input type="radio" name="pop_name" value="pop_carrey" id="pop_carrey"/>
+             <label for="pop_carrey"> <img src="/assets/sprites/popcorn/pop_carrey.png"/ width="75px" height="75px"/>  </label>
+
+             <input type="radio" name="pop_name" value="pop_kent" id="pop_kent"/>
+             <label for="pop_kent"> <img src="/assets/sprites/popcorn/pop_kent.png"/ width="75px" height="75px"/>  </label>
+
+             <input type="radio" name="pop_name" value="pop_marley" id="pop_marley"/>
+             <label for="pop_marley"> <img src="/assets/sprites/popcorn/pop_marley.png"/ width="75px" height="75px"/>  </label>
+
+             <input type="radio" name="pop_name" value="pop_minator" id="pop_minator"/>
+             <label for="pop_minator"> <img src="/assets/sprites/popcorn/pop_minator.png"/ width="75px" height="75px"/>  </label>
+
+             <input type="radio" name="pop_name" value="pop_ninja" id="pop_ninja"/>
+             <label for="pop_ninja"> <img src="/assets/sprites/popcorn/pop_ninja.png"/ width="75px" height="75px"/>  </label>
+
+
+
+             <input type="radio" name="pop_name" value="pop_ninja" id="pop_ninja"/>
+             <label for="pop_ninja"> <img src="/assets/sprites/popcorn/pop_soldat.png"/ width="75px" height="75px"/>  </label>
+
+             <input type="radio" name="pop_name" value="pop_vador" id="pop_vador"/>
+             <label for="pop_vador"> <img src="/assets/sprites/popcorn/pop_vador.png"/ width="75px" height="75px"/>  </label>
+
+             <input type="radio" name="pop_name" value="saint_patrick_pop" id="saint_patrick_pop"/>
+             <label for="saint_patrick_pop"> <img src="/assets/sprites/popcorn/saint_patrick_pop.png"/ width="75px" height="75px"/>  </label>
+
+             <input type="radio" name="pop_name" value="santa_pop" id="santa_pop"/>
+             <label for="santa_pop"> <img src="/assets/sprites/popcorn/santa_pop.png"/ width="75px" height="75px"/>  </label>
+
+             <input type="radio" name="pop_name" value="thug_pop" id="thug_pop"/>
+             <label for="thug_pop"> <img src="/assets/sprites/popcorn/thug_pop.png"/ width="75px" height="75px"/>  </label>
+
+          </p>
+           </fieldset>
+
+           <input type="submit" value="Envoyer" />
+		</form>
+
+  </div>
+
+
+
+</div>
+
+<div class="footer">
+  <p>Ce jeu a été developpé par cinq étudiants de licence 3 Informatique de l'Université Jean Monnet de Saint-Etienne.
+   <br/>@Copyrigth: Ibrahima DIALLO, Solofo RABONARIJAONA, Aldwin LAUREAT, Christian OKOUERET ELENGA, Morad BENKARAACHE.</p>
+</div>
+
+
+<% /* script js de la page inscription */ %>
+<script src="/js/inscription.js"></script>
+
+
+</body>
+</html>

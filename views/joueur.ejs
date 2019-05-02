@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+  <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css">
+      <script type="text/javascript" src="/bootstrap/js/bootstrap.min.js">
+      </script> 
+      <title>ECRAN - POP UP GAME</title>
+
+  </head>
+  <body class="jumbotron text-center">
+
+    <h3><button type="button" class="btn btn-danger"> Bienvenue dans Popup'Game </button></h3>
+    <br/>
+
+    <h4><button type="button" class="btn btn-danger"> <%= pseudo %> </button></h4>
+    <br/>
+
+    <h4>
+      <p id="pop-name"><button type="button" class="btn btn-danger">Votre personnage : <%= popName %> </button></p>
+      
+    </h4>
+
+    <br/>
+  
+    <img alt="perso" src="/assets/sprites/popcorn/<%= popName %>.png" width="100" height="100" class="rounded-circle"/>
+    <br/>
+    <br/>
+    <h4><span id="vague"><button type="button" class="btn btn-danger btn-lg"> Vague n°<%= vague %> </button></span></h4>
+    
+    
+
+    <% /* SCRIPT POUR CHARGER LA MANETTE */ %>
+    <script src="/js/joueur.js"></script>
+  </body>
+</html>

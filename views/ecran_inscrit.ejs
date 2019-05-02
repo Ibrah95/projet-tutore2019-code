@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css">
+    <script type="text/javascript" src="/bootstrap/js/bootstrap.min.js">
+    </script> 
+    <title>ECRAN - POP UP GAME</title>
+
+    <style>
+      
+      .vague {
+             
+        display: block;
+        
+      }
+
+      .vague li {
+        font-size: 1.6em;
+        font-weight: bold;
+        
+        list-style: none;
+        
+      }
+    </style>
+  </head>
+  <body class="jumbotron text-center">
+
+    <h3><button type="button" class="btn btn-danger"> Bienvenue dans Popup'Game </button></h3>
+    <br>
+
+    <% for (let i = 1; i <= NBR_VAGUE; i ++) { %>
+    <div class="vague card-deck"">
+      <h4><button type="button" class="btn btn-danger btn-lg"> VAGUE n° <%= i %></button></h4>
+      <hr/>
+      <ul id="vague-<%= i %> card bg-warning">
+      </ul>
+    </div>
+    <% } %>
+
+    <div>
+      <a href="/chargement_vague?vague=1" id="lancer-jeu">
+        <button type="button" class="btn btn-danger btn-lg">COMMENCER LE JEU</button></a>
+    </div>
+
+
+
+    <% /* script js de la page inscription */ %>
+    <script src="/js/ecran_inscrit.js"></script>
+
+  </body>
+</html>

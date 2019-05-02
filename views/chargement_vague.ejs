@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>ECRAN - POP UP GAME</title>
+    <style>
+      body, html {
+        margin: 0;
+        position: relative;
+      }
+    </style>
+  </head>
+  <body>
+
+  <h1> VAGUE N° <%= vague.toUpperCase() %></h1>
+  <div>
+    Votre tour dans <span id="countdown"></span> s
+  </div>
+
+  <% /* SCRIPT POUR DEMARARER LE COUNTDOWN */ %>
+  <script src="/js/chargement_vague.js"></script>
+
+  </body>
+</html>

@@ -1,0 +1,4 @@
+Ibra: admin,inscription,chargment_vague
+
+
+Chris : ecran_inscrit,joueur,jeu_complet
