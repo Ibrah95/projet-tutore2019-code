@@ -53,7 +53,7 @@ class Game extends Phaser.State {
 
     // creer les popbox manipuler par l'IA
     listPopbox = createIA(this.game);
-
+  
     // vitesseAlea = ChangeVitesse(listPopbox);
     // directionAlea = ChangeDirection(listPopbox);
 

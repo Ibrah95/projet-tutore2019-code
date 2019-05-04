@@ -564,6 +564,7 @@ var createPopbox = function createPopbox(x, y, game) {
   sprite.width = 70;
   sprite.height = 110;
   sprite.body.allowRotation = false;
+
   return sprite;
 };
 
@@ -578,10 +579,18 @@ var createIA = function createIA(game) {
       var posX = _config.DIST_LIGNE + _config.DIST_LIGNE * i;
       var posY = _config.POS_Y_POPBOX + _config.DIST_COLONNE * j;
       var popbox = createPopbox(posX, posY, game);
+
       // ajouter popbox dans la liste des popbox pour pouvoir les manipuler
       listPopbox.push(popbox);
     }
-  }
+  }game.add.tween(listPopbox[6].scale).to({ x: 0.07, y: 0.1 }, 2000, Phaser.Easing.Linear.None, true, 0, 2000, true);
+  /*  game.add.tween(listPopbox[2]).to( { x: [ 1100, 1100, 800, 800 ,0],
+                      y: [ POS_Y_POPBOX,  600 ,600,POS_Y_POPBOX,0] }, 4000, "Sine.easeInOut", true, -1, false);*/
+  game.add.tween(listPopbox[7].scale).to({ x: 0.07, y: 0.1 }, 2000, Phaser.Easing.Linear.None, true, 0, 2000, true);
+  listPopbox[4].alpha = 0;
+  listPopbox[3].alpha = 0;
+  game.add.tween(listPopbox[4]).to({ alpha: 1 }, 10000, Phaser.Easing.Linear.None, true, 0, 10000, true);
+  game.add.tween(listPopbox[3]).to({ alpha: 1 }, 10000, Phaser.Easing.Linear.None, true, 0, 10000, true);
 
   return listPopbox;
 };
@@ -607,12 +616,15 @@ var movementIA = function movementIA(listPopbox, game, tempsIA, directionAlea, v
   if (tempsIA == true) {
     directionAlea = ChangeDirection(listPopbox); // change la direction
     //console.log(directionAlea)
-
+    //let i = ChangeTaille(listPopbox)
+    //listPopbox[i].width +=100
+    //listPopbox[i].height +=100
+    // console.log(listPopbox[0])
     vitesseAlea = ChangeVitesse(listPopbox);
     //console.log(vitesseAlea)
   }
 
-  for (var i = 0; i < listPopbox.length; i++) {
+  for (var i = 1; i < listPopbox.length; i++) {
     if (i % 2 === 0) {
       // pair (correspond aux popbox sur la rangé supérieur)
       if (listPopbox[i].position.y <= _config.LIMIT_TOP) {
@@ -636,6 +648,8 @@ var movementIA = function movementIA(listPopbox, game, tempsIA, directionAlea, v
     }
 
     listPopbox[i].position.y += directionAlea[i] * vitesseAlea[i];
+    // movementVoitureIA(listPopbox)
+    movementZigZagIA(listPopbox);
   }
 
   //listPopbox[0].position.y += -1 * 0.5
@@ -667,10 +681,77 @@ var ChangeVitesse = function ChangeVitesse(listPopbox) {
   var random = void 0;
   for (var i = 0; i < listPopbox.length; i++) {
 
-    random = Math.random() * (10.0 - 5.0) + 5.0; // vitesse comprise entre 1.5 et 5.0
+    random = Math.random() * (10.0 - 5.0) + 5.0; // vitesse comprise entre 10.0 et 5.0
     vitesseAlea[i] = random;
   }
   return vitesseAlea;
+};
+
+var movementVoitureIA = function movementVoitureIA(listPopbox) {
+
+  var random = Math.floor(Math.random() * 3);
+
+  if (listPopbox[0].position.x == 2100) {
+    if (random == 0) {
+
+      listPopbox[0].position.y = _config.POS_Y_POPBOX;
+      listPopbox[0].position.x = _config.POS_Y_POPBOX;
+    } else if (random == 1) {
+      listPopbox[0].position.y = _config.POS_Y_POPBOX + _config.DIST_COLONNE;
+      listPopbox[0].position.x = _config.POS_Y_POPBOX;
+    } else {
+      listPopbox[0].position.y = _config.POS_Y_POPBOX + _config.DIST_COLONNE * 2;
+      listPopbox[0].position.x = _config.POS_Y_POPBOX;
+    }
+  }listPopbox[0].position.x += 1 * 2.0;
+  console.log(listPopbox[0].position.x);
+};
+
+var movementZigZagIA = function movementZigZagIA(listPopbox) {
+
+  var direction = 1;
+  var random = Math.floor(Math.random() * 3);
+
+  if (listPopbox[0].position.x == 2100) {
+    if (random == 0) {
+
+      listPopbox[0].position.y = _config.POS_Y_POPBOX;
+      listPopbox[0].position.x = _config.POS_Y_POPBOX;
+    } else if (random == 1) {
+      listPopbox[0].position.y = _config.POS_Y_POPBOX + _config.DIST_COLONNE;
+      listPopbox[0].position.x = _config.POS_Y_POPBOX;
+    } else {
+      listPopbox[0].position.y = _config.POS_Y_POPBOX + _config.DIST_COLONNE * 2;
+      listPopbox[0].position.x = _config.POS_Y_POPBOX;
+    }
+  }
+  //if( listPopbox[0].position.x < )
+
+  if (listPopbox[0].position.x >= 650) {
+    direction = 1;
+  }
+
+  if (listPopbox[0].position.x >= 800) {
+    direction = -1;
+  }
+  if (listPopbox[0].position.x >= 1100) {
+    direction = 1;
+  }
+
+  if (listPopbox[0].position.x >= 1200) {
+    direction = -1;
+  }
+
+  if (listPopbox[0].position.y <= _config.LIMIT_TOP) {
+    direction = 1;
+  }
+  if (listPopbox[0].position.y >= _config.LIMIT_BOTTOM) {
+    direction = -1;
+  }
+
+  listPopbox[0].position.x += 1 * 0.5;
+  listPopbox[0].position.y += direction * 0.5;
+  console.log(listPopbox[0].position.x);
 };
 
 exports.default = movementIA;
