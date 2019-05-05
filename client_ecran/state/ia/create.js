@@ -3,7 +3,10 @@ import {
   POS_Y_POPBOX,
   NBR_POPBOX_LIGNE,
   DIST_LIGNE,
-  DIST_COLONNE
+  DIST_COLONNE,
+  LIMIT_TOP,
+  LIMIT_BOTTOM,
+  LIMIT_LEFT
 } from '../../config'
 
 // LES FONCTIONS UTILITAIRES
@@ -22,8 +25,19 @@ const createPopbox = (x, y, game) => {
   sprite.width = 200
   sprite.height = 200
   sprite.body.allowRotation = false
-  return sprite
+  
+  
+
+    
+ 
+   return sprite
 }
+
+
+
+
+
+
 
 
 // LA FONCTION PRINCIPALE
@@ -37,10 +51,20 @@ const createIA = (game) => {
       const posX = DIST_LIGNE + DIST_LIGNE * i;
       const posY = POS_Y_POPBOX + DIST_COLONNE * j;
       const popbox = createPopbox(posX, posY, game);
+
       // ajouter popbox dans la liste des popbox pour pouvoir les manipuler
       listPopbox.push(popbox);
+
     }
-  }
+
+  }        game.add.tween(listPopbox[6].scale).to( { x: 0.07, y: 0.1}, 2000, Phaser.Easing.Linear.None, true, 0, 2000, true);
+         /*  game.add.tween(listPopbox[2]).to( { x: [ 1100, 1100, 800, 800 ,0],
+                             y: [ POS_Y_POPBOX,  600 ,600,POS_Y_POPBOX,0] }, 4000, "Sine.easeInOut", true, -1, false);*/
+           game.add.tween(listPopbox[7].scale).to( { x: 0.07, y: 0.1}, 2000, Phaser.Easing.Linear.None, true, 0, 2000, true);
+           listPopbox[4].alpha=0
+           listPopbox[3].alpha=0
+           game.add.tween(listPopbox[4]).to( { alpha: 1 }, 10000, Phaser.Easing.Linear.None, true, 0, 10000, true);
+           game.add.tween(listPopbox[3]).to( { alpha: 1 }, 10000, Phaser.Easing.Linear.None, true, 0, 10000, true);
 
   return listPopbox;
 
