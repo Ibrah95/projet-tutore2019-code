@@ -477,27 +477,30 @@ var _ = __webpack_require__(0);
 var fileLoader = function fileLoader(game) {
   game.load.crossOrigin = 'Anonymous';
   game.stage.backgroundColor = '#1E1E1E';
-  game.load.image('asphalt', _.ASSETS_URL + '/sprites/asphalt/ground_' + localStorage.getItem('stage') + '.jpg');
-
+  if (localStorage.getItem('stage') === '2') {
+    game.load.image('asphalt', _.ASSETS_URL + '/sprites/asphalt/ground_' + localStorage.getItem('stage') + '.png');
+  } else {
+    game.load.image('asphalt', _.ASSETS_URL + '/sprites/asphalt/ground_' + localStorage.getItem('stage') + '.jpg');
+  }
   // charger les personnages popcorn
-  game.load.image('pop_marley', _.ASSETS_URL + '/sprites/popcorn/pop_marley.png');
-  game.load.image('bat_pop', _.ASSETS_URL + '/sprites/popcorn/bat_pop.png');
-  game.load.spritesheet('pop_soldat', _.ASSETS_URL + '/sprites/popcorn/pop_soldat.png', 300, 300, 2);
-  game.load.image('caramba_pop', _.ASSETS_URL + '/sprites/popcorn/caramba_pop.png');
-  game.load.image('pop_vador', _.ASSETS_URL + '/sprites/popcorn/pop_vador.png');
-  game.load.image('gentle_pop', _.ASSETS_URL + '/sprites/popcorn/gentle_pop.png');
-  game.load.image('pop_blood', _.ASSETS_URL + '/sprites/popcorn/pop_blood.png');
-  game.load.image('pop_boy', _.ASSETS_URL + '/sprites/popcorn/pop_boy.png');
-  game.load.image('pop_kent', _.ASSETS_URL + '/sprites/popcorn/pop_kent.png');
-  game.load.image('pop_carrey', _.ASSETS_URL + '/sprites/popcorn/pop_carrey.png');
-  game.load.image('pop_minator', _.ASSETS_URL + '/sprites/popcorn/pop_minator.png');
-  game.load.image('pop_ninja', _.ASSETS_URL + '/sprites/popcorn/pop_ninja.png');
-  game.load.image('saint_patrick_pop', _.ASSETS_URL + '/sprites/popcorn/saint_patrick_pop.png');
-  game.load.image('santa_pop', _.ASSETS_URL + '/sprites/popcorn/santa_pop.png');
-  game.load.image('thug_pop', _.ASSETS_URL + '/sprites/popcorn/thug_pop.png');
+  game.load.spritesheet('pop_marley', _.ASSETS_URL + '/sprites/popcorn/pop_marley.png', 300, 300, 4);
+  game.load.spritesheet('bat_pop', _.ASSETS_URL + '/sprites/popcorn/bat_pop.png', 300, 300, 4);
+  game.load.spritesheet('pop_soldat', _.ASSETS_URL + '/sprites/popcorn/pop_soldat.png', 300, 300, 4);
+  game.load.spritesheet('caramba_pop', _.ASSETS_URL + '/sprites/popcorn/caramba_pop.png', 300, 300, 4);
+  game.load.spritesheet('pop_vador', _.ASSETS_URL + '/sprites/popcorn/pop_vador.png', 300, 300, 4);
+  game.load.spritesheet('gentle_pop', _.ASSETS_URL + '/sprites/popcorn/gentle_pop.png', 300, 300, 4);
+  game.load.spritesheet('pop_blood', _.ASSETS_URL + '/sprites/popcorn/pop_blood.png', 300, 300, 4);
+  game.load.spritesheet('pop_boy', _.ASSETS_URL + '/sprites/popcorn/pop_boy.png', 300, 300, 4);
+  game.load.spritesheet('pop_kent', _.ASSETS_URL + '/sprites/popcorn/pop_kent.png', 300, 300, 4);
+  game.load.spritesheet('pop_carrey', _.ASSETS_URL + '/sprites/popcorn/pop_carrey.png', 300, 300, 4);
+  game.load.spritesheet('pop_minator', _.ASSETS_URL + '/sprites/popcorn/pop_minator.png', 300, 300, 4);
+  game.load.spritesheet('pop_ninja', _.ASSETS_URL + '/sprites/popcorn/pop_ninja.png', 300, 300, 4);
+  game.load.spritesheet('saint_patrick_pop', _.ASSETS_URL + '/sprites/popcorn/saint_patrick_pop.png', 300, 300, 4);
+  game.load.spritesheet('santa_pop', _.ASSETS_URL + '/sprites/popcorn/santa_pop.png', 300, 300, 4);
+  game.load.spritesheet('thug_pop', _.ASSETS_URL + '/sprites/popcorn/thug_pop.png', 300, 300, 4);
 
   // charger les obstacles
-  game.load.image('popbox', _.ASSETS_URL + '/sprites/popbox/popbox2.png');
+  game.load.image('popbox', _.ASSETS_URL + '/sprites/popbox/popbox' + localStorage.getItem('stage') + '.png');
 
   // charger les énemies
   game.load.spritesheet('bird', _.ASSETS_URL + '/sprites/enemies/birds_1.png', 183, 168, 14);
