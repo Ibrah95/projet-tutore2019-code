@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>ECRAN - POP UP GAME</title>
+    <style>
+      body, html {
+        margin: 0;
+        position: relative;
+      }
+      .vague {
+        background-color: linen;
+        width: 300px;
+        height: 500px;
+        padding: 20px;
+        display: block;
+      }
+
+      .vague li {
+        font-size: 1.6em;
+        font-weight: bold;
+        color: grey;
+        list-style: none;
+      }
+    </style>
+  </head>
+  <body>
+
+    <h1>Bienvenue sur POP UP GAME</h1>
+
+    <% for (let i = 1; i <= NBR_VAGUE; i ++) { %>
+    <div class="vague">
+      <h2>VAGUE n° <%= i %></h2>
+      <hr/>
+      <ul id="vague-<%= i %>">
+      </ul>
+    </div>
+    <% } %>
+
+    <div>
+      <a href="/chargement_vague?vague=1" id="lancer-jeu">COMMENCER LE JEU</a>
+    </div>
+
+
+
+    <% /* script js de la page inscription */ %>
+    <script src="/js/ecran_inscrit.js"></script>
+
+  </body>
+</html>

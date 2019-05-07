@@ -18,12 +18,26 @@ import {
 const SERVER_IP = 'localhost:8000/'
 let socket = null
 let otherPlayers = {}
-let tempsRestantEnSeconde = 3 * 60;
+let tempsRestantEnSeconde = 10 // 3 * 60;
 let minutesRestant = Number.parseInt(tempsRestantEnSeconde / 60);
 let secondesRestant = Number.parseInt(tempsRestantEnSeconde % 60);
 let text = null;
 let timerlogo = null;
 let tempsEcouler = false;
+
+// recuperer le nombre de vague dns la variable de session
+let NBR_VAGUE = Number.parseInt(localStorage.getItem('nbr_vague'));
+
+// recuperer la duree pour une vague dans la variable de session
+let DUREE_VAGUE = Number.parseInt(localStorage.getItem('duree_vague'));
+
+// recuperer la vague courant dans la variable de session
+let vagueCourant = Number.parseInt(localStorage.getItem('vague_courant'));
+
+const nbrJoueurParVague = [];
+
+let attenteJoueurs = true;
+
 let tempsIA = false
 let tempsrestantIA = 2;
 let direction = 1
@@ -33,6 +47,7 @@ let vitesseAlea = new Array(NBR_POPBOX_LIGNE * NBR_POPBOX_COLONNE).fill(0);
 let directionAlea = new Array(NBR_POPBOX_LIGNE * NBR_POPBOX_COLONNE).fill(0); //tab avec des direction àleatoire
 let vitesseAleaMonstre = new Array(NBR_MONSTRE_LIGNE * NBR_MONSTRE_COLONNE).fill(0);
 let directionAleaMonstre = new Array(NBR_MONSTRE_LIGNE * NBR_MONSTRE_COLONNE).fill(0);
+
 let listPopbox = []; // tableau contenant les popbox manipuler par l'IA
 let listEnemy = []; // tableau contenant les enemis
 let music = null // music pendant le jeu
@@ -81,11 +96,14 @@ class Game extends Phaser.State {
     //  It won't start automatically, allowing you to hook it to button events and the like.
     timer.start();
 
+    // recuperer le nombre de joeur inscrit par vague
+    for (let i = 0; i < NBR_VAGUE; i++) {
+      nbrJoueurParVague[i] = Number.parseInt(localStorage.getItem(`nbr_joueur_vague_${i+1}`));
+    }
 
    const timerIA = this.game.time.create(false);
    timerIA.loop(1000,updateCounterIA, this.game);
    timerIA.start();
-
 
 
     // Configures the game camera
@@ -152,18 +170,51 @@ function updateCounter() {
 
 if (!tempsEcouler && isGameStarted) {
   if(tempsRestantEnSeconde > 0){
-	   tempsRestantEnSeconde--;
-  } else{ // quand le timer arrive à zero il reprend à 5, enlever le else pour garder time à 0
-	  // tempsRestantEnSeconde = 5 * 60;
-    tempsEcouler = true;
-    socket.emit('temps-ecouler', true);
+    if (attenteJoueurs === false) {
+	     tempsRestantEnSeconde--;
+    } else {
+      updateVagueCourant(localStorage.getItem('vague_courant'));
+      // compter le nombre de joueur afficher sur l'écran
+      const nbrJoueurAfficher = Object.keys(otherPlayers).length;
+      // si tout les joueurs inscrits dans la vague sont sur l'écran
+      if (nbrJoueurParVague[vagueCourant - 1] ===  nbrJoueurAfficher) {
+        attenteJoueurs = false;
+      }
+    }
+  } else { // quand le timer arrive à zero
+    if (vagueCourant < NBR_VAGUE) {
+      vagueCourant += 1;
+      // temps pour une vague est achever donc
+      // enregistrer la vague courant dans la session
+      localStorage.setItem('vague_courant', vagueCourant);
+      // notifier les joueurs en attentes de la vague en cours
+      // notifierJoueursEnAttentes();
+      // rediriger la page vers page de chargement vague
+      window.location.replace(`/chargement_vague?vague=${vagueCourant}`);
+    } else {
+      // rediriger la page vers la page de classement
+      tempsEcouler = true;
+      socket.emit('temps-ecouler', true);
+    }
   }
 }
 
-  minutesRestant = Number.parseInt(tempsRestantEnSeconde / 60);
-  secondesRestant = Number.parseInt(tempsRestantEnSeconde % 60);
+minutesRestant = Number.parseInt(tempsRestantEnSeconde / 60);
+secondesRestant = Number.parseInt(tempsRestantEnSeconde % 60);
+}
 
 
+function updateVagueCourant(vague) {
+  const req = new XMLHttpRequest();
+  req.onreadystatechange = function(event) {
+      // XMLHttpRequest.DONE === 4
+      if (this.readyState === XMLHttpRequest.DONE) {
+          if (this.status === 200) {
+          }
+      }
+  };
+  req.open('PUT', `/update_vague_courant?vague=${vague}`, true);
+  req.send(null);
 }
 
 function updateCounterIA() {
@@ -184,8 +235,6 @@ if (!tempsIA) {
 
 
 }
-
-
 
 
 
