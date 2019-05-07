@@ -75,13 +75,19 @@ Object.defineProperty(exports, "__esModule", {
 });
 var WINDOW_WIDTH = exports.WINDOW_WIDTH = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
 var WINDOW_HEIGHT = exports.WINDOW_HEIGHT = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
-var WORLD_SIZE = exports.WORLD_SIZE = { width: 1024, height: 900 };
+var WORLD_SIZE = exports.WORLD_SIZE = { width: 2024, height: 1000 };
 var ASSETS_URL = exports.ASSETS_URL = '../assets';
 var NBR_POPBOX_COLONNE = exports.NBR_POPBOX_COLONNE = 2;
-var POS_Y_POPBOX = exports.POS_Y_POPBOX = 400;
+var POS_Y_POPBOX = exports.POS_Y_POPBOX = WORLD_SIZE.height / 2 + 200;
 var NBR_POPBOX_LIGNE = exports.NBR_POPBOX_LIGNE = 4;
-var DIST_LIGNE = exports.DIST_LIGNE = 400;
-var DIST_COLONNE = exports.DIST_COLONNE = 250;
+var NBR_MONSTRE_LIGNE = exports.NBR_MONSTRE_LIGNE = localStorage.getItem('stage') === '3' ? 1 : 2;
+var NBR_MONSTRE_COLONNE = exports.NBR_MONSTRE_COLONNE = localStorage.getItem('stage') === '3' ? 3 : 2;
+var DIST_LIGNE = exports.DIST_LIGNE = localStorage.getItem('stage') !== '2' ? 600 : 2000;
+var DIST_COLONNE = exports.DIST_COLONNE = 600;
+var LIMIT_TOP = exports.LIMIT_TOP = 200;
+var LIMIT_BOTTOM = exports.LIMIT_BOTTOM = 2000;
+var LIMIT_LEFT = exports.LIMIT_LEFT = 100;
+var LIMIT_RIGHT = exports.LIMIT_RIGHT = 2000;
 
 /***/ }),
 /* 1 */
@@ -263,11 +269,17 @@ var _create = __webpack_require__(8);
 
 var _create2 = _interopRequireDefault(_create);
 
-var _updatePlayers = __webpack_require__(9);
+var _createEnemies = __webpack_require__(9);
+
+var _createEnemies2 = _interopRequireDefault(_createEnemies);
+
+var _movement = __webpack_require__(10);
+
+var _updatePlayers = __webpack_require__(11);
 
 var _updatePlayers2 = _interopRequireDefault(_updatePlayers);
 
-var _playerMovementInterpolation = __webpack_require__(10);
+var _playerMovementInterpolation = __webpack_require__(12);
 
 var _playerMovementInterpolation2 = _interopRequireDefault(_playerMovementInterpolation);
 
@@ -279,7 +291,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var SERVER_IP = 'localhost:8000/';
+var SERVER_IP = '192.168.1.2:8080/'; //'localhost:8080/'
 var socket = null;
 var otherPlayers = {};
 var tempsRestantEnSeconde = 3 * 60;
@@ -289,7 +301,34 @@ var text = null;
 var timerlogo = null;
 var tempsEcouler = false;
 
+// recuperer le nombre de vague dns la variable de session
+var NBR_VAGUE = Number.parseInt(localStorage.getItem('nbr_vague'));
+
+// recuperer la duree pour une vague dans la variable de session
+var DUREE_VAGUE = Number.parseInt(localStorage.getItem('duree_vague'));
+
+// recuperer la vague courant dans la variable de session
+var vagueCourant = Number.parseInt(localStorage.getItem('vague_courant'));
+
+var nbrJoueurParVague = [];
+
+var attenteJoueurs = true;
+
+var tempsIA = false;
+var tempsrestantIA = 2;
+var direction = 1;
+var direction2 = -1;
+var vitesse = 0.5;
+var vitesseAlea = new Array(_config.NBR_POPBOX_LIGNE * _config.NBR_POPBOX_COLONNE).fill(0);
+var directionAlea = new Array(_config.NBR_POPBOX_LIGNE * _config.NBR_POPBOX_COLONNE).fill(0); //tab avec des direction àleatoire
+var vitesseAleaMonstre = new Array(_config.NBR_MONSTRE_LIGNE * _config.NBR_MONSTRE_COLONNE).fill(0);
+var directionAleaMonstre = new Array(_config.NBR_MONSTRE_LIGNE * _config.NBR_MONSTRE_COLONNE).fill(0);
+
 var listPopbox = []; // tableau contenant les popbox manipuler par l'IA
+var listEnemy = []; // tableau contenant les enemis
+var music = null; // music pendant le jeu
+var isGameStarted = false;
+var bird = void 0;
 
 var Game = function (_Phaser$State) {
   _inherits(Game, _Phaser$State);
@@ -325,7 +364,14 @@ var Game = function (_Phaser$State) {
       (0, _updatePlayers2.default)(socket, otherPlayers, this.game);
 
       // creer les popbox manipuler par l'IA
-      listPopbox = (0, _create2.default)(this.game);
+      if (localStorage.getItem('stage') !== '2') {
+        listPopbox = (0, _create2.default)(this.game);
+      }
+
+      // creer les enemies manipuler par l'IA
+      if (localStorage.getItem('stage') !== '1') {
+        listEnemy = (0, _createEnemies2.default)(this.game);
+      }
 
       // CONFIGURATION DU TIMER (à modifier mais juste pour le test)
       //  Create our Timer
@@ -336,6 +382,15 @@ var Game = function (_Phaser$State) {
       //  It won't start automatically, allowing you to hook it to button events and the like.
       timer.start();
 
+      // recuperer le nombre de joeur inscrit par vague
+      for (var i = 0; i < NBR_VAGUE; i++) {
+        nbrJoueurParVague[i] = Number.parseInt(localStorage.getItem('nbr_joueur_vague_' + (i + 1)));
+      }
+
+      var timerIA = this.game.time.create(false);
+      timerIA.loop(1000, updateCounterIA, this.game);
+      timerIA.start();
+
       // Configures the game camera
       this.game.camera.x = width / 2;
       this.game.camera.y = height / 2;
@@ -343,47 +398,127 @@ var Game = function (_Phaser$State) {
       // Scale game to fit the entire window
       this.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
 
-      text = this.game.add.text(_config.WORLD_SIZE.width / 2 + 140, 50, minutesRestant + ' : ' + secondesRestant, { fontSize: '43px', fill: '#AFF', align: 'center' });
+      // timer du jeu
+      text = this.game.add.text(_config.WORLD_SIZE.width / 2 + 80 * 4, 50, '0' + minutesRestant + ' : ' + (secondesRestant < 10 ? '0' : '') + secondesRestant, { font: "100px Courier Black", fill: "#FF8C00" });
+      text.stroke = "#FFFFFF";
+      text.strokeThickness = 20;
+      //  Apply the shadow to the Stroke and the Fill (this is the default)
+      text.setShadow(2, 2, "#333333", 2, true, true);
 
-      timerlogo = this.game.add.sprite(_config.WORLD_SIZE.width / 2 + 60, 50, 'timerlogo');
-
-      timerlogo.width = 50;
-      timerlogo.height = 50;
+      // ajouter music du jeu
+      music = this.game.add.audio('music');
+      //  Being mp3 files these take time to decode, so we can't play them instantly
+      //  Using setDecodedCallback we can be notified when they're ALL ready for use.
+      //  The audio files could decode in ANY order, we can never be sure which it'll be.
+      this.game.sound.setDecodedCallback(music, start, this);
+      this.game.sound.play('music', 1, true);
     }
   }, {
     key: 'update',
     value: function update() {
       // Interpolates the players movement et gerer les collisions
-      (0, _playerMovementInterpolation2.default)(otherPlayers, listPopbox, this.game, socket);
-
+      (0, _playerMovementInterpolation2.default)(otherPlayers, listPopbox, listEnemy, this.game, socket);
+      if (isGameStarted) {
+        // move obstacles
+        var retour = (0, _movement.movementIA)(listPopbox, this.game, tempsIA, directionAlea, vitesseAlea);
+        vitesseAlea = retour.vitesseAlea;
+        directionAlea = retour.directionAlea;
+        // move enemies
+        if (localStorage.getItem('stage') !== '1') {
+          var sens = localStorage.getItem('stage') === '2' ? -1 : 1;
+          var retour2 = (0, _movement.movementIAMonstre)(listEnemy, this.game, tempsIA, directionAleaMonstre, vitesseAleaMonstre, sens);
+          vitesseAleaMonstre = retour2.vitesseAlea;
+          directionAleaMonstre = retour2.directionAlea;
+        }
+        tempsIA = false;
+      }
       socket.on('notification-temps-ecouler', function (data) {
         window.alert('TEMPS ECOULER !!!\n\n NOMBRE POPCORN ARRIV\xC9 : ' + data.nombre_de_popcorn_arriver + ' \n NOMBRE DE POPCORN CAPTUR\xC9 : ' + data.nombre_de_popcorn_capturer);
       });
-
+    }
+  }, {
+    key: 'render',
+    value: function render() {
       // affichage TIMER
       //this.game.debug.text(`TIMER :  ${minutesRestant} min ${secondesRestant} s` , 32, 64);
-      text.setText(minutesRestant + ' : ' + secondesRestant);
+      text.setText('0' + minutesRestant + ' : ' + (secondesRestant < 10 ? '0' : '') + secondesRestant);
     }
   }]);
 
   return Game;
 }(Phaser.State);
 
+// start game when music plays
+
+
+function start() {
+  isGameStarted = true;
+  music.play();
+}
+
 function updateCounter() {
 
-  if (!tempsEcouler) {
+  if (!tempsEcouler && isGameStarted) {
     if (tempsRestantEnSeconde > 0) {
-      tempsRestantEnSeconde--;
+      if (attenteJoueurs === false) {
+        tempsRestantEnSeconde--;
+      } else {
+        updateVagueCourant(localStorage.getItem('vague_courant'));
+        // compter le nombre de joueur afficher sur l'écran
+        var nbrJoueurAfficher = Object.keys(otherPlayers).length;
+        // si tout les joueurs inscrits dans la vague sont sur l'écran
+        if (nbrJoueurParVague[vagueCourant - 1] === nbrJoueurAfficher) {
+          attenteJoueurs = false;
+        }
+      }
     } else {
-      // quand le timer arrive à zero il reprend à 5, enlever le else pour garder time à 0
-      // tempsRestantEnSeconde = 5 * 60;
-      tempsEcouler = true;
-      socket.emit('temps-ecouler', true);
+      // quand le timer arrive à zero
+      if (vagueCourant < NBR_VAGUE) {
+        vagueCourant += 1;
+        // temps pour une vague est achever donc
+        // enregistrer la vague courant dans la session
+        localStorage.setItem('vague_courant', vagueCourant);
+        // notifier les joueurs en attentes de la vague en cours
+        // notifierJoueursEnAttentes();
+        // rediriger la page vers page de chargement vague
+        window.location.replace('/chargement_vague?vague=' + vagueCourant);
+      } else {
+        // rediriger la page vers la page de classement
+        tempsEcouler = true;
+        socket.emit('temps-ecouler', true);
+      }
     }
   }
 
   minutesRestant = Number.parseInt(tempsRestantEnSeconde / 60);
   secondesRestant = Number.parseInt(tempsRestantEnSeconde % 60);
+}
+
+function updateVagueCourant(vague) {
+  var req = new XMLHttpRequest();
+  req.onreadystatechange = function (event) {
+    // XMLHttpRequest.DONE === 4
+    if (this.readyState === XMLHttpRequest.DONE) {
+      if (this.status === 200) {}
+    }
+  };
+  req.open('PUT', '/update_vague_courant?vague=' + vague, true);
+  req.send(null);
+}
+
+function updateCounterIA() {
+
+  if (!tempsIA) {
+
+    if (tempsrestantIA > 0) {
+      tempsrestantIA--;
+    } else {
+      // quand le timer arrive à zero il reprend à 5, enlever le else pour garder time à 0
+      // tempsRestantEnSeconde = 5 * 60;
+      tempsrestantIA = 2;
+      tempsIA = true;
+    }
+  }
 }
 
 exports.default = Game;
@@ -404,27 +539,39 @@ var _ = __webpack_require__(0);
 var fileLoader = function fileLoader(game) {
   game.load.crossOrigin = 'Anonymous';
   game.stage.backgroundColor = '#1E1E1E';
-  game.load.image('asphalt', _.ASSETS_URL + '/sprites/asphalt/new_bg.png');
-
+  if (localStorage.getItem('stage') === '2') {
+    game.load.image('asphalt', _.ASSETS_URL + '/sprites/asphalt/ground_' + localStorage.getItem('stage') + '.png');
+  } else {
+    game.load.image('asphalt', _.ASSETS_URL + '/sprites/asphalt/ground_' + localStorage.getItem('stage') + '.jpg');
+  }
   // charger les personnages popcorn
-  game.load.image('pop_marley', _.ASSETS_URL + '/sprites/popcorn/pop_marley.png');
-  game.load.image('bat_pop', _.ASSETS_URL + '/sprites/popcorn/bat_pop.png');
-  game.load.image('pop_soldat', _.ASSETS_URL + '/sprites/popcorn/pop_soldat.png');
-  game.load.image('caramba_pop', _.ASSETS_URL + '/sprites/popcorn/caramba_pop.png');
-  game.load.image('pop_vador', _.ASSETS_URL + '/sprites/popcorn/pop_vador.png');
-  game.load.image('gentle_pop', _.ASSETS_URL + '/sprites/popcorn/gentle_pop.png');
-  game.load.image('pop_blood', _.ASSETS_URL + '/sprites/popcorn/pop_blood.png');
-  game.load.image('pop_boy', _.ASSETS_URL + '/sprites/popcorn/pop_boy.png');
-  game.load.image('pop_kent', _.ASSETS_URL + '/sprites/popcorn/pop_kent.png');
-  game.load.image('pop_carrey', _.ASSETS_URL + '/sprites/popcorn/pop_carrey.png');
-  game.load.image('pop_minator', _.ASSETS_URL + '/sprites/popcorn/pop_minator.png');
-  game.load.image('pop_ninja', _.ASSETS_URL + '/sprites/popcorn/pop_ninja.png');
-  game.load.image('saint_patrick_pop', _.ASSETS_URL + '/sprites/popcorn/saint_patrick_pop.png');
-  game.load.image('santa_pop', _.ASSETS_URL + '/sprites/popcorn/santa_pop.png');
-  game.load.image('thug_pop', _.ASSETS_URL + '/sprites/popcorn/thug_pop.png');
+  game.load.spritesheet('pop_marley', _.ASSETS_URL + '/sprites/popcorn/pop_marley.png', 300, 300, 4);
+  game.load.spritesheet('bat_pop', _.ASSETS_URL + '/sprites/popcorn/bat_pop.png', 300, 300, 4);
+  game.load.spritesheet('pop_soldat', _.ASSETS_URL + '/sprites/popcorn/pop_soldat.png', 300, 300, 4);
+  game.load.spritesheet('caramba_pop', _.ASSETS_URL + '/sprites/popcorn/caramba_pop.png', 300, 300, 4);
+  game.load.spritesheet('pop_vador', _.ASSETS_URL + '/sprites/popcorn/pop_vador.png', 300, 300, 4);
+  game.load.spritesheet('gentle_pop', _.ASSETS_URL + '/sprites/popcorn/gentle_pop.png', 300, 300, 4);
+  game.load.spritesheet('pop_blood_gang', _.ASSETS_URL + '/sprites/popcorn/pop_blood_gang.png', 300, 300, 4);
+  game.load.spritesheet('pop_boy', _.ASSETS_URL + '/sprites/popcorn/pop_boy.png', 300, 300, 4);
+  game.load.spritesheet('pop_kent', _.ASSETS_URL + '/sprites/popcorn/pop_kent.png', 300, 300, 4);
+  game.load.spritesheet('pop_carrey', _.ASSETS_URL + '/sprites/popcorn/pop_carrey.png', 300, 300, 4);
+  game.load.spritesheet('pop_minator', _.ASSETS_URL + '/sprites/popcorn/pop_minator.png', 300, 300, 4);
+  game.load.spritesheet('pop_ninja', _.ASSETS_URL + '/sprites/popcorn/pop_ninja.png', 300, 300, 4);
+  game.load.spritesheet('saint_patrick_pop', _.ASSETS_URL + '/sprites/popcorn/saint_patrick_pop.png', 300, 300, 4);
+  game.load.spritesheet('santa_pop', _.ASSETS_URL + '/sprites/popcorn/santa_pop.png', 300, 300, 4);
+  game.load.spritesheet('thug_pop', _.ASSETS_URL + '/sprites/popcorn/thug_pop.png', 300, 300, 4);
 
-  game.load.image('popbox', _.ASSETS_URL + '/sprites/car/popbox.png');
-  game.load.image('timerlogo', _.ASSETS_URL + '/sprites/design/timerlogo.png');
+  // charger les obstacles
+  game.load.image('popbox', _.ASSETS_URL + '/sprites/popbox/popbox' + localStorage.getItem('stage') + '.png');
+
+  // charger les énemies
+  game.load.spritesheet('bird', _.ASSETS_URL + '/sprites/enemies/birds_1.png', 183, 168, 14);
+
+  // charger les voitures
+  game.load.image('car', _.ASSETS_URL + '/sprites/enemies/car_2.png');
+
+  // charger les musiques selons le level d'avancement
+  game.load.audio('music', [_.ASSETS_URL + '/audio/music_' + localStorage.getItem('stage') + '.mp3', _.ASSETS_URL + '/audio/music_' + localStorage.getItem('stage') + '.ogg']);
 };
 
 exports.default = fileLoader;
@@ -458,11 +605,21 @@ var worldCreator = function worldCreator(game) {
 };
 
 var createMap = function createMap(game) {
+  // let groundTiles = []
+  // const groundSprite = game.add.sprite(0, 0, 'asphalt')
+  // /*groundSprite.width = 1920
+  // groundSprite.height = 1080*/
+  // groundTiles.push(groundSprite)
+
   var groundTiles = [];
-  var groundSprite = game.add.sprite(0, 0, 'asphalt');
-  /*groundSprite.width = 1920
-  groundSprite.height = 1080*/
-  groundTiles.push(groundSprite);
+  for (var i = 0; i <= width / 64; i++) {
+    for (var j = 0; j <= height / 64; j++) {
+      var groundSprite = game.add.sprite(i * 400, j * 400, 'asphalt');
+      groundSprite.width = 400;
+      groundSprite.height = 400;
+      groundTiles.push(groundSprite);
+    }
+  }
 };
 
 exports.default = worldCreator;
@@ -486,14 +643,18 @@ var createPlayer = function createPlayer(type, customName, x, y, game) {
   sprite.body.collideWorldBounds = true;
   sprite.body.bounce.setTo(1, 1);
   sprite.anchor.setTo(0.5, 0.5);
-  if (type === 'popcorn') {
-    sprite.width = 60;
-    sprite.height = 60;
-  } else {
-    sprite.width = 70;
-    sprite.height = 110;
-  }
+  sprite.width = 150;
+  sprite.height = 150;
+  // if (type === 'popcorn') {
+  //   sprite.width = 100
+  //   sprite.height = 100
+  // } else {
+  //   sprite.width = 70
+  //   sprite.height = 110
+  // }
   sprite.body.allowRotation = false;
+  sprite.animations.add('run');
+  sprite.animations.play('run', 2, true);
   return sprite;
 };
 
@@ -518,12 +679,17 @@ var createPopbox = function createPopbox(x, y, game) {
   var sprite = sprite = game.add.sprite(x, y, 'popbox');
   game.physics.enable(sprite, Phaser.Physics.ARCADE);
   game.physics.startSystem(Phaser.Physics.ARCADE);
-  sprite.body.collideWorldBounds = true;
+  sprite.body.collideWorldBounds = false;
+  sprite.body.checkCollision.up = true;
+  sprite.body.checkCollision.down = true;
+  sprite.body.checkCollision.right = true;
+  sprite.body.checkCollision.left = true;
   sprite.body.bounce.setTo(1, 1);
   sprite.anchor.setTo(0.5, 0.5);
-  sprite.width = 70;
-  sprite.height = 110;
+  sprite.width = 200;
+  sprite.height = 200;
   sprite.body.allowRotation = false;
+
   return sprite;
 };
 
@@ -538,11 +704,11 @@ var createIA = function createIA(game) {
       var posX = _config.DIST_LIGNE + _config.DIST_LIGNE * i;
       var posY = _config.POS_Y_POPBOX + _config.DIST_COLONNE * j;
       var popbox = createPopbox(posX, posY, game);
+
       // ajouter popbox dans la liste des popbox pour pouvoir les manipuler
       listPopbox.push(popbox);
     }
   }
-
   return listPopbox;
 };
 
@@ -550,6 +716,234 @@ exports.default = createIA;
 
 /***/ }),
 /* 9 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _config = __webpack_require__(0);
+
+// LES FONCTIONS UTILITAIRES
+
+var create = function create(x, y, game) {
+  var sprite = void 0;
+  if (localStorage.getItem('stage') === '3') {
+    sprite = game.add.sprite(x, y, 'bird');
+    game.physics.enable(sprite, Phaser.Physics.ARCADE);
+    game.physics.startSystem(Phaser.Physics.ARCADE);
+    sprite.body.collideWorldBounds = false;
+    sprite.body.checkCollision.up = true;
+    sprite.body.checkCollision.down = true;
+    sprite.body.checkCollision.left = true;
+    sprite.body.checkCollision.right = true;
+    sprite.body.bounce.setTo(1, 1);
+    sprite.anchor.setTo(0.5, 0.5);
+    sprite.animations.add('run');
+    sprite.animations.play('run', 14, true);
+  } else {
+    sprite = game.add.sprite(x, y, 'car');
+    game.physics.enable(sprite, Phaser.Physics.ARCADE);
+    game.physics.startSystem(Phaser.Physics.ARCADE);
+    sprite.body.collideWorldBounds = false;
+    sprite.body.checkCollision.up = true;
+    sprite.body.checkCollision.down = true;
+    sprite.body.checkCollision.right = true;
+    sprite.body.checkCollision.left = true;
+    sprite.body.bounce.setTo(1, 1);
+    sprite.anchor.setTo(0.5, 0.5);
+    sprite.width = 400;
+    sprite.height = 300;
+  }
+
+  return sprite;
+};
+
+// LA FONCTION PRINCIPALE
+
+var createEnemies = function createEnemies(game) {
+  var listEnemy = [];
+  // creer les enemies par colonne et par ligne
+  for (var i = 0; i < _config.NBR_MONSTRE_LIGNE; i++) {
+    for (var j = 0; j < _config.NBR_MONSTRE_COLONNE; j++) {
+      // calculer positions popbox
+      var posX = _config.DIST_LIGNE + _config.DIST_LIGNE * i;
+      var posY = _config.POS_Y_POPBOX + _config.DIST_COLONNE * j;
+      var enemy = create(posX, posY, game);
+      // ajouter popbox dans la liste des popbox pour pouvoir les manipuler
+      listEnemy.push(enemy);
+    }
+  }
+
+  return listEnemy;
+};
+
+exports.default = createEnemies;
+
+/***/ }),
+/* 10 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.movementIAMonstre = exports.movementIA = undefined;
+
+var _config = __webpack_require__(0);
+
+var movementIA = function movementIA(listPopbox, game, tempsIA, directionAlea, vitesseAlea) {
+
+  //console.log(tempsIA)
+  if (tempsIA == true) {
+    directionAlea = ChangeDirection(listPopbox); // change la direction
+    vitesseAlea = ChangeVitesse(listPopbox);
+  }
+
+  for (var i = 0; i < listPopbox.length; i++) {
+    if (i % 2 === 0) {
+      // pair (correspond aux popbox sur la rangé supérieur)
+      if (listPopbox[i].position.y <= _config.LIMIT_TOP) {
+        directionAlea[i] = 1;
+      }
+      if (listPopbox[i].position.y >= _config.LIMIT_BOTTOM / 2 - 40) {
+        directionAlea[i] = -1;
+      }
+    } else {
+      // impair (correspond aux popbox sur la rangé inférieur)
+      if (listPopbox[i].position.y <= _config.LIMIT_BOTTOM / 2 - 40) {
+        directionAlea[i] = 1;
+      }
+      if (listPopbox[i].position.y >= _config.LIMIT_BOTTOM) {
+        directionAlea[i] = -1;
+      }
+    }
+    listPopbox[i].position.y += directionAlea[i] * vitesseAlea[i];
+  }
+
+  return { directionAlea: directionAlea, vitesseAlea: vitesseAlea };
+};
+
+var movementIAMonstre = function movementIAMonstre(listPopbox, game, tempsIA, directionAlea, vitesseAlea) {
+  var sens = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : 1;
+
+
+  //console.log(tempsIA)
+  if (tempsIA == true) {
+    directionAlea = ChangeDirection(listPopbox); // change la direction
+    vitesseAlea = ChangeVitesse(listPopbox);
+  }
+
+  for (var i = 0; i < listPopbox.length; i++) {
+    if (i % 2 === 0) {
+      // pair (correspond aux popbox sur la rangé supérieur)
+      if (listPopbox[i].position.y <= _config.LIMIT_TOP) {
+        directionAlea[i] = 1;
+      }
+      if (listPopbox[i].position.y >= _config.LIMIT_BOTTOM / 2 - 40) {
+        directionAlea[i] = -1;
+      }
+    } else {
+      // impair (correspond aux popbox sur la rangé inférieur)
+      if (listPopbox[i].position.y <= _config.LIMIT_BOTTOM / 2 - 40) {
+        directionAlea[i] = 1;
+      }
+      if (listPopbox[i].position.y >= _config.LIMIT_BOTTOM) {
+        directionAlea[i] = -1;
+      }
+    }
+    if (sens > 0) {
+      movementZigZagIA(listPopbox[i], vitesseAlea[i]);
+    } else {
+      movementZigZagIARevert(listPopbox[i], vitesseAlea[i]);
+    }
+    listPopbox[i].position.y += directionAlea[i] * vitesseAlea[i];
+  }
+
+  return { directionAlea: directionAlea, vitesseAlea: vitesseAlea };
+};
+
+var ChangeDirection = function ChangeDirection(listPopbox) {
+  var directionAlea = [];
+  var random = void 0;
+  for (var i = 0; i < listPopbox.length; i++) {
+    random = Math.floor(Math.random() * 12); //random integer from 0 to 11
+
+
+    if (random % 2 == 0) {
+      //console.log('PAIR')
+      directionAlea[i] = -1;
+    } else {
+      //console.log('IMPAIR')
+
+      directionAlea[i] = 1;
+    }
+  }
+  return directionAlea;
+};
+
+var ChangeVitesse = function ChangeVitesse(listPopbox) {
+  var vitesseAlea = [];
+  var random = void 0;
+  for (var i = 0; i < listPopbox.length; i++) {
+
+    random = Math.random() * (10.0 - 5.0) + 5.0; // vitesse comprise entre 1.5 et 5.0
+    vitesseAlea[i] = random;
+  }
+  return vitesseAlea;
+};
+
+var movementVoitureIA = function movementVoitureIA(listPopbox) {
+
+  var random = Math.floor(Math.random() * 3);
+
+  if (listPopbox[0].position.x == 2100) {
+    if (random == 0) {
+
+      listPopbox[0].position.y = _config.POS_Y_POPBOX;
+      listPopbox[0].position.x = _config.POS_Y_POPBOX;
+    } else if (random == 1) {
+      listPopbox[0].position.y = _config.POS_Y_POPBOX + _config.DIST_COLONNE;
+      listPopbox[0].position.x = _config.POS_Y_POPBOX;
+    } else {
+      listPopbox[0].position.y = _config.POS_Y_POPBOX + _config.DIST_COLONNE * 2;
+      listPopbox[0].position.x = _config.POS_Y_POPBOX;
+    }
+  }listPopbox[0].position.x += 1 * 2.0;
+};
+
+var movementZigZagIA = function movementZigZagIA(popbox, vitesseAlea) {
+  // remettre le popbox à un position initial aléatoire lorsqu'il dépase la
+  // limite à droite de l'écran
+  var j = Math.floor(Math.random() * _config.NBR_POPBOX_COLONNE);
+  if (popbox.position.x >= _config.WINDOW_WIDTH) {
+    popbox.position.x = -200;
+    popbox.position.y = _config.POS_Y_POPBOX + _config.DIST_COLONNE * j;
+  }
+  popbox.position.x += 1 * vitesseAlea;
+};
+
+var movementZigZagIARevert = function movementZigZagIARevert(popbox, vitesseAlea) {
+  // remettre le popbox à un position initial aléatoire lorsqu'il dépase la
+  // limite à gauche de l'écran
+  var j = Math.floor(Math.random() * _config.NBR_POPBOX_COLONNE);
+  if (popbox.position.x < 0) {
+    popbox.position.x = _config.WINDOW_WIDTH + 200;
+    popbox.position.y = _config.POS_Y_POPBOX + _config.DIST_COLONNE * j;
+  }
+  popbox.position.x += -1 * vitesseAlea;
+};
+
+exports.movementIA = movementIA;
+exports.movementIAMonstre = movementIAMonstre;
+
+/***/ }),
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -623,7 +1017,7 @@ var updatePlayers = function updatePlayers(socket, otherPlayers, game) {
 exports.default = updatePlayers;
 
 /***/ }),
-/* 10 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -632,7 +1026,7 @@ exports.default = updatePlayers;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-var playerMovementInterpolation = function playerMovementInterpolation(otherPlayers, listPopbox, game, socket) {
+var playerMovementInterpolation = function playerMovementInterpolation(otherPlayers, listPopbox, listEnemy, game, socket) {
   var _loop = function _loop(id) {
     var player = otherPlayers[id];
     if (player.target_x !== undefined) {
@@ -658,14 +1052,30 @@ var playerMovementInterpolation = function playerMovementInterpolation(otherPlay
       // gerer collision avec les popbox IA
       for (var popboxIA in listPopbox) {
         game.physics.arcade.collide(player.sprite, listPopbox[popboxIA], function (player1, player2) {
-          if (player.type === 'popcorn') {
-            player.sprite.destroy();
-            player.playerName.destroy();
-            player.speedText.destroy();
-            // ask the server to delete the popcorn that collided with a popbox
-            player.emitPlayerDeletion(socket);
-            delete otherPlayers[id];
-          }
+          //if (player.type === 'popcorn') {
+          player.sprite.destroy();
+          player.playerName.destroy();
+          player.speedText.destroy();
+          // ask the server to delete the popcorn that collided with a popbox
+          player.emitPlayerDeletion(socket);
+          delete otherPlayers[id];
+          console.log('collision');
+          //}
+          player.emitNombreCapture(socket);
+        });
+      }
+      // gerer collision avec les enemies
+      for (var enemyIA in listEnemy) {
+        game.physics.arcade.collide(player.sprite, listEnemy[enemyIA], function (player1, player2) {
+          //if (player.type === 'popcorn') {
+          player.sprite.destroy();
+          player.playerName.destroy();
+          player.speedText.destroy();
+          // ask the server to delete the popcorn that collided with a popbox
+          player.emitPlayerDeletion(socket);
+          delete otherPlayers[id];
+          console.log('collision');
+          //}
           player.emitNombreCapture(socket);
         });
       }

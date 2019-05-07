@@ -39,7 +39,12 @@ export default function (x, y, customName, game, socket) {
     movePlayer(stick, force, forceX, forceY) {
       this.sprite.body.velocity.x = stick.forceX * 1000;
       this.sprite.body.velocity.y = stick.forceY * 1000;
-      
+
+      console.log('position y');
+      console.log(this.sprite.body.y);
+      console.log('LIMIT BOTTOM');
+      console.log(LIMIT_BOTTOM)
+
       if( this.sprite.body.x <= LIMIT_LEFT ){
           this.sprite.body.x += 50
         }
@@ -49,6 +54,7 @@ export default function (x, y, customName, game, socket) {
         }
 
         if(this.sprite.body.y >= LIMIT_BOTTOM ){
+          console.log('entrer dans limit bottom')
           this.sprite.body.y -= 50
         }
       this.emitPlayerData();
