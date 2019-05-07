@@ -5,12 +5,15 @@ import createWorld from './world/createWorld'
 import player from './player'
 import createIA from './ia/create'
 import createEnemies from './ia/createEnemies'
-import movementIA from './ia/movement'
-import ChangeDirection from './ia/movement'
-import ChangeVitesse from './ia/movement'
+import { movementIA, movementIAMonstre } from './ia/movement'
 import updatePlayers from './sockets/updatePlayers'
 import playerMovementInterpolation from './predictions/playerMovementInterpolation'
-import { NBR_POPBOX_LIGNE, NBR_POPBOX_COLONNE } from '../config'
+import {
+  NBR_POPBOX_LIGNE,
+  NBR_POPBOX_COLONNE,
+  NBR_MONSTRE_LIGNE,
+  NBR_MONSTRE_COLONNE
+} from '../config'
 
 const SERVER_IP = 'localhost:8000/'
 let socket = null
@@ -27,7 +30,9 @@ let direction = 1
 let direction2 = -1
 let vitesse = 0.5
 let vitesseAlea = new Array(NBR_POPBOX_LIGNE * NBR_POPBOX_COLONNE).fill(0);
-let directionAlea = new Array(NBR_POPBOX_LIGNE * NBR_POPBOX_COLONNE).fill(0);; //tab avec des direction àleatoire
+let directionAlea = new Array(NBR_POPBOX_LIGNE * NBR_POPBOX_COLONNE).fill(0); //tab avec des direction àleatoire
+let vitesseAleaMonstre = new Array(NBR_MONSTRE_LIGNE * NBR_MONSTRE_COLONNE).fill(0);
+let directionAleaMonstre = new Array(NBR_MONSTRE_LIGNE * NBR_MONSTRE_COLONNE).fill(0);
 let listPopbox = []; // tableau contenant les popbox manipuler par l'IA
 let listEnemy = []; // tableau contenant les enemis
 let music = null // music pendant le jeu
@@ -58,16 +63,14 @@ class Game extends Phaser.State {
     updatePlayers(socket, otherPlayers, this.game)
 
     // creer les popbox manipuler par l'IA
-    listPopbox = createIA(this.game);
+    if (localStorage.getItem('stage') !== '2') {
+      listPopbox = createIA(this.game);
+    }
 
     // creer les enemies manipuler par l'IA
-    // listEnemy = createEnemies(this.game);
-    bird = this.game.add.sprite(500, 500, 'bird');
-    bird.animations.add('run');
-    bird.animations.play('run', 14, true);
-
-    // vitesseAlea = ChangeVitesse(listPopbox);
-    // directionAlea = ChangeDirection(listPopbox);
+    if (localStorage.getItem('stage') !== '1') {
+      listEnemy = createEnemies(this.game);
+    }
 
     // CONFIGURATION DU TIMER (à modifier mais juste pour le test)
     //  Create our Timer
@@ -94,7 +97,7 @@ class Game extends Phaser.State {
 
 
     // timer du jeu
-    text = this.game.add.text((WORLD_SIZE.width/2)+ (80*4),50,`${minutesRestant} : ${secondesRestant}`, { font: "100px Courier Black", fill: "#FF8C00" });
+    text = this.game.add.text((WORLD_SIZE.width/2)+ (80*4),50,`0${minutesRestant} : ${(secondesRestant < 10) ? '0' : ''}${secondesRestant}`, { font: "100px Courier Black", fill: "#FF8C00" });
     text.stroke = "#FFFFFF";
     text.strokeThickness = 20;
     //  Apply the shadow to the Stroke and the Fill (this is the default)
@@ -110,13 +113,21 @@ class Game extends Phaser.State {
   }
 
   update () {
+    // Interpolates the players movement et gerer les collisions
+    playerMovementInterpolation(otherPlayers, listPopbox, listEnemy, this.game, socket)
     if (isGameStarted) {
-      // Interpolates the players movement et gerer les collisions
-      playerMovementInterpolation(otherPlayers, listPopbox, this.game, socket)
+      // move obstacles
       const retour = movementIA(listPopbox,this.game,tempsIA,directionAlea,vitesseAlea)
-      tempsIA = false;
       vitesseAlea = retour.vitesseAlea
       directionAlea = retour.directionAlea
+      // move enemies
+      if (localStorage.getItem('stage') !== '1') {
+        const sens = (localStorage.getItem('stage') === '2') ? -1 : 1;
+        const retour2 = movementIAMonstre(listEnemy, this.game, tempsIA, directionAleaMonstre, vitesseAleaMonstre, sens);
+        vitesseAleaMonstre = retour2.vitesseAlea
+        directionAleaMonstre = retour2.directionAlea
+      }
+      tempsIA = false;
     }
     socket.on('notification-temps-ecouler', data =>{
        window.alert(`TEMPS ECOULER !!!\n\n NOMBRE POPCORN ARRIVÉ : ${data.nombre_de_popcorn_arriver} \n NOMBRE DE POPCORN CAPTURÉ : ${data.nombre_de_popcorn_capturer}`);

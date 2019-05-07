@@ -79,12 +79,15 @@ var WORLD_SIZE = exports.WORLD_SIZE = { width: 2024, height: 1000 };
 var ASSETS_URL = exports.ASSETS_URL = '../assets';
 var NBR_POPBOX_COLONNE = exports.NBR_POPBOX_COLONNE = 2;
 var POS_Y_POPBOX = exports.POS_Y_POPBOX = WORLD_SIZE.height / 2 + 200;
-var NBR_POPBOX_LIGNE = exports.NBR_POPBOX_LIGNE = 7;
-var DIST_LIGNE = exports.DIST_LIGNE = 450;
-var DIST_COLONNE = exports.DIST_COLONNE = 300;
+var NBR_POPBOX_LIGNE = exports.NBR_POPBOX_LIGNE = 4;
+var NBR_MONSTRE_LIGNE = exports.NBR_MONSTRE_LIGNE = localStorage.getItem('stage') === '3' ? 1 : 2;
+var NBR_MONSTRE_COLONNE = exports.NBR_MONSTRE_COLONNE = localStorage.getItem('stage') === '3' ? 3 : 2;
+var DIST_LIGNE = exports.DIST_LIGNE = localStorage.getItem('stage') !== '2' ? 600 : 2000;
+var DIST_COLONNE = exports.DIST_COLONNE = 600;
 var LIMIT_TOP = exports.LIMIT_TOP = 200;
 var LIMIT_BOTTOM = exports.LIMIT_BOTTOM = 2000;
 var LIMIT_LEFT = exports.LIMIT_LEFT = 100;
+var LIMIT_RIGHT = exports.LIMIT_RIGHT = 2000;
 
 /***/ }),
 /* 1 */
@@ -272,8 +275,6 @@ var _createEnemies2 = _interopRequireDefault(_createEnemies);
 
 var _movement = __webpack_require__(10);
 
-var _movement2 = _interopRequireDefault(_movement);
-
 var _updatePlayers = __webpack_require__(11);
 
 var _updatePlayers2 = _interopRequireDefault(_updatePlayers);
@@ -305,7 +306,9 @@ var direction = 1;
 var direction2 = -1;
 var vitesse = 0.5;
 var vitesseAlea = new Array(_config.NBR_POPBOX_LIGNE * _config.NBR_POPBOX_COLONNE).fill(0);
-var directionAlea = new Array(_config.NBR_POPBOX_LIGNE * _config.NBR_POPBOX_COLONNE).fill(0);; //tab avec des direction àleatoire
+var directionAlea = new Array(_config.NBR_POPBOX_LIGNE * _config.NBR_POPBOX_COLONNE).fill(0); //tab avec des direction àleatoire
+var vitesseAleaMonstre = new Array(_config.NBR_MONSTRE_LIGNE * _config.NBR_MONSTRE_COLONNE).fill(0);
+var directionAleaMonstre = new Array(_config.NBR_MONSTRE_LIGNE * _config.NBR_MONSTRE_COLONNE).fill(0);
 var listPopbox = []; // tableau contenant les popbox manipuler par l'IA
 var listEnemy = []; // tableau contenant les enemis
 var music = null; // music pendant le jeu
@@ -346,16 +349,14 @@ var Game = function (_Phaser$State) {
       (0, _updatePlayers2.default)(socket, otherPlayers, this.game);
 
       // creer les popbox manipuler par l'IA
-      listPopbox = (0, _create2.default)(this.game);
+      if (localStorage.getItem('stage') !== '2') {
+        listPopbox = (0, _create2.default)(this.game);
+      }
 
       // creer les enemies manipuler par l'IA
-      // listEnemy = createEnemies(this.game);
-      bird = this.game.add.sprite(500, 500, 'bird');
-      bird.animations.add('run');
-      bird.animations.play('run', 14, true);
-
-      // vitesseAlea = ChangeVitesse(listPopbox);
-      // directionAlea = ChangeDirection(listPopbox);
+      if (localStorage.getItem('stage') !== '1') {
+        listEnemy = (0, _createEnemies2.default)(this.game);
+      }
 
       // CONFIGURATION DU TIMER (à modifier mais juste pour le test)
       //  Create our Timer
@@ -378,7 +379,7 @@ var Game = function (_Phaser$State) {
       this.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
 
       // timer du jeu
-      text = this.game.add.text(_config.WORLD_SIZE.width / 2 + 80 * 4, 50, minutesRestant + ' : ' + secondesRestant, { font: "100px Courier Black", fill: "#FF8C00" });
+      text = this.game.add.text(_config.WORLD_SIZE.width / 2 + 80 * 4, 50, '0' + minutesRestant + ' : ' + (secondesRestant < 10 ? '0' : '') + secondesRestant, { font: "100px Courier Black", fill: "#FF8C00" });
       text.stroke = "#FFFFFF";
       text.strokeThickness = 20;
       //  Apply the shadow to the Stroke and the Fill (this is the default)
@@ -395,13 +396,21 @@ var Game = function (_Phaser$State) {
   }, {
     key: 'update',
     value: function update() {
+      // Interpolates the players movement et gerer les collisions
+      (0, _playerMovementInterpolation2.default)(otherPlayers, listPopbox, listEnemy, this.game, socket);
       if (isGameStarted) {
-        // Interpolates the players movement et gerer les collisions
-        (0, _playerMovementInterpolation2.default)(otherPlayers, listPopbox, this.game, socket);
-        var retour = (0, _movement2.default)(listPopbox, this.game, tempsIA, directionAlea, vitesseAlea);
-        tempsIA = false;
+        // move obstacles
+        var retour = (0, _movement.movementIA)(listPopbox, this.game, tempsIA, directionAlea, vitesseAlea);
         vitesseAlea = retour.vitesseAlea;
         directionAlea = retour.directionAlea;
+        // move enemies
+        if (localStorage.getItem('stage') !== '1') {
+          var sens = localStorage.getItem('stage') === '2' ? -1 : 1;
+          var retour2 = (0, _movement.movementIAMonstre)(listEnemy, this.game, tempsIA, directionAleaMonstre, vitesseAleaMonstre, sens);
+          vitesseAleaMonstre = retour2.vitesseAlea;
+          directionAleaMonstre = retour2.directionAlea;
+        }
+        tempsIA = false;
       }
       socket.on('notification-temps-ecouler', function (data) {
         window.alert('TEMPS ECOULER !!!\n\n NOMBRE POPCORN ARRIV\xC9 : ' + data.nombre_de_popcorn_arriver + ' \n NOMBRE DE POPCORN CAPTUR\xC9 : ' + data.nombre_de_popcorn_capturer);
@@ -489,7 +498,7 @@ var fileLoader = function fileLoader(game) {
   game.load.spritesheet('caramba_pop', _.ASSETS_URL + '/sprites/popcorn/caramba_pop.png', 300, 300, 4);
   game.load.spritesheet('pop_vador', _.ASSETS_URL + '/sprites/popcorn/pop_vador.png', 300, 300, 4);
   game.load.spritesheet('gentle_pop', _.ASSETS_URL + '/sprites/popcorn/gentle_pop.png', 300, 300, 4);
-  game.load.spritesheet('pop_blood', _.ASSETS_URL + '/sprites/popcorn/pop_blood.png', 300, 300, 4);
+  game.load.spritesheet('pop_blood', _.ASSETS_URL + '/sprites/popcorn/pop_blood_gang.png', 300, 300, 4);
   game.load.spritesheet('pop_boy', _.ASSETS_URL + '/sprites/popcorn/pop_boy.png', 300, 300, 4);
   game.load.spritesheet('pop_kent', _.ASSETS_URL + '/sprites/popcorn/pop_kent.png', 300, 300, 4);
   game.load.spritesheet('pop_carrey', _.ASSETS_URL + '/sprites/popcorn/pop_carrey.png', 300, 300, 4);
@@ -505,8 +514,11 @@ var fileLoader = function fileLoader(game) {
   // charger les énemies
   game.load.spritesheet('bird', _.ASSETS_URL + '/sprites/enemies/birds_1.png', 183, 168, 14);
 
+  // charger les voitures
+  game.load.image('car', _.ASSETS_URL + '/sprites/enemies/car_2.png');
+
   // charger les musiques selons le level d'avancement
-  game.load.audio('music', [_.ASSETS_URL + '/audio/music_1.mp3', _.ASSETS_URL + '/audio/music_1.ogg']);
+  game.load.audio('music', [_.ASSETS_URL + '/audio/music_' + localStorage.getItem('stage') + '.mp3', _.ASSETS_URL + '/audio/music_' + localStorage.getItem('stage') + '.ogg']);
 };
 
 exports.default = fileLoader;
@@ -614,11 +626,11 @@ var createPopbox = function createPopbox(x, y, game) {
   var sprite = sprite = game.add.sprite(x, y, 'popbox');
   game.physics.enable(sprite, Phaser.Physics.ARCADE);
   game.physics.startSystem(Phaser.Physics.ARCADE);
-  sprite.body.collideWorldBounds = true;
+  sprite.body.collideWorldBounds = false;
   sprite.body.checkCollision.up = true;
-  sprite.body.checkCollision.up = true;
-  sprite.body.checkCollision.up = true;
-  sprite.body.checkCollision.up = true;
+  sprite.body.checkCollision.down = true;
+  sprite.body.checkCollision.right = true;
+  sprite.body.checkCollision.left = true;
   sprite.body.bounce.setTo(1, 1);
   sprite.anchor.setTo(0.5, 0.5);
   sprite.width = 200;
@@ -643,15 +655,7 @@ var createIA = function createIA(game) {
       // ajouter popbox dans la liste des popbox pour pouvoir les manipuler
       listPopbox.push(popbox);
     }
-  }game.add.tween(listPopbox[6].scale).to({ x: 0.07, y: 0.1 }, 2000, Phaser.Easing.Linear.None, true, 0, 2000, true);
-  /*  game.add.tween(listPopbox[2]).to( { x: [ 1100, 1100, 800, 800 ,0],
-                      y: [ POS_Y_POPBOX,  600 ,600,POS_Y_POPBOX,0] }, 4000, "Sine.easeInOut", true, -1, false);*/
-  game.add.tween(listPopbox[7].scale).to({ x: 0.07, y: 0.1 }, 2000, Phaser.Easing.Linear.None, true, 0, 2000, true);
-  listPopbox[4].alpha = 0;
-  listPopbox[3].alpha = 0;
-  game.add.tween(listPopbox[4]).to({ alpha: 1 }, 10000, Phaser.Easing.Linear.None, true, 0, 10000, true);
-  game.add.tween(listPopbox[3]).to({ alpha: 1 }, 10000, Phaser.Easing.Linear.None, true, 0, 10000, true);
-
+  }
   return listPopbox;
 };
 
@@ -673,41 +677,45 @@ var _config = __webpack_require__(0);
 // LES FONCTIONS UTILITAIRES
 
 var create = function create(x, y, game) {
-  var count = 0;
-  var length = 400 / 20;
-  var points = [];
-
-  for (var i = 0; i < 20; i++) {
-    points.push(new Phaser.Point(i * length, 0));
+  var sprite = void 0;
+  if (localStorage.getItem('stage') === '3') {
+    sprite = game.add.sprite(x, y, 'bird');
+    game.physics.enable(sprite, Phaser.Physics.ARCADE);
+    game.physics.startSystem(Phaser.Physics.ARCADE);
+    sprite.body.collideWorldBounds = false;
+    sprite.body.checkCollision.up = true;
+    sprite.body.checkCollision.down = true;
+    sprite.body.checkCollision.left = true;
+    sprite.body.checkCollision.right = true;
+    sprite.body.bounce.setTo(1, 1);
+    sprite.anchor.setTo(0.5, 0.5);
+    sprite.animations.add('run');
+    sprite.animations.play('run', 14, true);
+  } else {
+    sprite = game.add.sprite(x, y, 'car');
+    game.physics.enable(sprite, Phaser.Physics.ARCADE);
+    game.physics.startSystem(Phaser.Physics.ARCADE);
+    sprite.body.collideWorldBounds = false;
+    sprite.body.checkCollision.up = true;
+    sprite.body.checkCollision.down = true;
+    sprite.body.checkCollision.right = true;
+    sprite.body.checkCollision.left = true;
+    sprite.body.bounce.setTo(1, 1);
+    sprite.anchor.setTo(0.5, 0.5);
+    sprite.width = 400;
+    sprite.height = 300;
   }
-  var rope = game.add.rope(x, y, 'snake', null, points);
-  rope.scale.set(0.8);
-  game.physics.enable(rope, Phaser.Physics.ARCADE);
-  game.physics.startSystem(Phaser.Physics.ARCADE);
-  rope.body.collideWorldBounds = true;
-  rope.body.checkCollision.up = true;
-  rope.body.checkCollision.up = true;
-  rope.body.checkCollision.up = true;
-  rope.body.checkCollision.up = true;
-  rope.body.bounce.setTo(1, 1);
-  rope.anchor.setTo(0.5, 0.5);
-  rope.updateAnimation = function () {
-    count += 0.1;
-    for (var _i = 0; _i < this.points.length; _i++) {
-      this.points[_i].y = Math.sin(_i * 0.5 + count) * 20;
-    }
-  };
 
-  return rope;
+  return sprite;
 };
 
 // LA FONCTION PRINCIPALE
 
 var createEnemies = function createEnemies(game) {
   var listEnemy = [];
-  // creer les popbox par colonne et par ligne
-  for (var i = 0; i < _config.NBR_POPBOX_LIGNE; i++) {
-    for (var j = 0; j < _config.NBR_POPBOX_COLONNE; j++) {
+  // creer les enemies par colonne et par ligne
+  for (var i = 0; i < _config.NBR_MONSTRE_LIGNE; i++) {
+    for (var j = 0; j < _config.NBR_MONSTRE_COLONNE; j++) {
       // calculer positions popbox
       var posX = _config.DIST_LIGNE + _config.DIST_LIGNE * i;
       var posY = _config.POS_Y_POPBOX + _config.DIST_COLONNE * j;
@@ -732,6 +740,7 @@ exports.default = createEnemies;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.movementIAMonstre = exports.movementIA = undefined;
 
 var _config = __webpack_require__(0);
 
@@ -740,44 +749,68 @@ var movementIA = function movementIA(listPopbox, game, tempsIA, directionAlea, v
   //console.log(tempsIA)
   if (tempsIA == true) {
     directionAlea = ChangeDirection(listPopbox); // change la direction
-    //console.log(directionAlea)
-    //let i = ChangeTaille(listPopbox)
-    //listPopbox[i].width +=100
-    //listPopbox[i].height +=100
-    // console.log(listPopbox[0])
     vitesseAlea = ChangeVitesse(listPopbox);
-    //console.log(vitesseAlea)
   }
 
-  for (var i = 1; i < listPopbox.length; i++) {
+  for (var i = 0; i < listPopbox.length; i++) {
     if (i % 2 === 0) {
       // pair (correspond aux popbox sur la rangé supérieur)
       if (listPopbox[i].position.y <= _config.LIMIT_TOP) {
         directionAlea[i] = 1;
-        listPopbox[i].position.y += directionAlea[i] * vitesseAlea[i];
       }
       if (listPopbox[i].position.y >= _config.LIMIT_BOTTOM / 2 - 40) {
         directionAlea[i] = -1;
-        listPopbox[i].position.y += directionAlea[i] * vitesseAlea[i];
       }
     } else {
       // impair (correspond aux popbox sur la rangé inférieur)
       if (listPopbox[i].position.y <= _config.LIMIT_BOTTOM / 2 - 40) {
         directionAlea[i] = 1;
-        listPopbox[i].position.y += directionAlea[i] * vitesseAlea[i];
       }
       if (listPopbox[i].position.y >= _config.LIMIT_BOTTOM) {
         directionAlea[i] = -1;
-        listPopbox[i].position.y += directionAlea[i] * vitesseAlea[i];
       }
     }
-
     listPopbox[i].position.y += directionAlea[i] * vitesseAlea[i];
-    // movementVoitureIA(listPopbox)
-    movementZigZagIA(listPopbox);
   }
 
-  //listPopbox[0].position.y += -1 * 0.5
+  return { directionAlea: directionAlea, vitesseAlea: vitesseAlea };
+};
+
+var movementIAMonstre = function movementIAMonstre(listPopbox, game, tempsIA, directionAlea, vitesseAlea) {
+  var sens = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : 1;
+
+
+  //console.log(tempsIA)
+  if (tempsIA == true) {
+    directionAlea = ChangeDirection(listPopbox); // change la direction
+    vitesseAlea = ChangeVitesse(listPopbox);
+  }
+
+  for (var i = 0; i < listPopbox.length; i++) {
+    if (i % 2 === 0) {
+      // pair (correspond aux popbox sur la rangé supérieur)
+      if (listPopbox[i].position.y <= _config.LIMIT_TOP) {
+        directionAlea[i] = 1;
+      }
+      if (listPopbox[i].position.y >= _config.LIMIT_BOTTOM / 2 - 40) {
+        directionAlea[i] = -1;
+      }
+    } else {
+      // impair (correspond aux popbox sur la rangé inférieur)
+      if (listPopbox[i].position.y <= _config.LIMIT_BOTTOM / 2 - 40) {
+        directionAlea[i] = 1;
+      }
+      if (listPopbox[i].position.y >= _config.LIMIT_BOTTOM) {
+        directionAlea[i] = -1;
+      }
+    }
+    if (sens > 0) {
+      movementZigZagIA(listPopbox[i], vitesseAlea[i]);
+    } else {
+      movementZigZagIARevert(listPopbox[i], vitesseAlea[i]);
+    }
+    listPopbox[i].position.y += directionAlea[i] * vitesseAlea[i];
+  }
 
   return { directionAlea: directionAlea, vitesseAlea: vitesseAlea };
 };
@@ -806,11 +839,7 @@ var ChangeVitesse = function ChangeVitesse(listPopbox) {
   var random = void 0;
   for (var i = 0; i < listPopbox.length; i++) {
 
-<<<<<<< HEAD
     random = Math.random() * (20.0 - 15.0) + 15.0; // vitesse comprise entre 1.5 et 5.0
-=======
-    random = Math.random() * (10.0 - 5.0) + 5.0; // vitesse comprise entre 10.0 et 5.0
->>>>>>> 8ff4656d47d33502f95ad7527d2620bd3dda6194
     vitesseAlea[i] = random;
   }
   return vitesseAlea;
@@ -833,57 +862,32 @@ var movementVoitureIA = function movementVoitureIA(listPopbox) {
       listPopbox[0].position.x = _config.POS_Y_POPBOX;
     }
   }listPopbox[0].position.x += 1 * 2.0;
-  console.log(listPopbox[0].position.x);
 };
 
-var movementZigZagIA = function movementZigZagIA(listPopbox) {
-
-  var direction = 1;
-  var random = Math.floor(Math.random() * 3);
-
-  if (listPopbox[0].position.x == 2100) {
-    if (random == 0) {
-
-      listPopbox[0].position.y = _config.POS_Y_POPBOX;
-      listPopbox[0].position.x = _config.POS_Y_POPBOX;
-    } else if (random == 1) {
-      listPopbox[0].position.y = _config.POS_Y_POPBOX + _config.DIST_COLONNE;
-      listPopbox[0].position.x = _config.POS_Y_POPBOX;
-    } else {
-      listPopbox[0].position.y = _config.POS_Y_POPBOX + _config.DIST_COLONNE * 2;
-      listPopbox[0].position.x = _config.POS_Y_POPBOX;
-    }
+var movementZigZagIA = function movementZigZagIA(popbox, vitesseAlea) {
+  // remettre le popbox à un position initial aléatoire lorsqu'il dépase la
+  // limite à droite de l'écran
+  var j = Math.floor(Math.random() * _config.NBR_POPBOX_COLONNE);
+  if (popbox.position.x >= _config.WINDOW_WIDTH) {
+    popbox.position.x = -200;
+    popbox.position.y = _config.POS_Y_POPBOX + _config.DIST_COLONNE * j;
   }
-  //if( listPopbox[0].position.x < )
-
-  if (listPopbox[0].position.x >= 650) {
-    direction = 1;
-  }
-
-  if (listPopbox[0].position.x >= 800) {
-    direction = -1;
-  }
-  if (listPopbox[0].position.x >= 1100) {
-    direction = 1;
-  }
-
-  if (listPopbox[0].position.x >= 1200) {
-    direction = -1;
-  }
-
-  if (listPopbox[0].position.y <= _config.LIMIT_TOP) {
-    direction = 1;
-  }
-  if (listPopbox[0].position.y >= _config.LIMIT_BOTTOM) {
-    direction = -1;
-  }
-
-  listPopbox[0].position.x += 1 * 0.5;
-  listPopbox[0].position.y += direction * 0.5;
-  console.log(listPopbox[0].position.x);
+  popbox.position.x += 1 * vitesseAlea;
 };
 
-exports.default = movementIA;
+var movementZigZagIARevert = function movementZigZagIARevert(popbox, vitesseAlea) {
+  // remettre le popbox à un position initial aléatoire lorsqu'il dépase la
+  // limite à gauche de l'écran
+  var j = Math.floor(Math.random() * _config.NBR_POPBOX_COLONNE);
+  if (popbox.position.x < 0) {
+    popbox.position.x = _config.WINDOW_WIDTH + 200;
+    popbox.position.y = _config.POS_Y_POPBOX + _config.DIST_COLONNE * j;
+  }
+  popbox.position.x += -1 * vitesseAlea;
+};
+
+exports.movementIA = movementIA;
+exports.movementIAMonstre = movementIAMonstre;
 
 /***/ }),
 /* 11 */
@@ -969,7 +973,7 @@ exports.default = updatePlayers;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-var playerMovementInterpolation = function playerMovementInterpolation(otherPlayers, listPopbox, game, socket) {
+var playerMovementInterpolation = function playerMovementInterpolation(otherPlayers, listPopbox, listEnemy, game, socket) {
   var _loop = function _loop(id) {
     var player = otherPlayers[id];
     if (player.target_x !== undefined) {
@@ -995,6 +999,21 @@ var playerMovementInterpolation = function playerMovementInterpolation(otherPlay
       // gerer collision avec les popbox IA
       for (var popboxIA in listPopbox) {
         game.physics.arcade.collide(player.sprite, listPopbox[popboxIA], function (player1, player2) {
+          //if (player.type === 'popcorn') {
+          player.sprite.destroy();
+          player.playerName.destroy();
+          player.speedText.destroy();
+          // ask the server to delete the popcorn that collided with a popbox
+          player.emitPlayerDeletion(socket);
+          delete otherPlayers[id];
+          console.log('collision');
+          //}
+          player.emitNombreCapture(socket);
+        });
+      }
+      // gerer collision avec les enemies
+      for (var enemyIA in listEnemy) {
+        game.physics.arcade.collide(player.sprite, listEnemy[enemyIA], function (player1, player2) {
           //if (player.type === 'popcorn') {
           player.sprite.destroy();
           player.playerName.destroy();

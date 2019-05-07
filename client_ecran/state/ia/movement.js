@@ -4,6 +4,7 @@ import {
   LIMIT_TOP,
   LIMIT_LEFT,
   LIMIT_BOTTOM,
+  LIMIT_RIGHT,
   NBR_POPBOX_COLONNE,
   POS_Y_POPBOX,
   NBR_POPBOX_LIGNE,
@@ -17,46 +18,67 @@ const movementIA = (listPopbox,game,tempsIA,directionAlea,vitesseAlea) => {
   //console.log(tempsIA)
   if(tempsIA == true){
     directionAlea = ChangeDirection(listPopbox) // change la direction
-    //console.log(directionAlea)
-	//let i = ChangeTaille(listPopbox)
-	//listPopbox[i].width +=100
-    //listPopbox[i].height +=100
-   // console.log(listPopbox[0])
     vitesseAlea = ChangeVitesse(listPopbox)
-    //console.log(vitesseAlea)
   }
 
-  for( let i = 1; i < listPopbox.length; i++){
+  for( let i = 0; i < listPopbox.length; i++){
     if (i % 2 === 0) { // pair (correspond aux popbox sur la rangé supérieur)
       if(listPopbox[i].position.y <= LIMIT_TOP ){
         directionAlea[i] = 1
-        listPopbox[i].position.y += directionAlea[i] * vitesseAlea[i]
       }
       if(listPopbox[i].position.y >= (LIMIT_BOTTOM / 2) - 40){
         directionAlea[i] = -1
-        listPopbox[i].position.y += directionAlea[i] * vitesseAlea[i]
       }
     } else { // impair (correspond aux popbox sur la rangé inférieur)
       if(listPopbox[i].position.y <= (LIMIT_BOTTOM / 2) - 40){
         directionAlea[i] = 1
-        listPopbox[i].position.y += directionAlea[i] * vitesseAlea[i]
       }
       if(listPopbox[i].position.y >= LIMIT_BOTTOM){
         directionAlea[i] = -1
-        listPopbox[i].position.y += directionAlea[i] * vitesseAlea[i]
       }
     }
-
     listPopbox[i].position.y += directionAlea[i] * vitesseAlea[i]
-   // movementVoitureIA(listPopbox)
-      movementZigZagIA(listPopbox)
   }
-
-
-  //listPopbox[0].position.y += -1 * 0.5
 
   return {directionAlea,vitesseAlea}
 }
+
+const movementIAMonstre = (listPopbox, game, tempsIA, directionAlea, vitesseAlea, sens = 1) => {
+
+
+  //console.log(tempsIA)
+  if(tempsIA == true){
+    directionAlea = ChangeDirection(listPopbox) // change la direction
+    vitesseAlea = ChangeVitesse(listPopbox)
+  }
+
+  for( let i = 0; i < listPopbox.length; i++){
+    if (i % 2 === 0) { // pair (correspond aux popbox sur la rangé supérieur)
+      if(listPopbox[i].position.y <= LIMIT_TOP ){
+        directionAlea[i] = 1
+      }
+      if(listPopbox[i].position.y >= (LIMIT_BOTTOM / 2) - 40){
+        directionAlea[i] = -1
+      }
+    } else { // impair (correspond aux popbox sur la rangé inférieur)
+      if(listPopbox[i].position.y <= (LIMIT_BOTTOM / 2) - 40){
+        directionAlea[i] = 1
+      }
+      if(listPopbox[i].position.y >= LIMIT_BOTTOM){
+        directionAlea[i] = -1
+      }
+    }
+    if (sens > 0) {
+      movementZigZagIA(listPopbox[i], vitesseAlea[i]);
+    } else {
+      movementZigZagIARevert(listPopbox[i], vitesseAlea[i]);
+    }
+    listPopbox[i].position.y += directionAlea[i] * vitesseAlea[i]
+  }
+
+  return {directionAlea,vitesseAlea}
+}
+
 
 const ChangeDirection=(listPopbox) => {
   const directionAlea=[]
@@ -93,84 +115,48 @@ const ChangeVitesse=(listPopbox) =>{
 
 const movementVoitureIA=(listPopbox) => {
 
-		let random = Math.floor(Math.random()*3);
+  let random = Math.floor(Math.random()*3);
 
-	    if(listPopbox[0].position.x == 2100){
-	    	if(random == 0){
+  if(listPopbox[0].position.x == 2100){
+    if(random == 0){
 
-	    	 listPopbox[0].position.y = POS_Y_POPBOX
-	    	 listPopbox[0].position.x = POS_Y_POPBOX
+      listPopbox[0].position.y = POS_Y_POPBOX
+      listPopbox[0].position.x = POS_Y_POPBOX
 
-	    	}
-	    	else if(random == 1){
-	    	 listPopbox[0].position.y = POS_Y_POPBOX + DIST_COLONNE
-	    	 listPopbox[0].position.x = POS_Y_POPBOX
-	    	}else{
-	    	 listPopbox[0].position.y = POS_Y_POPBOX + DIST_COLONNE *2
-	    	 listPopbox[0].position.x = POS_Y_POPBOX
-	    	}
+    }
+    else if(random == 1){
+      listPopbox[0].position.y = POS_Y_POPBOX + DIST_COLONNE
+      listPopbox[0].position.x = POS_Y_POPBOX
+    }else{
+      listPopbox[0].position.y = POS_Y_POPBOX + DIST_COLONNE *2
+      listPopbox[0].position.x = POS_Y_POPBOX
+    }
 
-	    }listPopbox[0].position.x += 1 *2.0
-	    console.log(listPopbox[0].position.x )
-
-
+  }listPopbox[0].position.x += 1 *2.0
 }
 
 
-const movementZigZagIA=(listPopbox) => {
-
-	let direction = 1
-	let random = Math.floor(Math.random()*3);
-
-	    if(listPopbox[0].position.x == 2100){
-	    	if(random == 0){
-
-	    	listPopbox[0].position.y = POS_Y_POPBOX
-	    	 listPopbox[0].position.x = POS_Y_POPBOX
-
-	    	}
-	    	else if(random == 1){
-	    	 listPopbox[0].position.y = POS_Y_POPBOX + DIST_COLONNE
-	    	 listPopbox[0].position.x = POS_Y_POPBOX
-
-
-
-	    	}else{
-	    	 listPopbox[0].position.y = POS_Y_POPBOX + DIST_COLONNE *2
-	    	 listPopbox[0].position.x = POS_Y_POPBOX
-
-	    	}
-	    }
-	    //if( listPopbox[0].position.x < )
-
-	    if(listPopbox[0].position.x >= 650){
-	    	 	  direction = 1
-	    		}
-
-	    if(listPopbox[0].position.x >= 800){
-	    	 	  direction = -1
-	    		}
-	    if(listPopbox[0].position.x >= 1100){
-	    	 	  direction = 1
-	    		}
-
-	    if(listPopbox[0].position.x >= 1200){
-	    	 	  direction = -1
-	    		}
-
-	    if(listPopbox[0].position.y <= LIMIT_TOP){
-	    	 	  direction = 1
-	    		}
-	    if(listPopbox[0].position.y >= LIMIT_BOTTOM){
-	    	 	  direction = -1
-	    		}
-
-	    listPopbox[0].position.x += 1 *0.5
-	    listPopbox[0].position.y += direction *0.5
-	    console.log(listPopbox[0].position.x )
-
-
+const movementZigZagIA=(popbox, vitesseAlea) => {
+  // remettre le popbox à un position initial aléatoire lorsqu'il dépase la
+  // limite à droite de l'écran
+  const j = Math.floor(Math.random() * NBR_POPBOX_COLONNE);
+  if(popbox.position.x >= WINDOW_WIDTH){
+    popbox.position.x = -200;
+    popbox.position.y = POS_Y_POPBOX + DIST_COLONNE * j;
+  }
+  popbox.position.x += 1 * vitesseAlea;
 }
 
 
-export default movementIA
+const movementZigZagIARevert = (popbox, vitesseAlea) => {
+  // remettre le popbox à un position initial aléatoire lorsqu'il dépase la
+  // limite à gauche de l'écran
+  const j = Math.floor(Math.random() * NBR_POPBOX_COLONNE);
+  if(popbox.position.x < 0){
+    popbox.position.x = WINDOW_WIDTH + 200;
+    popbox.position.y = POS_Y_POPBOX + DIST_COLONNE * j;
+  }
+  popbox.position.x += -1 * vitesseAlea;
+}
+
+export { movementIA, movementIAMonstre }
