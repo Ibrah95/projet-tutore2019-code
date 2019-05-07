@@ -6,7 +6,7 @@ import player from './player'
 import newPlayer from './sockets/newPlayer'
 import { WINDOW_HEIGHT,WINDOW_WIDTH } from './../config'
 
-const SERVER_IP = /*'localhost:8080/'*/ '192.168.1.2:8080/'
+const SERVER_IP = 'localhost:8080/' //'192.168.1.2:8080/'
 let socket = null
 let otherPlayers = {}
 let bmd = null
