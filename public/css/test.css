@@ -1,15 +1,4 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/police/faster-fontfacekit/web fonts/faster_regular_macroman/stylesheet.css" type="text/css" charset="utf-8" />
-    <link rel="stylesheet" href="/police/baloo-fontfacekit/web fonts/baloo_regular_macroman/stylesheet.css" type="text/css" charset="utf-8" />
-
-    <title>ECRAN - POP'UP GAME</title>
-
-    <style>
-    	/*<link rel="stylesheet" href="../public/css/admin.css">*/
+ <style>
 
     	* {
  			box-sizing: border-box;
@@ -28,7 +17,7 @@
 
 		
       	body {	
-			background-image:url(/img/bg.png);
+			background-image:url(../public/img/bg.png);
 			background-position:center center;
 		}
 		
@@ -178,7 +167,7 @@
 		  .col-3 {width: 25%;}
 		  .col-4 {width: 33.33%;}
 		  .col-5 {width: 41.66%;}
-		  .col-6 {width: 60%;}
+		  .col-6 {width: 50%;}
 		  .col-7 {width: 58.33%;}
 		  .col-8 {width: 66.66%;}
 		  .col-9 {width: 75%;}
@@ -319,53 +308,3 @@
 
 
     </style>
-  </head>
-
-
-  <body>
-
-    <div class="header">
-    		<h3>POP'UP GAME</h3>
-    </div>
-
-    <div class="row">
-    	 
-  		<div class="col-6 col-s-9">
-  			<center>
-  				<img class="logo" src="/img/logo.png"/ width="200px" height="200px"/>
-  			</center>
-  			<p>
-    			Cette page est accessible uniquement par les administrateurs du jeu.
-    		</p>
-
-
-    		<fieldset>
-             	<legend><h2>CONFIGURATION</h2></legend>
-
-			    <form action="/ecran_inscrit" method="get" id="config-form">
-				    <div>
-				        <label>Nombre de vagues : <input type="number" name="nbr_vague" min="1" max="8" id="nbr-vague" /></label>
-				    </div>
-
-				    <div>
-				        <label>Nombre de joueurs par vague : <input type="number" name="nbr_joueur_par_vague" min="2" max="25" id="nbr-joueur-vague" /></label>
-				    </div>
-
-
-				    <div>
-						<input class="bouton bouton1" type="submit" value="LANCER LE JEU" />
-					</div>
-			    </form>
-			</fieldset>
-
-			
-			
-					
-		</div>
-    </div>
-
-  
-    <script src="/js/admin.js"></script>
-
-  </body>
-</html>
