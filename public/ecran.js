@@ -294,7 +294,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var SERVER_IP = '192.168.1.2:8080/'; //'localhost:8080/'
 var socket = null;
 var otherPlayers = {};
-var tempsRestantEnSeconde = 3 * 60;
+var tempsRestantEnSeconde = 10; // 3 * 60;
 var minutesRestant = Number.parseInt(tempsRestantEnSeconde / 60);
 var secondesRestant = Number.parseInt(tempsRestantEnSeconde % 60);
 var text = null;
@@ -493,7 +493,6 @@ function updateCounter() {
   minutesRestant = Number.parseInt(tempsRestantEnSeconde / 60);
   secondesRestant = Number.parseInt(tempsRestantEnSeconde % 60);
 }
-
 function updateVagueCourant(vague) {
   var req = new XMLHttpRequest();
   req.onreadystatechange = function (event) {
@@ -893,6 +892,7 @@ var ChangeVitesse = function ChangeVitesse(listPopbox) {
   for (var i = 0; i < listPopbox.length; i++) {
 
     random = Math.random() * (10.0 - 5.0) + 5.0; // vitesse comprise entre 1.5 et 5.0
+
     vitesseAlea[i] = random;
   }
   return vitesseAlea;

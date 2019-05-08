@@ -20,7 +20,7 @@ import {
 const SERVER_IP = '192.168.1.2:8080/' //'localhost:8080/'
 let socket = null
 let otherPlayers = {}
-let tempsRestantEnSeconde = 3 * 60;
+let tempsRestantEnSeconde = 10 // 3 * 60;
 let minutesRestant = Number.parseInt(tempsRestantEnSeconde / 60);
 let secondesRestant = Number.parseInt(tempsRestantEnSeconde % 60);
 let text = null;
@@ -232,8 +232,37 @@ if (!tempsIA) {
     tempsIA = true;
   }
 
+function updateVagueCourant(vague) {
+  const req = new XMLHttpRequest();
+  req.onreadystatechange = function(event) {
+      // XMLHttpRequest.DONE === 4
+      if (this.readyState === XMLHttpRequest.DONE) {
+          if (this.status === 200) {
+          }
+      }
+  };
+  req.open('PUT', `/update_vague_courant?vague=${vague}`, true);
+  req.send(null);
 }
 
+function updateCounterIA() {
+
+if (!tempsIA) {
+
+  if(tempsrestantIA > 0){
+     tempsrestantIA--;
+
+  } else{ // quand le timer arrive à zero il reprend à 5, enlever le else pour garder time à 0
+    // tempsRestantEnSeconde = 5 * 60;
+    tempsrestantIA = 2;
+    tempsIA = true;
+  }
+
+}
+
+
+
+}
 
 
 }
