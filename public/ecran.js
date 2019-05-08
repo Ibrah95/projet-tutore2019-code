@@ -298,6 +298,7 @@ var tempsRestantEnSeconde = 10; // 3 * 60;
 var minutesRestant = Number.parseInt(tempsRestantEnSeconde / 60);
 var secondesRestant = Number.parseInt(tempsRestantEnSeconde % 60);
 var text = null;
+var annonce = null;
 var timerlogo = null;
 var tempsEcouler = false;
 
@@ -382,7 +383,6 @@ var Game = function (_Phaser$State) {
       //  It won't start automatically, allowing you to hook it to button events and the like.
       timer.start();
 
-
       // recuperer le nombre de joeur inscrit par vague
       for (var i = 0; i < NBR_VAGUE; i++) {
         nbrJoueurParVague[i] = Number.parseInt(localStorage.getItem('nbr_joueur_vague_' + (i + 1)));
@@ -391,7 +391,6 @@ var Game = function (_Phaser$State) {
       var timerIA = this.game.time.create(false);
       timerIA.loop(1000, updateCounterIA, this.game);
       timerIA.start();
-
 
       // Configures the game camera
       this.game.camera.x = width / 2;
@@ -418,9 +417,9 @@ var Game = function (_Phaser$State) {
   }, {
     key: 'update',
     value: function update() {
-      // Interpolates the players movement et gerer les collisions
-      (0, _playerMovementInterpolation2.default)(otherPlayers, listPopbox, listEnemy, this.game, socket);
-      if (isGameStarted) {
+      if (isGameStarted && !attenteJoueurs) {
+        // Interpolates the players movement et gerer les collisions
+        (0, _playerMovementInterpolation2.default)(otherPlayers, listPopbox, listEnemy, this.game, socket);
         // move obstacles
         var retour = (0, _movement.movementIA)(listPopbox, this.game, tempsIA, directionAlea, vitesseAlea);
         vitesseAlea = retour.vitesseAlea;
@@ -444,6 +443,13 @@ var Game = function (_Phaser$State) {
       // affichage TIMER
       //this.game.debug.text(`TIMER :  ${minutesRestant} min ${secondesRestant} s` , 32, 64);
       text.setText('0' + minutesRestant + ' : ' + (secondesRestant < 10 ? '0' : '') + secondesRestant);
+
+      // annonce depart du jeu
+      annonce = this.game.add.text(_config.WORLD_SIZE.width / 2 + 200 * 2, _config.WORLD_SIZE.height / 2, 'G O', { font: "400px Courier Black", fill: "#FF8C00" });
+      annonce.stroke = "#FFFFFF";
+      annonce.strokeThickness = 50;
+      //  Apply the shadow to the Stroke and the Fill (this is the default)
+      annonce.setShadow(2, 2, "#FFFFFF", 2, true, true);
     }
   }]);
 
@@ -496,7 +502,6 @@ function updateCounter() {
   secondesRestant = Number.parseInt(tempsRestantEnSeconde % 60);
 }
 
-
 function updateVagueCourant(vague) {
   var req = new XMLHttpRequest();
   req.onreadystatechange = function (event) {
@@ -507,6 +512,7 @@ function updateVagueCourant(vague) {
   };
   req.open('PUT', '/update_vague_courant?vague=' + vague, true);
   req.send(null);
+}
 
 function updateCounterIA() {
 

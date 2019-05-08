@@ -22,6 +22,7 @@ let tempsRestantEnSeconde = 10 // 3 * 60;
 let minutesRestant = Number.parseInt(tempsRestantEnSeconde / 60);
 let secondesRestant = Number.parseInt(tempsRestantEnSeconde % 60);
 let text = null;
+let annonce = null;
 let timerlogo = null;
 let tempsEcouler = false;
 
@@ -131,9 +132,10 @@ class Game extends Phaser.State {
   }
 
   update () {
-    // Interpolates the players movement et gerer les collisions
-    playerMovementInterpolation(otherPlayers, listPopbox, listEnemy, this.game, socket)
-    if (isGameStarted) {
+    if (isGameStarted  && !
+      attenteJoueurs) {
+      // Interpolates the players movement et gerer les collisions
+      playerMovementInterpolation(otherPlayers, listPopbox, listEnemy, this.game, socket)
       // move obstacles
       const retour = movementIA(listPopbox,this.game,tempsIA,directionAlea,vitesseAlea)
       vitesseAlea = retour.vitesseAlea
@@ -156,6 +158,13 @@ class Game extends Phaser.State {
     // affichage TIMER
     //this.game.debug.text(`TIMER :  ${minutesRestant} min ${secondesRestant} s` , 32, 64);
      text.setText(`0${minutesRestant} : ${(secondesRestant < 10) ? '0' : ''}${secondesRestant}`);
+
+     // annonce depart du jeu
+     annonce = this.game.add.text((WORLD_SIZE.width/2) + (200 * 2), (WORLD_SIZE.height/2),`G O`, { font: "400px Courier Black", fill: "#FF8C00" });
+     annonce.stroke = "#FFFFFF";
+     annonce.strokeThickness = 50;
+     //  Apply the shadow to the Stroke and the Fill (this is the default)
+     annonce.setShadow(2, 2, "#FFFFFF", 2, true, true);
   }
 
 }
