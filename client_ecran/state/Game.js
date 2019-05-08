@@ -15,7 +15,9 @@ import {
   NBR_MONSTRE_COLONNE
 } from '../config'
 
-const SERVER_IP = 'localhost:8000/'
+
+
+const SERVER_IP = '192.168.1.2:8080/' //'localhost:8080/'
 let socket = null
 let otherPlayers = {}
 let tempsRestantEnSeconde = 10 // 3 * 60;
@@ -102,9 +104,9 @@ class Game extends Phaser.State {
       nbrJoueurParVague[i] = Number.parseInt(localStorage.getItem(`nbr_joueur_vague_${i+1}`));
     }
 
-   const timerIA = this.game.time.create(false);
-   timerIA.loop(1000,updateCounterIA, this.game);
-   timerIA.start();
+    const timerIA = this.game.time.create(false);
+    timerIA.loop(1000,updateCounterIA, this.game);
+    timerIA.start();
 
 
     // Configures the game camera
@@ -134,117 +136,146 @@ class Game extends Phaser.State {
   update () {
     if (isGameStarted  && !
       attenteJoueurs) {
-      // Interpolates the players movement et gerer les collisions
-      playerMovementInterpolation(otherPlayers, listPopbox, listEnemy, this.game, socket)
-      // move obstacles
-      const retour = movementIA(listPopbox,this.game,tempsIA,directionAlea,vitesseAlea)
-      vitesseAlea = retour.vitesseAlea
-      directionAlea = retour.directionAlea
-      // move enemies
-      if (localStorage.getItem('stage') !== '1') {
-        const sens = (localStorage.getItem('stage') === '2') ? -1 : 1;
-        const retour2 = movementIAMonstre(listEnemy, this.game, tempsIA, directionAleaMonstre, vitesseAleaMonstre, sens);
-        vitesseAleaMonstre = retour2.vitesseAlea
-        directionAleaMonstre = retour2.directionAlea
+        // Interpolates the players movement et gerer les collisions
+        playerMovementInterpolation(otherPlayers, listPopbox, listEnemy, this.game, socket)
+        // move obstacles
+        const retour = movementIA(listPopbox,this.game,tempsIA,directionAlea,vitesseAlea)
+        vitesseAlea = retour.vitesseAlea
+        directionAlea = retour.directionAlea
+        // move enemies
+        if (localStorage.getItem('stage') !== '1') {
+          const sens = (localStorage.getItem('stage') === '2') ? -1 : 1;
+          const retour2 = movementIAMonstre(listEnemy, this.game, tempsIA, directionAleaMonstre, vitesseAleaMonstre, sens);
+          vitesseAleaMonstre = retour2.vitesseAlea
+          directionAleaMonstre = retour2.directionAlea
+        }
+        tempsIA = false;
       }
-      tempsIA = false;
+      socket.on('notification-temps-ecouler', data =>{
+        window.alert(`TEMPS ECOULER !!!\n\n NOMBRE POPCORN ARRIVÉ : ${data.nombre_de_popcorn_arriver} \n NOMBRE DE POPCORN CAPTURÉ : ${data.nombre_de_popcorn_capturer}`);
+      })
     }
-    socket.on('notification-temps-ecouler', data =>{
-       window.alert(`TEMPS ECOULER !!!\n\n NOMBRE POPCORN ARRIVÉ : ${data.nombre_de_popcorn_arriver} \n NOMBRE DE POPCORN CAPTURÉ : ${data.nombre_de_popcorn_capturer}`);
-    })
+
+    render () {
+      // affichage TIMER
+      //this.game.debug.text(`TIMER :  ${minutesRestant} min ${secondesRestant} s` , 32, 64);
+      text.setText(`0${minutesRestant} : ${(secondesRestant < 10) ? '0' : ''}${secondesRestant}`);
+
+      // annonce depart du jeu
+      annonce = this.game.add.text((WORLD_SIZE.width/2) + (200 * 2), (WORLD_SIZE.height/2),`G O`, { font: "400px Courier Black", fill: "#FF8C00" });
+      annonce.stroke = "#FFFFFF";
+      annonce.strokeThickness = 50;
+      //  Apply the shadow to the Stroke and the Fill (this is the default)
+      annonce.setShadow(2, 2, "#FFFFFF", 2, true, true);
+    }
+
   }
 
-  render () {
-    // affichage TIMER
-    //this.game.debug.text(`TIMER :  ${minutesRestant} min ${secondesRestant} s` , 32, 64);
-     text.setText(`0${minutesRestant} : ${(secondesRestant < 10) ? '0' : ''}${secondesRestant}`);
-
-     // annonce depart du jeu
-     annonce = this.game.add.text((WORLD_SIZE.width/2) + (200 * 2), (WORLD_SIZE.height/2),`G O`, { font: "400px Courier Black", fill: "#FF8C00" });
-     annonce.stroke = "#FFFFFF";
-     annonce.strokeThickness = 50;
-     //  Apply the shadow to the Stroke and the Fill (this is the default)
-     annonce.setShadow(2, 2, "#FFFFFF", 2, true, true);
+  // start game when music plays
+  function start() {
+    isGameStarted = true;
+    music.play();
   }
 
-}
+  function updateCounter() {
 
-// start game when music plays
-function start() {
-  isGameStarted = true;
-  music.play();
-}
-
-function updateCounter() {
-
-if (!tempsEcouler && isGameStarted) {
-  if(tempsRestantEnSeconde > 0){
-    if (attenteJoueurs === false) {
-	     tempsRestantEnSeconde--;
-    } else {
-      updateVagueCourant(localStorage.getItem('vague_courant'));
-      // compter le nombre de joueur afficher sur l'écran
-      const nbrJoueurAfficher = Object.keys(otherPlayers).length;
-      // si tout les joueurs inscrits dans la vague sont sur l'écran
-      if (nbrJoueurParVague[vagueCourant - 1] ===  nbrJoueurAfficher) {
-        attenteJoueurs = false;
+    if (!tempsEcouler && isGameStarted) {
+      if(tempsRestantEnSeconde > 0){
+        if (attenteJoueurs === false) {
+          tempsRestantEnSeconde--;
+        } else {
+          updateVagueCourant(localStorage.getItem('vague_courant'));
+          // compter le nombre de joueur afficher sur l'écran
+          const nbrJoueurAfficher = Object.keys(otherPlayers).length;
+          // si tout les joueurs inscrits dans la vague sont sur l'écran
+          if (nbrJoueurParVague[vagueCourant - 1] ===  nbrJoueurAfficher) {
+            attenteJoueurs = false;
+          }
+        }
+      } else { // quand le timer arrive à zero
+        if (vagueCourant < NBR_VAGUE) {
+          vagueCourant += 1;
+          // temps pour une vague est achever donc
+          // enregistrer la vague courant dans la session
+          localStorage.setItem('vague_courant', vagueCourant);
+          // notifier les joueurs en attentes de la vague en cours
+          // notifierJoueursEnAttentes();
+          // rediriger la page vers page de chargement vague
+          window.location.replace(`/chargement_vague?vague=${vagueCourant}`);
+        } else {
+          // rediriger la page vers la page de classement
+          tempsEcouler = true;
+          socket.emit('temps-ecouler', true);
+        }
       }
     }
-  } else { // quand le timer arrive à zero
-    if (vagueCourant < NBR_VAGUE) {
-      vagueCourant += 1;
-      // temps pour une vague est achever donc
-      // enregistrer la vague courant dans la session
-      localStorage.setItem('vague_courant', vagueCourant);
-      // notifier les joueurs en attentes de la vague en cours
-      // notifierJoueursEnAttentes();
-      // rediriger la page vers page de chargement vague
-      window.location.replace(`/chargement_vague?vague=${vagueCourant}`);
-    } else {
-      // rediriger la page vers la page de classement
-      tempsEcouler = true;
-      socket.emit('temps-ecouler', true);
-    }
+
+    minutesRestant = Number.parseInt(tempsRestantEnSeconde / 60);
+    secondesRestant = Number.parseInt(tempsRestantEnSeconde % 60);
   }
-}
-
-minutesRestant = Number.parseInt(tempsRestantEnSeconde / 60);
-secondesRestant = Number.parseInt(tempsRestantEnSeconde % 60);
-}
 
 
-function updateVagueCourant(vague) {
-  const req = new XMLHttpRequest();
-  req.onreadystatechange = function(event) {
+  function updateVagueCourant(vague) {
+    const req = new XMLHttpRequest();
+    req.onreadystatechange = function(event) {
       // XMLHttpRequest.DONE === 4
       if (this.readyState === XMLHttpRequest.DONE) {
-          if (this.status === 200) {
-          }
+        if (this.status === 200) {
+        }
       }
-  };
-  req.open('PUT', `/update_vague_courant?vague=${vague}`, true);
-  req.send(null);
-}
-
-function updateCounterIA() {
-
-if (!tempsIA) {
-
-  if(tempsrestantIA > 0){
-     tempsrestantIA--;
-
-  } else{ // quand le timer arrive à zero il reprend à 5, enlever le else pour garder time à 0
-    // tempsRestantEnSeconde = 5 * 60;
-    tempsrestantIA = 2;
-    tempsIA = true;
+    };
+    req.open('PUT', `/update_vague_courant?vague=${vague}`, true);
+    req.send(null);
   }
 
-}
+  function updateCounterIA() {
+
+    if (!tempsIA) {
+
+      if(tempsrestantIA > 0){
+        tempsrestantIA--;
+
+      } else{ // quand le timer arrive à zero il reprend à 5, enlever le else pour garder time à 0
+        // tempsRestantEnSeconde = 5 * 60;
+        tempsrestantIA = 2;
+        tempsIA = true;
+      }
+
+      function updateVagueCourant(vague) {
+        const req = new XMLHttpRequest();
+        req.onreadystatechange = function(event) {
+          // XMLHttpRequest.DONE === 4
+          if (this.readyState === XMLHttpRequest.DONE) {
+            if (this.status === 200) {
+            }
+          }
+        };
+        req.open('PUT', `/update_vague_courant?vague=${vague}`, true);
+        req.send(null);
+      }
+
+      function updateCounterIA() {
+
+        if (!tempsIA) {
+
+          if(tempsrestantIA > 0){
+            tempsrestantIA--;
+
+          } else{ // quand le timer arrive à zero il reprend à 5, enlever le else pour garder time à 0
+            // tempsRestantEnSeconde = 5 * 60;
+            tempsrestantIA = 2;
+            tempsIA = true;
+          }
+
+        }
 
 
 
-}
+      }
+
+
+    }
 
 
 
-export default Game
+    export default Game

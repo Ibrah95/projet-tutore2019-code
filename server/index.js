@@ -2,7 +2,7 @@
 const http = require('http')
 const app = require('./config')
 const Server = http.Server(app)
-const PORT = process.env.PORT || 8000
+const PORT = process.env.PORT || 8080
 const io = require('socket.io')(Server)
 let tabPosition = new Array(5).fill(0);
 let dernier_rang = 0;
@@ -76,7 +76,7 @@ io.on('connection', socket => {
     // console.log('move: \n', data)
     const {type, customName, position, nombreCapture, estCapturer, x, y, angle, playerName, speed } = data
     const id = String(socket.id)
-    if(type=== 'popcorn' && x > 1780 && players[id] !== undefined){
+    if(type=== 'popcorn' && x > 2000 && players[id] !== undefined){
       const rang = ++dernier_rang;
       nombre_de_popcorn_arriver++;
       io.emit('est-arriver', { id: id, rang: rang })

@@ -15,7 +15,7 @@ const fileLoader = game => {
   game.load.spritesheet('caramba_pop', `${ASSETS_URL}/sprites/popcorn/caramba_pop.png`, 300, 300, 4)
   game.load.spritesheet('pop_vador', `${ASSETS_URL}/sprites/popcorn/pop_vador.png`, 300, 300, 4)
   game.load.spritesheet('gentle_pop', `${ASSETS_URL}/sprites/popcorn/gentle_pop.png`, 300, 300, 4)
-  game.load.spritesheet('pop_blood', `${ASSETS_URL}/sprites/popcorn/pop_blood_gang.png`, 300, 300, 4)
+  game.load.spritesheet('pop_blood_gang', `${ASSETS_URL}/sprites/popcorn/pop_blood_gang.png`, 300, 300, 4)
   game.load.spritesheet('pop_boy', `${ASSETS_URL}/sprites/popcorn/pop_boy.png`, 300, 300, 4)
   game.load.spritesheet('pop_kent', `${ASSETS_URL}/sprites/popcorn/pop_kent.png`, 300, 300, 4)
   game.load.spritesheet('pop_carrey', `${ASSETS_URL}/sprites/popcorn/pop_carrey.png`, 300, 300, 4)

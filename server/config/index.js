@@ -23,6 +23,14 @@ app.get('/', function(req, res) {
     res.render('inscription.ejs');
 });
 
+app.get('/home', function(req, res) {
+  res.render('accueil.ejs');
+})
+
+app.get('/story', function (req, res) {
+  res.render('story.ejs');
+})
+
 // API POUR RECUPERER LA VAGUE EN COURS
 app.get('/get_vague_en_cours', function(req, res) {
     res.json({ vague: vagueCourant});

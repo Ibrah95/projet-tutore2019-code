@@ -1,184 +1,628 @@
 <!DOCTYPE html>
 <html>
-<head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<style>
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <link rel="stylesheet" href="/police/mainecraft/stylesheetSOLO.css" type="text/css" charset="utf-8" />
+  <link rel="stylesheet" href="/police/baloo-fontfacekit/web fonts/baloo_regular_macroman/stylesheet.css" type="text/css" charset="utf-8" />
+  <link rel="stylesheet" href="/police/blackjack-fontfacekit/web fonts/blackjack_regular_macroman/stylesheet.css" type="text/css" charset="utf-8" />
 
-* {
-  box-sizing: border-box;
-}
+  <title>ECRAN - INSCRIPTION</title>
 
-.row::after {
-  content: "";
-  clear: both;
-  display: table;
-}
+  <style>
+/*
+    * {
+      box-sizing: border-box;
+    }*/
 
-[class*="col-"] {
-  /*float: left;*/
-  padding: 15px;
-  margin:auto;
-}
+    [class*="col-"] {
+      padding: 15px;
+      margin:auto;
+    }
+/*
+    html {
+      font-family: "verdana", sans-serif;
+    }*/
 
-html {
-  font-family: "verdana", sans-serif;
-}
+    body, html {
+            height: 100%;
+            margin: 0;
+        }
 
-.header {
-  background-color: red;
-  color: #ffffff;
-  padding: 10px;
-  text-align: center;
-}
+    /* **************** le header   *********************/
+    .header h1 {
+      text-align: center;
+      font-family: 'minecraft_peregular';
+      /* font-family: 'Press Start 2P', cursive;*/
+      /*font-family: 'Permanent Marker', cursive;*/
+      font-size: 10em;
+      font-weight: bold;
+      margin-top: 25px;
+      margin-bottom: 0px;
+      color: orange;
+      -webkit-animation: tracking-in-contract-bck 1s cubic-bezier(0.215, 0.610, 0.355, 1.000) both;
+      animation: tracking-in-contract-bck 1s cubic-bezier(0.215, 0.610, 0.355, 1.000) both;
+
+    }
+
+    .header h2 {
+      text-align: center;
+      font-family: 'minecraft_peregular';
+      /* font-family: 'Press Start 2P', cursive;*/
+      /*font-family: 'Permanent Marker', cursive;*/
+      font-size: 8em;
+      font-weight: bold;
+      margin-top: 5px;
+      margin-bottom: 0px;
+      color: black;
+      -webkit-animation: tracking-in-contract-bck 1s cubic-bezier(0.215, 0.610, 0.355, 1.000) both;
+      animation: tracking-in-contract-bck 1s cubic-bezier(0.215, 0.610, 0.355, 1.000) both;     
+    }
 
 
-input[type="radio"] {
-}
+      /**** le background ******/
+    .bg {
+     /* The image used */
+      background-image: url("/img/bg.png");
+      /* Full height */
+      height: 100%;
+        /* Center and scale the image nicely */
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: cover;
+      -webkit-animation: kenburns-top 5s ease-out both;
+      animation: kenburns-top 5s ease-out both;
+      text-align: center;
+    }
+
+    /*************** Le logo ********************/
+    #logo {
+      text-align: center;
+    }
+
+    .shake-bottom {
+      -webkit-animation: shake-bottom 3s cubic-bezier(0.455, 0.030, 0.515, 0.955) infinite both;
+      animation: shake-bottom 3s cubic-bezier(0.455, 0.030, 0.515, 0.955) infinite both;
+    }
 
 
 
-.footer {
-  background-color: #0099cc;
-  color: #ffffff;
-  text-align: center;
-  font-size: 12px;
-  padding: 5px;
-  font-style: italic;
-}
 
-/* For mobile phones: */
-[class*="col-"] {
-  width: 100%;
-}
+    input[type="radio"] {
+      /*display: none;*/
+    }
 
-@media only screen and (min-width: 600px) {
-  /* For tablets: */
-  .col-s-1 {width: 8.33%;}
-  .col-s-2 {width: 16.66%;}
-  .col-s-3 {width: 25%;}
-  .col-s-4 {width: 33.33%;}
-  .col-s-5 {width: 41.66%;}
-  .col-s-6 {width: 50%;}
-  .col-s-7 {width: 58.33%;}
-  .col-s-8 {width: 66.66%;}
-  .col-s-9 {width: 75%;}
-  .col-s-10 {width: 83.33%;}
-  .col-s-11 {width: 91.66%;}
-  .col-s-12 {width: 100%;}
-}
-@media only screen and (min-width: 768px) {
-  /* For desktop: */
-  .col-1 {width: 8.33%;}
-  .col-2 {width: 16.66%;}
-  .col-3 {width: 25%;}
-  .col-4 {width: 33.33%;}
-  .col-5 {width: 41.66%;}
-  .col-6 {width: 40%;}
-  .col-7 {width: 58.33%;}
-  .col-8 {width: 66.66%;}
-  .col-9 {width: 75%;}
-  .col-10 {width: 83.33%;}
-  .col-11 {width: 91.66%;}
-  .col-12 {width: 100%;}
-}
-</style>
+    /* la phrase "Cette page est accessible uniquement ...." */
+    .col-6 p {
+      font-family: 'black_jackregular';
+      font-size: 40px;
+      font-style: italic;
+      text-align: center;
+      color: black; 
+      font-weight:bold;
+    }
+
+    .bienvenue { 
+      font-family: 'balooregular';
+      font-size: 60px;
+      margin-bottom: -30px;
+      margin-top:10px;
+    }
+    
+    
+
+    /************** Pour le formulaire ***************/
+  
+
+    legend {
+      font-family: 'balooregular';
+      color:#DF3F3F;
+      font-weight:bold;
+      font-size: 30px;
+    }
+
+    fieldset {
+      padding:0 20px 20px 20px;
+      margin-bottom:10px;
+      border:5px solid #DF3F3F;
+
+    }
+
+    input[type="text"] {
+      padding:10px;
+      border:4px solid #F5C5C5;
+      border-radius:10px;
+      width:200px;
+      box-shadow:1px 1px 2px #C0C0C0 inset;
+    }
+
+ 
+
+    input[type=submit] {
+      font-family: 'balooregular';
+      width:150px;
+      margin-left:5px;
+      box-shadow:1px 1px 1px #D83F3D;
+      cursor:pointer;
+      padding: 10px;
+      font-weight:bold;
+      font-size: 25px;
+    }
+
+    .pseudo {
+      margin-top:-20px;
+      display:block;
+      font-size: 30px;
+      font-weight:bold;
+      font-family: 'balooregular';
+    }
+
+    .per{
+      font-size: 30px;
+      font-weight:bold;
+      margin-top:15px;
+      font-family: 'balooregular';
+    }
+
+/************** CONFIGURATION RESPONSIVE DESIGN *************/
+
+    /* For mobile phones: */
+    [class*="col-"] {
+      width: 100%;
+    }
+
+    @media only screen and (min-width: 600px) {
+      /* For tablets: */
+      .col-s-1 {width: 8.33%;}
+      .col-s-2 {width: 16.66%;}
+      .col-s-3 {width: 25%;}
+      .col-s-4 {width: 33.33%;}
+      .col-s-5 {width: 41.66%;}
+      .col-s-6 {width: 50%;}
+      .col-s-7 {width: 58.33%;}
+      .col-s-8 {width: 66.66%;}
+      .col-s-9 {width: 75%;}
+      .col-s-10 {width: 83.33%;}
+      .col-s-11 {width: 91.66%;}
+      .col-s-12 {width: 100%;}
+    }
+    @media only screen and (min-width: 768px) {
+      /* For desktop: */
+      .col-1 {width: 8.33%;}
+      .col-2 {width: 16.66%;}
+      .col-3 {width: 25%;}
+      .col-4 {width: 33.33%;}
+      .col-5 {width: 41.66%;}
+      .col-6 {width: 60%;}
+      .col-7 {width: 58.33%;}
+      .col-8 {width: 66.66%;}
+      .col-9 {width: 75%;}
+      .col-10 {width: 83.33%;}
+      .col-11 {width: 91.66%;}
+      .col-12 {width: 100%;}
+    }
+
+    /******************* ANIMATIONS ***********************/
+            /* ----------------------------------------------
+ * Generated by Animista on 2019-5-3 18:5:31
+ * w: http://animista.net, t: @cssanimista
+ * ---------------------------------------------- */
+        /**
+ * ----------------------------------------
+ * animation bounce-top
+ * ----------------------------------------
+ */
+        
+        @-webkit-keyframes bounce-top {
+            0% {
+                -webkit-transform: translateY(-45px);
+                transform: translateY(-45px);
+                -webkit-animation-timing-function: ease-in;
+                animation-timing-function: ease-in;
+                opacity: 1;
+            }
+            24% {
+                opacity: 1;
+            }
+            40% {
+                -webkit-transform: translateY(-24px);
+                transform: translateY(-24px);
+                -webkit-animation-timing-function: ease-in;
+                animation-timing-function: ease-in;
+            }
+            65% {
+                -webkit-transform: translateY(-12px);
+                transform: translateY(-12px);
+                -webkit-animation-timing-function: ease-in;
+                animation-timing-function: ease-in;
+            }
+            82% {
+                -webkit-transform: translateY(-6px);
+                transform: translateY(-6px);
+                -webkit-animation-timing-function: ease-in;
+                animation-timing-function: ease-in;
+            }
+            93% {
+                -webkit-transform: translateY(-4px);
+                transform: translateY(-4px);
+                -webkit-animation-timing-function: ease-in;
+                animation-timing-function: ease-in;
+            }
+            25%,
+            55%,
+            75%,
+            87% {
+                -webkit-transform: translateY(0px);
+                transform: translateY(0px);
+                -webkit-animation-timing-function: ease-out;
+                animation-timing-function: ease-out;
+            }
+            100% {
+                -webkit-transform: translateY(0px);
+                transform: translateY(0px);
+                -webkit-animation-timing-function: ease-out;
+                animation-timing-function: ease-out;
+                opacity: 1;
+            }
+        }
+        
+        @keyframes bounce-top {
+            0% {
+                -webkit-transform: translateY(-45px);
+                transform: translateY(-45px);
+                -webkit-animation-timing-function: ease-in;
+                animation-timing-function: ease-in;
+                opacity: 1;
+            }
+            24% {
+                opacity: 1;
+            }
+            40% {
+                -webkit-transform: translateY(-24px);
+                transform: translateY(-24px);
+                -webkit-animation-timing-function: ease-in;
+                animation-timing-function: ease-in;
+            }
+            65% {
+                -webkit-transform: translateY(-12px);
+                transform: translateY(-12px);
+                -webkit-animation-timing-function: ease-in;
+                animation-timing-function: ease-in;
+            }
+            82% {
+                -webkit-transform: translateY(-6px);
+                transform: translateY(-6px);
+                -webkit-animation-timing-function: ease-in;
+                animation-timing-function: ease-in;
+            }
+            93% {
+                -webkit-transform: translateY(-4px);
+                transform: translateY(-4px);
+                -webkit-animation-timing-function: ease-in;
+                animation-timing-function: ease-in;
+            }
+            25%,
+            55%,
+            75%,
+            87% {
+                -webkit-transform: translateY(0px);
+                transform: translateY(0px);
+                -webkit-animation-timing-function: ease-out;
+                animation-timing-function: ease-out;
+            }
+            100% {
+                -webkit-transform: translateY(0px);
+                transform: translateY(0px);
+                -webkit-animation-timing-function: ease-out;
+                animation-timing-function: ease-out;
+                opacity: 1;
+            }
+        }
+        /* ----------------------------------------------
+ * Generated by Animista on 2019-5-3 14:52:3
+ * w: http://animista.net, t: @cssanimista
+ * ---------------------------------------------- */
+        /**
+ * ----------------------------------------
+ * animation shake-bottom
+ * ----------------------------------------
+ */
+        
+        @-webkit-keyframes shake-bottom {
+            0%,
+            100% {
+                -webkit-transform: rotate(0deg);
+                transform: rotate(0deg);
+                -webkit-transform-origin: 50% 100%;
+                transform-origin: 50% 100%;
+            }
+            10% {
+                -webkit-transform: rotate(2deg);
+                transform: rotate(2deg);
+            }
+            20%,
+            40%,
+            60% {
+                -webkit-transform: rotate(-4deg);
+                transform: rotate(-4deg);
+            }
+            30%,
+            50%,
+            70% {
+                -webkit-transform: rotate(4deg);
+                transform: rotate(4deg);
+            }
+            80% {
+                -webkit-transform: rotate(-2deg);
+                transform: rotate(-2deg);
+            }
+            90% {
+                -webkit-transform: rotate(2deg);
+                transform: rotate(2deg);
+            }
+        }
+        
+        @keyframes shake-bottom {
+            0%,
+            100% {
+                -webkit-transform: rotate(0deg);
+                transform: rotate(0deg);
+                -webkit-transform-origin: 50% 100%;
+                transform-origin: 50% 100%;
+            }
+            10% {
+                -webkit-transform: rotate(2deg);
+                transform: rotate(2deg);
+            }
+            20%,
+            40%,
+            60% {
+                -webkit-transform: rotate(-4deg);
+                transform: rotate(-4deg);
+            }
+            30%,
+            50%,
+            70% {
+                -webkit-transform: rotate(4deg);
+                transform: rotate(4deg);
+            }
+            80% {
+                -webkit-transform: rotate(-2deg);
+                transform: rotate(-2deg);
+            }
+            90% {
+                -webkit-transform: rotate(2deg);
+                transform: rotate(2deg);
+            }
+        }
+        /* ----------------------------------------------
+ * Generated by Animista on 2019-5-3 14:17:28
+ * w: http://animista.net, t: @cssanimista
+ * ---------------------------------------------- */
+        /**
+ * ----------------------------------------
+ * animation kenburns-top
+ * ----------------------------------------
+ */
+        
+        @-webkit-keyframes kenburns-top {
+            0% {
+                -webkit-transform: scale(1) translateY(0);
+                transform: scale(1) translateY(0);
+                -webkit-transform-origin: 50% 16%;
+                transform-origin: 50% 16%;
+            }
+            100% {
+                -webkit-transform: scale(1.25) translateY(-15px);
+                transform: scale(1.25) translateY(-15px);
+                -webkit-transform-origin: top;
+                transform-origin: top;
+            }
+        }
+        
+        @keyframes kenburns-top {
+            0% {
+                -webkit-transform: scale(1) translateY(0);
+                transform: scale(1) translateY(0);
+                -webkit-transform-origin: 50% 16%;
+                transform-origin: 50% 16%;
+            }
+            100% {
+                -webkit-transform: scale(1.25) translateY(-15px);
+                transform: scale(1.25) translateY(-15px);
+                -webkit-transform-origin: top;
+                transform-origin: top;
+            }
+        }
+        /* ----------------------------------------------
+ * Generated by Animista on 2019-5-3 14:13:53
+ * w: http://animista.net, t: @cssanimista
+ * ---------------------------------------------- */
+        /**
+ * ----------------------------------------
+ * animation tracking-in-contract-bck
+ * ----------------------------------------
+ */
+        
+        @-webkit-keyframes tracking-in-contract-bck {
+            0% {
+                letter-spacing: 1em;
+                -webkit-transform: translateZ(400px);
+                transform: translateZ(400px);
+                opacity: 0;
+            }
+            40% {
+                opacity: 0.6;
+            }
+            100% {
+                -webkit-transform: translateZ(0);
+                transform: translateZ(0);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes tracking-in-contract-bck {
+            0% {
+                letter-spacing: 1em;
+                -webkit-transform: translateZ(400px);
+                transform: translateZ(400px);
+                opacity: 0;
+            }
+            40% {
+                opacity: 0.6;
+            }
+            100% {
+                -webkit-transform: translateZ(0);
+                transform: translateZ(0);
+                opacity: 1;
+            }
+        }
+
+
+
+
+  </style>
 </head>
+
 <body>
+<div class="bg">
+  <div class="header">
+    <h1>POP UP</h1>
+    <h2 class="bounce-top">G A M E</h2>
+  </div>
 
-<div class="header">
-  <h1>BIENVENUE DANS POP'UP GAME</h1>
-</div>
+  <div class="row">
+    <div class="col-6 col-s-9">
 
-<div class="row">
+      <div id="logo" class="shake-bottom"><img src="/img/logo.png" width="200" height="200" /></div>
 
-
-  <div class="col-6 col-s-9">
+      <h1 class="bienvenue"> BIENVENUE !!! </h1>
+      <p>Inscrivez-vous ici en donnant votre pseudo et en choisissant votre personnage.</p>
 
   		<form method="get" action="/inscription">
 
           <fieldset>
-             <legend><h2>INSCRIPTION</h2></legend>
-              <p>Inscrivez-vous ici en donnant votre pseudo et en choisissant votre personnage.</p>
-              <p>
-             <label for="pseudo">Votre pseudo :</label>
-             <input type="text" name="pseudo" id="pseudo" required/>
-             <span id="pseudo-help" style="display:none; color:red;">Ce pseudo est déjà pris !</span>
+              <legend>
+                <h2>INSCRIPTION</h2>
+              </legend>
 
-             <br />
-             Choisissez votre personnage :
-             <br />
+                <label class="pseudo" for="pseudo">Votre pseudo :</label>
+                <input type="text" name="pseudo" id="pseudo" required/>
+                <span id="pseudo-help" style="display:none; color:red;">Ce pseudo est déjà pris !</span>
 
-             <input type="radio" value="bat_pop" name="pop_name" id="bat_pop"/>
-             <label for="bat_pop"> <img src="/assets/sprites/popcorn/bat_pop.png"/ width="75px" height="75px"/>  </label>
+                <br />
 
-             <input type="radio" value="caramba_pop" name="pop_name" id="caramba_pop"/>
-             <label for="caramba_pop"> <img src="/assets/sprites/popcorn/caramba_pop.png"/ width="75px" height="75px"/>  </label>
+                <div class="per">
+                  Choisissez votre personnage :
+                </div>
 
-             <input type="radio" value="gentle_pop" name="pop_name" id="gentle_pop"/>
-             <label for="gentle_pop"> <img src="/assets/sprites/popcorn/gentle_pop.png"/ width="75px" height="75px"/>  </label>
+                <br />
 
-             <input type="radio" value="pop_blood_gang" name="pop_name" id="pop_blood_gang"/>
-             <label for="pop_blood_gang"> <img src="/assets/sprites/popcorn/pop_blood_gang.png"/ width="75px" height="75px"/>  </label>
-
-             <input type="radio" name="pop_name" value="pop_boy" id="pop_boy"/>
-             <label for="pop_boy"> <img src="/assets/sprites/popcorn/pop_boy.png"/ width="75px" height="75px"/>  </label>
+                <input type="radio" value="bat_pop" name="pop_name" id="bat_pop"/>
+                <label for="bat_pop">
+                <img src="/assets/sprites/popcorn/bat_pop.png"/ width="70px" height="70px"/> 
+                </label>
 
 
-
-             <input type="radio" name="pop_name" value="pop_carrey" id="pop_carrey"/>
-             <label for="pop_carrey"> <img src="/assets/sprites/popcorn/pop_carrey.png"/ width="75px" height="75px"/>  </label>
-
-             <input type="radio" name="pop_name" value="pop_kent" id="pop_kent"/>
-             <label for="pop_kent"> <img src="/assets/sprites/popcorn/pop_kent.png"/ width="75px" height="75px"/>  </label>
-
-             <input type="radio" name="pop_name" value="pop_marley" id="pop_marley"/>
-             <label for="pop_marley"> <img src="/assets/sprites/popcorn/pop_marley.png"/ width="75px" height="75px"/>  </label>
-
-             <input type="radio" name="pop_name" value="pop_minator" id="pop_minator"/>
-             <label for="pop_minator"> <img src="/assets/sprites/popcorn/pop_minator.png"/ width="75px" height="75px"/>  </label>
-
-             <input type="radio" name="pop_name" value="pop_ninja" id="pop_ninja"/>
-             <label for="pop_ninja"> <img src="/assets/sprites/popcorn/pop_ninja.png"/ width="75px" height="75px"/>  </label>
+                <input type="radio" value="caramba_pop" name="pop_name" id="caramba_pop"/>
+                <label for="caramba_pop"> 
+                  <img src="/assets/sprites/popcorn/caramba_pop.png"/ width="70px" height="70px"/>  
+                </label>
 
 
+                <input type="radio" value="gentle_pop" name="pop_name" id="gentle_pop"/>
+                <label for="gentle_pop"> 
+                  <img src="/assets/sprites/popcorn/gentle_pop.png"/ width="70px" height="70px"/>  
+                </label>
 
-             <input type="radio" name="pop_name" value="pop_ninja" id="pop_ninja"/>
-             <label for="pop_ninja"> <img src="/assets/sprites/popcorn/pop_soldat.png"/ width="75px" height="75px"/>  </label>
 
-             <input type="radio" name="pop_name" value="pop_vador" id="pop_vador"/>
-             <label for="pop_vador"> <img src="/assets/sprites/popcorn/pop_vador.png"/ width="75px" height="75px"/>  </label>
+                <input type="radio" value="pop_blood_gang" name="pop_name" id="pop_blood_gang"/>
+                <label for="pop_blood_gang"> 
+                  <img src="/assets/sprites/popcorn/pop_blood_gang.png"/ width="70px" height="70px"/>  
+                </label>
 
-             <input type="radio" name="pop_name" value="saint_patrick_pop" id="saint_patrick_pop"/>
-             <label for="saint_patrick_pop"> <img src="/assets/sprites/popcorn/saint_patrick_pop.png"/ width="75px" height="75px"/>  </label>
 
-             <input type="radio" name="pop_name" value="santa_pop" id="santa_pop"/>
-             <label for="santa_pop"> <img src="/assets/sprites/popcorn/santa_pop.png"/ width="75px" height="75px"/>  </label>
+                <input type="radio" name="pop_name" value="pop_boy" id="pop_boy"/>
+                <label for="pop_boy"> 
+                  <img src="/assets/sprites/popcorn/pop_boy.png"/ width="70px" height="70px"/>  
+                </label>
 
-             <input type="radio" name="pop_name" value="thug_pop" id="thug_pop"/>
-             <label for="thug_pop"> <img src="/assets/sprites/popcorn/thug_pop.png"/ width="75px" height="75px"/>  </label>
 
-          </p>
-           </fieldset>
+                <input type="radio" name="pop_name" value="pop_carrey" id="pop_carrey"/>
+                <label for="pop_carrey"> 
+                  <img src="/assets/sprites/popcorn/pop_carrey.png"/ width="70px" height="70px"/>  
+                </label>
 
-           <input type="submit" value="Envoyer" />
-		</form>
 
-  </div>
+                <input type="radio" name="pop_name" value="pop_kent" id="pop_kent"/>
+                <label for="pop_kent"> 
+                  <img src="/assets/sprites/popcorn/pop_kent.png"/ width="70px" height="70px"/>  
+                </label>
 
 
 
-</div>
-
-<div class="footer">
-  <p>Ce jeu a été developpé par cinq étudiants de licence 3 Informatique de l'Université Jean Monnet de Saint-Etienne.
-   <br/>@Copyrigth: Ibrahima DIALLO, Solofo RABONARIJAONA, Aldwin LAUREAT, Christian OKOUERET ELENGA, Morad BENKARAACHE.</p>
-</div>
+                <input type="radio" name="pop_name" value="pop_marley" id="pop_marley"/>
+                <label for="pop_marley"> 
+                  <img src="/assets/sprites/popcorn/pop_marley.png"/ width="70px" height="70px"/>  
+                </label>
 
 
-<% /* script js de la page inscription */ %>
-<script src="/js/inscription.js"></script>
+                <input type="radio" name="pop_name" value="pop_minator" id="pop_minator"/>
+                <label for="pop_minator"> 
+                  <img src="/assets/sprites/popcorn/pop_minator.png"/ width="70px" height="70px"/>  
+                </label>
 
 
-</body>
+                <input type="radio" name="pop_name" value="pop_ninja" id="pop_ninja"/>
+                <label for="pop_ninja"> 
+                  <img src="/assets/sprites/popcorn/pop_ninja.png"/ width="70px" height="70px"/>  
+                </label>
+
+
+                <input type="radio" name="pop_name" value="pop_ninja" id="pop_soldat"/>
+                <label for="pop_ninja"> 
+                  <img src="/assets/sprites/popcorn/pop_soldat.png"/ width="70px" height="70px"/>  
+                </label>
+
+
+                <input type="radio" name="pop_name" value="pop_vador" id="pop_vador"/>
+                <label for="pop_vador"> 
+                  <img src="/assets/sprites/popcorn/pop_vador.png"/ width="70px" height="70px"/>  
+                </label>
+
+
+                <input type="radio" name="pop_name" value="saint_patrick_pop" id="saint_patrick_pop"/>
+                <label for="saint_patrick_pop"> 
+                  <img src="/assets/sprites/popcorn/saint_patrick_pop.png"/ width="70px" height="70px"/>  
+                </label>
+
+
+                <input type="radio" name="pop_name" value="santa_pop" id="santa_pop"/>
+                <label for="santa_pop"> 
+                  <img src="/assets/sprites/popcorn/santa_pop.png"/ width="70px" height="70px"/>  
+                </label>
+
+
+                <input type="radio" name="pop_name" value="thug_pop" id="thug_pop"/>
+                <label for="thug_pop"> 
+                  <img src="/assets/sprites/popcorn/thug_pop.png"/ width="70px" height="70px"/>  
+                </label>
+
+              </p>
+            </fieldset>
+
+            <input type="submit" value="Envoyer" />
+		      </form>
+
+        </div>
+
+    </div>
+
+
+   <script src="/js/inscription.js"></script>
+
+ </div>
+  </body>
+
 </html>
