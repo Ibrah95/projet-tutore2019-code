@@ -291,7 +291,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var SERVER_IP = 'localhost:8000/';
+var SERVER_IP = '192.168.1.2:8080/'; //'localhost:8080/'
 var socket = null;
 var otherPlayers = {};
 var tempsRestantEnSeconde = 10; // 3 * 60;
@@ -382,7 +382,6 @@ var Game = function (_Phaser$State) {
       //  It won't start automatically, allowing you to hook it to button events and the like.
       timer.start();
 
-
       // recuperer le nombre de joeur inscrit par vague
       for (var i = 0; i < NBR_VAGUE; i++) {
         nbrJoueurParVague[i] = Number.parseInt(localStorage.getItem('nbr_joueur_vague_' + (i + 1)));
@@ -391,7 +390,6 @@ var Game = function (_Phaser$State) {
       var timerIA = this.game.time.create(false);
       timerIA.loop(1000, updateCounterIA, this.game);
       timerIA.start();
-
 
       // Configures the game camera
       this.game.camera.x = width / 2;
@@ -495,8 +493,6 @@ function updateCounter() {
   minutesRestant = Number.parseInt(tempsRestantEnSeconde / 60);
   secondesRestant = Number.parseInt(tempsRestantEnSeconde % 60);
 }
-
-
 function updateVagueCourant(vague) {
   var req = new XMLHttpRequest();
   req.onreadystatechange = function (event) {
@@ -507,6 +503,7 @@ function updateVagueCourant(vague) {
   };
   req.open('PUT', '/update_vague_courant?vague=' + vague, true);
   req.send(null);
+}
 
 function updateCounterIA() {
 
@@ -553,7 +550,7 @@ var fileLoader = function fileLoader(game) {
   game.load.spritesheet('caramba_pop', _.ASSETS_URL + '/sprites/popcorn/caramba_pop.png', 300, 300, 4);
   game.load.spritesheet('pop_vador', _.ASSETS_URL + '/sprites/popcorn/pop_vador.png', 300, 300, 4);
   game.load.spritesheet('gentle_pop', _.ASSETS_URL + '/sprites/popcorn/gentle_pop.png', 300, 300, 4);
-  game.load.spritesheet('pop_blood', _.ASSETS_URL + '/sprites/popcorn/pop_blood_gang.png', 300, 300, 4);
+  game.load.spritesheet('pop_blood_gang', _.ASSETS_URL + '/sprites/popcorn/pop_blood_gang.png', 300, 300, 4);
   game.load.spritesheet('pop_boy', _.ASSETS_URL + '/sprites/popcorn/pop_boy.png', 300, 300, 4);
   game.load.spritesheet('pop_kent', _.ASSETS_URL + '/sprites/popcorn/pop_kent.png', 300, 300, 4);
   game.load.spritesheet('pop_carrey', _.ASSETS_URL + '/sprites/popcorn/pop_carrey.png', 300, 300, 4);
@@ -894,7 +891,8 @@ var ChangeVitesse = function ChangeVitesse(listPopbox) {
   var random = void 0;
   for (var i = 0; i < listPopbox.length; i++) {
 
-    random = Math.random() * (20.0 - 15.0) + 15.0; // vitesse comprise entre 1.5 et 5.0
+    random = Math.random() * (10.0 - 5.0) + 5.0; // vitesse comprise entre 1.5 et 5.0
+
     vitesseAlea[i] = random;
   }
   return vitesseAlea;
