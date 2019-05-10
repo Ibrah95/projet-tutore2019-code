@@ -36,3 +36,5 @@ lancerJeuElt.addEventListener('mousedown', function(){
     localStorage.setItem(`nbr_joueur_vague_${i+1}`, nbrJoueurInscrit);
   }
 }, false);
+
+localStorage.setItem('vague_courant', '1');

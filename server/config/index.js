@@ -14,10 +14,49 @@ let vagueCounter = new Array(NBR_VAGUE).fill(0); // compteur pour gerer les vagu
 let takenPseudos = {}; // dictionnaire contenant les pseudos déjà pris
 let takenPopcorn = {}; // tableau contenant le nombre de fois chaque popcorn a été pris
 let vagueCourant = 0; // numero de vague en cours
+let jeuEnCours = false;
 
 app.use(express.static(path.join(__dirname, './../../public/')))
 app.use('/assets', express.static(path.join(__dirname, './../../public/assets/')))
 app.use('/vendor', express.static(path.join(__dirname, './../../vendor')))
+
+
+app.put('update_time', function(req, res) {
+  // mettre à jour le temps du joueur
+  const pseudo = req.query.pseudo;
+  const time = Number.parseInt(req.query.time);
+  // chercher le joueur et le mettre à jour
+  for (let i = 0; i < subscribedPlayers.length; i++) {
+    if (subscribedPlayers[i].pseudo === pseudo) {
+      subscribedPlayers[i].time = time;
+      break;
+    }
+  }
+  res.json({ retour: true });
+});
+
+app.get('/winner', function(req, res) {
+  // trouver le joueur avec le meilleurs temps (i.e min du time)
+  let keyMin = 0;
+  for (let i = 1; i < subscribedPlayers.length; i++) {
+    if (subscribedPlayers[i].time < subscribedPlayers[keyMin].time) {
+      keyMin = i;
+    }
+  }
+  const { pseudo, popName, time } = subscribedPlayers[keyMin];
+  res.render('winner.ejs', { pseudo, popName, time });
+});
+
+app.put('/update_jeu_en_cours', function(req, res) {
+  const valeur = req.query.valeur
+  jeuEnCours = (valeur === 'true');
+  console.log(`jeuEnCours = ${jeuEnCours}`);
+  res.json({ retour: true });
+});
+
+app.get('/attente', function(req, res){
+  res.render('attente.ejs');
+})
 
 app.get('/', function(req, res) {
     res.render('inscription.ejs');
@@ -33,17 +72,19 @@ app.get('/story', function (req, res) {
 
 // API POUR RECUPERER LA VAGUE EN COURS
 app.get('/get_vague_en_cours', function(req, res) {
-    res.json({ vague: vagueCourant});
+    res.json({ vague: vagueCourant, jeuEnCours});
 });
 
 app.get('/chargement_vague', function(req, res) {
     const vague = req.query.vague
+    jeuEnCours = false;
     res.render('chargement_vague.ejs', { vague });
 });
 
 app.put('/update_vague_courant', function(req, res) {
   const vague = req.query.vague
-  vagueCourant = Number.parseInt(vague); // mettre à jour vague courant
+  vagueCourant = (Number.parseInt(vague) > NBR_VAGUE) ? 1 : Number.parseInt(vague); // mettre à jour vague courant
+  console.log(`vagueCourant = ${vagueCourant}`);
   res.json({ retour: true });
 });
 
@@ -125,7 +166,7 @@ app.get('/inscription', function(req, res) {
   takenPseudos[pseudo] = true;
 
   // enregistrer nouveau joueur
-  subscribedPlayers.push({ vague, pseudo, popName });
+  subscribedPlayers.push({ vague, pseudo, popName, time: 180 });
   if (pseudoJoueurParVague[vague - 1] === undefined) {
     pseudoJoueurParVague[vague - 1] = [];
   }

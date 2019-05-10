@@ -6,11 +6,13 @@ import player from './player'
 import newPlayer from './sockets/newPlayer'
 import { WINDOW_HEIGHT,WINDOW_WIDTH } from './../config'
 
-const SERVER_IP = /*'localhost:8080/'*/ '192.168.1.2:8080/'
+const SERVER_IP = 'localhost:8080/' //'192.168.1.2:8080/'
 let socket = null
 let otherPlayers = {}
 let bmd = null
 let est_arriver= false
+let estCapturer = false;
+let estTerminerPartie = false;
 let est_placer_sur_zone_fin = false;
 let rang = 0;
 
@@ -76,60 +78,99 @@ class Game extends Phaser.State {
         if("vibrate" in window.navigator) {
           window.navigator.vibrate(500);
         }
-        setTimeout(() => {
-          window.alert('Vous avez été capturé !!');
-        }, 800);
+        estCapturer = true;
       }
     })
     // gerer l'arrivé du popcorn à la zone de fin
     socket.on('est-arriver', data => {
-        if(data.id === String(socket.id)){
-            est_arriver = true;
-            rang = data.rang;
-        }
-    })
-    console.log(`est_arriver = ${est_arriver}`);
+      if(data.id === String(socket.id)){
+        est_arriver = true;
+        rang = data.rang;
+      }
+    });
+    // gerer la fin d'une partie
+    socket.on('partie-est-terminer', data => {
+      console.log('PARTIE EST TERMINER');
+      socket.emit('disconnect');
+      //if (data.id === String(socket.id)) {
+      // estTerminerPartie = true;
+      window.location.href = '/attente';
+      //}
+    });
     if (!est_arriver) {
+      if (!estCapturer) {
         this.player.drive(this.game)
+      } else {
+        this.player.sprite.body.x = 50;
+        estCapturer = false;
+        socket.emit('move-player', {
+          pseudo: sessionStorage.getItem('pseudo'),
+          estCapturer: this.player.estCapturer,
+          nombreCapture: this.player.nombreCapture,
+          position: this.player.position,
+          customName: this.player.customName,
+          speedText: {
+            x: this.player.sprite.body.x,
+            y: this.player.sprite.body.y,
+          },
+          type: this.player.type,
+          x: this.player.sprite.body.x,
+          y: this.player.sprite.body.y,
+          angle: this.player.sprite.body.rotation,
+          playerName: {
+            name: this.player.playerName.text,
+            x: this.player.playerName.x,
+            y: this.player.playerName.y
+          },
+          speed: {
+            value: this.player.speed,
+            x: this.player.speedText.x,
+            y: this.player.speedText.y
+          }
+        })
+      }
     } else {
-        if (!est_placer_sur_zone_fin) {
-            this.player.sprite.body.x = 1800;
-            socket.emit('move-player', {
-                estCapturer: this.player.estCapturer,
-                nombreCapture: this.player.nombreCapture,
-                position: this.player.position,
-                customName: this.player.customName,
-                speedText: {
-                  x: this.player.sprite.body.x,
-                  y: this.player.sprite.body.y,
-                },
-                type: this.player.type,
-                x: this.player.sprite.body.x,
-                y: this.player.sprite.body.y,
-                angle: this.player.sprite.body.rotation,
-                playerName: {
-                  name: this.player.playerName.text,
-                  x: this.player.playerName.x,
-                  y: this.player.playerName.y
-                },
-                speed: {
-                  value: this.player.speed,
-                  x: this.player.speedText.x,
-                  y: this.player.speedText.y
-                }
-            })
-            est_placer_sur_zone_fin = true;
-            if("vibrate" in window.navigator) {
-              window.navigator.vibrate(500);
-            }
-            setTimeout(()=>{
-              window.alert(`Félicitation vous êtes arrivé à la ${rang} ${(rang === 1) ? 'ère' : 'ème'} place`);
-            }, 800);
+      if (!est_placer_sur_zone_fin) {
+        this.player.sprite.body.x = 2500;
+        socket.emit('move-player', {
+          pseudo: sessionStorage.getItem('pseudo'),
+          estCapturer: this.player.estCapturer,
+          nombreCapture: this.player.nombreCapture,
+          position: this.player.position,
+          customName: this.player.customName,
+          speedText: {
+            x: this.player.sprite.body.x,
+            y: this.player.sprite.body.y,
+          },
+          type: this.player.type,
+          x: this.player.sprite.body.x,
+          y: this.player.sprite.body.y,
+          angle: this.player.sprite.body.rotation,
+          playerName: {
+            name: this.player.playerName.text,
+            x: this.player.playerName.x,
+            y: this.player.playerName.y
+          },
+          speed: {
+            value: this.player.speed,
+            x: this.player.speedText.x,
+            y: this.player.speedText.y
+          }
+        })
+        est_placer_sur_zone_fin = true;
+        if("vibrate" in window.navigator) {
+          window.navigator.vibrate(500);
         }
+        // setTimeout(()=>{
+        //   window.alert(`Félicitation vous êtes arrivé à la ${rang} ${(rang === 1) ? 'ère' : 'ème'} place`);
+        // }, 800);
+        sessionStorage.setItem('rang', rang);
+        window.location.href = '/attente';
+      }
     }
     // Interpolates the players movement
     // playerMovementInterpolation(otherPlayers)
-    }
+  }
 }
 
 export default Game

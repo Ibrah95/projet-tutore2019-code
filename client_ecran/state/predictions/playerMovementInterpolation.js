@@ -25,13 +25,13 @@ const playerMovementInterpolation = (otherPlayers, listPopbox, listEnemy, game, 
       for (let popboxIA in listPopbox) {
         game.physics.arcade.collide(player.sprite, listPopbox[popboxIA], function(player1, player2) {
           //if (player.type === 'popcorn') {
-            player.sprite.destroy()
-            player.playerName.destroy()
-            player.speedText.destroy()
+            // player.sprite.body.x = 50;
+            // player.playerName.destroy()
+            // player.speedText.destroy()
             // ask the server to delete the popcorn that collided with a popbox
             player.emitPlayerDeletion(socket);
-            delete otherPlayers[id];
-            console.log('collision');
+            // delete otherPlayers[id];
+            // console.log('collision');
           //}
           player.emitNombreCapture(socket);
         });
@@ -40,13 +40,13 @@ const playerMovementInterpolation = (otherPlayers, listPopbox, listEnemy, game, 
       for (let enemyIA in listEnemy) {
         game.physics.arcade.collide(player.sprite, listEnemy[enemyIA], function(player1, player2) {
           //if (player.type === 'popcorn') {
-            player.sprite.destroy()
-            player.playerName.destroy()
-            player.speedText.destroy()
+            // player.sprite.body.x = 50;
+            // player.playerName.destroy()
+            // player.speedText.destroy()
             // ask the server to delete the popcorn that collided with a popbox
             player.emitPlayerDeletion(socket);
-            delete otherPlayers[id];
-            console.log('collision');
+            // delete otherPlayers[id];
+            // console.log('collision');
           //}
           player.emitNombreCapture(socket);
         });

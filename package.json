@@ -4,9 +4,9 @@
   "description": "multiplayer online game type io",
   "main": "index.js",
   "scripts": {
-    "build": "cd client_popcorn;echo 'build client popcorn';webpack --progress --color; cd ../client_ecran; echo 'build client ecran'; webpack --progress --color; cd ../client_popbox;echo 'build client popbox';webpack --progress --color; mv ../views/popbox.js ../public/; mv ../views/popcorn.js ../public/; mv ../views/ecran.js ../public/",
+    "build": "cd client_popcorn;echo 'build client popcorn';webpack --progress --color; cd ../client_ecran; echo 'build client ecran'; webpack --progress --color; mv ../views/popcorn.js ../public/; mv ../views/ecran.js ../public/",
     "dev": "nodemon server/index.js --exec babel-node",
-    "start": "nodemon server/index.js"
+    "start": "node server/index.js"
   },
   "repository": {
     "type": "git",

@@ -14,3 +14,5 @@ nbrJoueurParVague.addEventListener('change', function(e) {
 
 // initialiser vague courant
 localStorage.setItem('vague_courant', 1);
+// initialiser Stage
+localStorage.setItem('stage', 1);

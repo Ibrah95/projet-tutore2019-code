@@ -8,17 +8,17 @@
         body {
             margin: 0;
         }
-        
-         .button {
+
+        .button {
             text-align: center;
             position: relative;
         }
-        
+
         .button span:hover {
             color: darkorange;
             font-size: 4.2em;
         }
-        
+
         .button span {
             position: absolute;
             top: 60px;
@@ -27,19 +27,19 @@
             font-size: 4em;
             left: 41%;
         }
-        
+
         div#slider {
             overflow: hidden;
-             margin-bottom: 100px;
+            margin-bottom: 100px;
             height: 100%;
         }
-        
+
         div#slider figure img {
             width: 8.333%;
             float: left;
             height: 100%;
         }
-        
+
         div#slider figure {
             position: relative;
             width: 1200%;
@@ -50,7 +50,7 @@
             font-size: 0;
             animation: 120s slidy infinite;
         }
-        
+
         @keyframes slidy {
             0% {
                 left: 0%;
@@ -135,6 +135,12 @@
 </head>
 
 <body>
+    <audio autoplay loop volume="0.2">
+        <source src="/test/audio.mp3" type="audio/mpeg">
+        <source src="/test/audio.ogg" type="audio/ogg">
+        <p>Votre navigateur ne prend pas en charge l'audio HTML.
+        </p>
+    </audio>
     <div id="slider">
         <figure>
             <img src="/test/story_1.png" />

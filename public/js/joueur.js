@@ -9,11 +9,15 @@ setInterval(function(){
       if (this.readyState === XMLHttpRequest.DONE) {
         if (this.status === 200) {
           const vague = JSON.parse(this.responseText).vague;
+          const jeuEnCours = JSON.parse(this.responseText).jeuEnCours;
           const vagueJoueur = document.getElementById('vague').textContent;
+          sessionStorage.setItem('vagueJoueur', vagueJoueur);
           const popName = document.getElementById('pop-name').textContent;
+          sessionStorage.setItem('popName', popName);
+          console.log(`jeuEnCours = ${jeuEnCours}`);
           // si le joueur appartient à la vague alors charger la manette
-          if (Number.parseInt(vague) === Number.parseInt(vagueJoueur)) {
-            window.location.replace(`/popcorn?pop_name=${popName}`);
+          if (Number.parseInt(vague) === Number.parseInt(vagueJoueur) && !jeuEnCours) {
+            window.location.assign(`/popcorn?pop_name=${popName}`);
           }
         }
       }

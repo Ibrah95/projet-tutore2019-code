@@ -40,11 +40,6 @@ export default function (x, y, customName, game, socket) {
       this.sprite.body.velocity.x = stick.forceX * 1000;
       this.sprite.body.velocity.y = stick.forceY * 1000;
 
-      console.log('position y');
-      console.log(this.sprite.body.y);
-      console.log('LIMIT BOTTOM');
-      console.log(LIMIT_BOTTOM)
-
       if( this.sprite.body.x <= LIMIT_LEFT ){
           this.sprite.body.x += 50
         }
@@ -66,6 +61,7 @@ export default function (x, y, customName, game, socket) {
     emitPlayerData () {
       // Emit the 'move-player' event, updating the player's data on the server
       socket.emit('move-player', {
+        pseudo: sessionStorage.getItem('pseudo'),
         estCapturer: this.estCapturer,
         nombreCapture: this.nombreCapture,
         position: this.position,

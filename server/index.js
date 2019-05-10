@@ -13,7 +13,7 @@ let nombre_de_popcorn_arriver = 0;
 
 Server.listen(PORT, () => console.log('Game server running on:', PORT))
 
-const players = {}
+let players = {}
 
 io.on('connection', socket => {
   // When a player connects
@@ -32,28 +32,28 @@ io.on('connection', socket => {
     } else {
       // Emit the update-players method in the client side
       io.emit('update-players', players)
+      console.log(players);
     }
-    console.log(`tabPosition = ${tabPosition}`);
+
   })
 
   socket.on('disconnect', state => {
     const id = String(socket.id)
     // liberer sa position si c un popbox
-    console.log('deconnexion')
+
     if (players[id] && players[id].type === 'popbox') {
-      console.log('mise à jour tabposition')
-      console.log(players[id].position)
+
       tabPosition[players[id].position]--;
     }
     delete players[id]
     io.emit('update-players', players)
-    console.log(`tabPosition = ${tabPosition}`)
+
   })
 
   // when a player is deleted
   socket.on('delete-player', data => {
-    players[data.id].estCapturer = true;
-    nombre_de_popcorn_capturer++;
+    // players[data.id].estCapturer = true;
+    // nombre_de_popcorn_capturer++;
     // notifier le joueur captuerer
     io.emit('notifier-capture', data.id);
     io.emit('update-players', players)
@@ -61,12 +61,11 @@ io.on('connection', socket => {
 
   // when a popbox caught a popcorn
   socket.on('increment-nombreCapture', data => {
-    console.log('increment-nombre Capture')
-    console.log(data.id)
+
     if (players[data.id] && players[data.id].type === 'popbox') {
-      console.log(`players[data.id] = ${players[data.id]}`);
+
       players[data.id].nombreCapture++;
-      console.log(`players[data.id] = ${players[data.id]}`);
+
       io.emit('update-players', players)
     }
   })
@@ -74,11 +73,12 @@ io.on('connection', socket => {
   // When a player moves
   socket.on('move-player', data => {
     // console.log('move: \n', data)
-    const {type, customName, position, nombreCapture, estCapturer, x, y, angle, playerName, speed } = data
+    const {type, customName, position, nombreCapture, estCapturer, x, y, angle, playerName, speed, pseudo } = data
     const id = String(socket.id)
-    if(type=== 'popcorn' && x > 2000 && players[id] !== undefined){
+    if(type=== 'popcorn' && x > 3000 && players[id] !== undefined){
       const rang = ++dernier_rang;
       nombre_de_popcorn_arriver++;
+      io.emit('update-time', { pseudo: pseudo })
       io.emit('est-arriver', { id: id, rang: rang })
       delete players[id];
     } else {
@@ -113,15 +113,17 @@ io.on('connection', socket => {
   })
 
   socket.on('move-player-after-collision', data => {
-    console.log('move after collision\n', data);
+
   })
 
   // gerer fin timer
   socket.on('temps-ecouler', data => {
-    console.log('temps ecouler');
-    console.log(data);
     if (data) {
-      console.log('est entrer dans notif')
+      players = {};
+      console.log('temps ecouler');
+      console.log(players);
+      io.emit('update-players', players);
+      io.emit('partie-est-terminer', { retour: true }); // notifier les popcorn
       io.emit('notification-temps-ecouler', {nombre_de_popcorn_arriver, nombre_de_popcorn_capturer});
     }
   })
@@ -133,7 +135,7 @@ io.on('connection', socket => {
 
   // GERER COMPTEUR POSITION POPBOX
   socket.on('counter-position', data => {
-    console.log(`counter position : ${data.tabPosition}`);
+
     if (tabPosition === null) {
       tabPosition = data.tabPosition;
     } else {

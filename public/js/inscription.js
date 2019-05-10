@@ -1,6 +1,11 @@
 const inputPseudo = document.getElementById('pseudo');
 const inputPseudoHelp = document.getElementById('pseudo-help');
 const inputsPerso = document.getElementsByName('pop_name');
+const form = document.querySelector('form');
+
+form.addEventListener('submit', function (e){
+  sessionStorage.setItem('pseudo', inputPseudo.value);
+}, false);
 // const inputPersoHelp = document.getElementById('pop-name-help');
 
 // verifier si le pseudo est disponible pendant le saisis
