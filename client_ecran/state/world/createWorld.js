@@ -14,11 +14,21 @@ const worldCreator = game => {
 }
 
 const createMap = game => {
+  // let groundTiles = []
+  // const groundSprite = game.add.sprite(0, 0, 'asphalt')
+  // /*groundSprite.width = 1920
+  // groundSprite.height = 1080*/
+  // groundTiles.push(groundSprite)
+
   let groundTiles = []
-  const groundSprite = game.add.sprite(0, 0, 'asphalt')
-  groundSprite.width = 1920
-  groundSprite.height = 1080
-  groundTiles.push(groundSprite)
+  for (let i = 0; i <= width / 64; i++) {
+    for (let j = 0; j <= height / 64; j++) {
+      const groundSprite = game.add.sprite(i * 400, j * 400, 'asphalt')
+      groundSprite.width = 400;
+      groundSprite.height = 400;
+      groundTiles.push(groundSprite)
+    }
+}
 }
 
 export default worldCreator

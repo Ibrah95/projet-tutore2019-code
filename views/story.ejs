@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/test/stylesheet.css" type="text/css" charset="utf-8" />
+    <style>
+        body {
+            margin: 0;
+        }
+
+        .button {
+            text-align: center;
+            position: relative;
+        }
+
+        .button span:hover {
+            color: darkorange;
+            font-size: 4.2em;
+        }
+
+        .button span {
+            position: absolute;
+            top: 60px;
+            color: white;
+            text-shadow: 1px 1px white;
+            font-size: 4em;
+            left: 41%;
+        }
+
+        div#slider {
+            overflow: hidden;
+            margin-bottom: 100px;
+            height: 100%;
+        }
+
+        div#slider figure img {
+            width: 8.333%;
+            float: left;
+            height: 100%;
+        }
+
+        div#slider figure {
+            position: relative;
+            width: 1200%;
+            height: auto;
+            margin: 0;
+            left: 0;
+            text-align: left;
+            font-size: 0;
+            animation: 120s slidy infinite;
+        }
+
+        @keyframes slidy {
+            0% {
+                left: 0%;
+            }
+            4% {
+                left: 0%;
+            }
+            8% {
+                left: -100%;
+            }
+            12% {
+                left: -100%;
+            }
+            16% {
+                left: -200%;
+            }
+            20% {
+                left: -200%;
+            }
+            24% {
+                left: -300%;
+            }
+            28% {
+                left: -300%;
+            }
+            32% {
+                left: -400%;
+            }
+            36% {
+                left: -400%;
+            }
+            40% {
+                left: -500%;
+            }
+            44% {
+                left: -500%;
+            }
+            48% {
+                left: -600%;
+            }
+            52% {
+                left: -600%;
+            }
+            56% {
+                left: -700%;
+            }
+            60% {
+                left: -700%;
+            }
+            64% {
+                left: -800%;
+            }
+            68% {
+                left: -800%;
+            }
+            72% {
+                left: -900%;
+            }
+            76% {
+                left: -900%;
+            }
+            80% {
+                left: -1000%;
+            }
+            84% {
+                left: -1000%;
+            }
+            88% {
+                left: -1100%;
+            }
+            92% {
+                left: -1100%;
+            }
+            96% {
+                left: -1200%;
+            }
+            100% {
+                left: -1200%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <audio autoplay loop volume="0.2">
+        <source src="/test/audio.mp3" type="audio/mpeg">
+        <source src="/test/audio.ogg" type="audio/ogg">
+        <p>Votre navigateur ne prend pas en charge l'audio HTML.
+        </p>
+    </audio>
+    <div id="slider">
+        <figure>
+            <img src="/test/story_1.png" />
+            <img src="/test/story_2.png" />
+            <img src="/test/story_3.png" />
+            <img src="/test/story_4.png" />
+            <img src="/test/story_5.png" />
+            <img src="/test/story_6.png" />
+            <img src="/test/story_7.png" />
+            <img src="/test/story_8.png" />
+            <img src="/test/story_9.png" />
+            <img src="/test/story_10.png" />
+            <img src="/test/story_11.png" />
+            <img src="/test/story_61.png" />
+        </figure>
+    </div>
+
+    <p class="button">
+        <a href="/admin"><img src="/test/button.png" width="400" height="200" /><span>LANCER</spans></a>
+    </p>
+</body>
+
+</html>

@@ -1,11 +1,19 @@
 import createPlayer from './createPlayer'
 import createJoystick from './createJoystick'
 import { isDown } from '../utils'
+import {
+  WINDOW_HEIGHT,
+  WINDOW_WIDTH,
+  LIMIT_TOP,
+  LIMIT_LEFT,
+  LIMIT_BOTTOM
+} from './../../config'
 
-export default function (x, y, game, socket) {
+export default function (x, y, customName, game, socket) {
   const player = {
     socket,
     type: 'popcorn',
+    customName: customName,
     sprite: createPlayer(x, y, game),
     joystick: createJoystick(x, y, game),
     playerName: null,
@@ -13,33 +21,51 @@ export default function (x, y, game, socket) {
     speedText: null,
     estCapturer: false,
     nombreCapture: 0,
+    position: 0,
     drive (game) {
       this.joystick.onDown.add(this.startPlayer, this);
       this.joystick.onUpdate.add(this.movePlayer, this);
       this.joystick.onUp.add(this.stopPlayer, this);
-
+      game.physics.arcade.collide(this);
       // Brings the player's sprite to top
       game.world.bringToTop(this.sprite)
       this.updatePlayerName()
       this.updatePlayerStatusText('speed', this.sprite.body.x - 57, this.sprite.body.y - 39, this.speedText)
+
     },
     startPlayer() {
-      this.sprite.alpha = 1;
+      this.sprite.alpha = 0;
     },
     movePlayer(stick, force, forceX, forceY) {
-      this.sprite.body.velocity.x = stick.forceX * 1500;
-      this.sprite.body.velocity.y = stick.forceY * 1500;
+      this.sprite.body.velocity.x = stick.forceX * 1000;
+      this.sprite.body.velocity.y = stick.forceY * 1000;
+
+      if( this.sprite.body.x <= LIMIT_LEFT ){
+          this.sprite.body.x += 50
+        }
+
+        if(this.sprite.body.y <= LIMIT_TOP){
+          this.sprite.body.y += 50
+        }
+
+        if(this.sprite.body.y >= LIMIT_BOTTOM ){
+          console.log('entrer dans limit bottom')
+          this.sprite.body.y -= 50
+        }
       this.emitPlayerData();
     },
     stopPlayer() {
       this.sprite.body.velocity.set(0);
-      this.sprite.alpha = 0.5;
+      this.sprite.alpha = 0;
     },
     emitPlayerData () {
       // Emit the 'move-player' event, updating the player's data on the server
       socket.emit('move-player', {
+        pseudo: sessionStorage.getItem('pseudo'),
         estCapturer: this.estCapturer,
         nombreCapture: this.nombreCapture,
+        position: this.position,
+        customName: this.customName,
         speedText: {
           x: this.sprite.body.x,
           y: this.sprite.body.y,
@@ -65,8 +91,9 @@ export default function (x, y, game, socket) {
       this.playerName.text = String(name)
       this.playerName.x = x
       this.playerName.y = y
+      this.playerName.alpha = 0;
       // Bring the player's name to top
-      game.world.bringToTop(this.playerName)
+      //game.world.bringToTop(this.playerName)
     },
     updatePlayerStatusText (status, x, y, text) {
       // Capitalize the status text
@@ -78,7 +105,8 @@ export default function (x, y, game, socket) {
       text.x = x
       text.y = y
       text.text = `${capitalizedStatus}: ${parseInt(this.newText)}`
-      game.world.bringToTop(text)
+      text.alpha = 0;
+      //game.world.bringToTop(text)
     }
   }
   return player

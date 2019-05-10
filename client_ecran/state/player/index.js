@@ -1,16 +1,17 @@
 import createPlayer from './createPlayer'
 import { isDown } from '../utils'
 
-export default function (type, nombreCapture, x, y, game, socket) {
+export default function (type, customName, nombreCapture, x, y, game, socket) {
   const player = {
     socket,
     type,
-    sprite: createPlayer(type, x, y, game),
+    sprite: createPlayer(type, customName, x, y, game),
     playerName: null,
     speed: 0,
     speedText: null,
     estCapturer: false,
     nombreCapture: nombreCapture,
+    customName: customName,
     drive (game) {
     },
     emitPlayerData () {

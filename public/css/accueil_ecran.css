@@ -1,0 +1,73 @@
+p,h1{
+	text-align: center;
+	color:white;
+}
+
+
+.choix{
+	text-align: center;
+	color:white;
+}
+
+body{
+	background-image:url(/img/cinema.jpg);
+	background-size: cover;
+
+}
+
+.logo{
+	margin-left: 850px;
+
+}
+
+.popcorn{
+	float:left;
+	width:340px;
+	height:540px;
+	text-align: center;
+	border-style: outset;
+	margin-top:100px;
+	margin-bottom:100px;
+	margin-left:300px;
+	background-color: red;
+}
+
+.popbox{
+
+	float:right;
+	width:340px;
+	height: 540px;
+	text-align: center;
+	border-style: outset;
+	margin-top:100px;
+	margin-bottom:100px;
+	margin-right:300px;
+	background-color: white;
+
+}
+
+.jouer {
+
+	margin-left: 200px;
+    	margin-top :350px;
+
+	background-color:red;
+	cursor:pointer;
+	font-size:16px;
+	border:none;
+	color:white;
+	padding: 15px 32px;
+	border-radius: 50%;
+	text-align:center;
+	display: inline-block;
+}
+
+footer {
+	position: absolute;
+	margin-top: 300px;
+	font-style: italic;
+	font-family: Arial;
+	 left: 0;
+	 right: 0;
+
+}

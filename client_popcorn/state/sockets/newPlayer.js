@@ -3,6 +3,8 @@ const newPlayer = (socket, player) => {
     socket.emit('new-player', {
       estCapturer: player.estCapturer,
       nombreCapture: player.nombreCapture,
+      position: player.position,
+      customName: player.customName,
       speedText: {
         x: player.sprite.body.x - 57,
         y: player.sprite.body.y - 39,
