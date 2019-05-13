@@ -25,6 +25,7 @@ app.put('update_time', function(req, res) {
   // mettre à jour le temps du joueur
   const pseudo = req.query.pseudo;
   const time = Number.parseInt(req.query.time);
+  console.log(`UPDATE TIME ${pseudo} AVEC ${time}`);
   // chercher le joueur et le mettre à jour
   for (let i = 0; i < subscribedPlayers.length; i++) {
     if (subscribedPlayers[i].pseudo === pseudo) {

@@ -9,7 +9,6 @@ import { WINDOW_HEIGHT,WINDOW_WIDTH } from './../config'
 const SERVER_IP = 'localhost:8080/' //'192.168.1.2:8080/'
 let socket = null
 let otherPlayers = {}
-let bmd = null
 let est_arriver= false
 let estCapturer = false;
 let estTerminerPartie = false;
@@ -51,14 +50,6 @@ class Game extends Phaser.State {
     // update all players
     // updatePlayers(socket, otherPlayers, this.game)
 
-    // create load bar for bonus
-    bmd = this.game.add.bitmapData(200,50);
-    bmd.ctx.beginPath();
-    bmd.ctx.rect(0,0,200,50);
-    bmd.ctx.fillStyle = '#b90f28';
-    bmd.ctx.fill();
-    healthBar = this.game.add.sprite(50, 252,bmd);
-    healthBar.anchor.y = 0.5;
 
     // Configures the game camera
     this.game.camera.x = this.player.sprite.x - 800 / 2

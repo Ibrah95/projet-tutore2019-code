@@ -174,6 +174,7 @@ class Game extends Phaser.State {
         window.alert(`TEMPS ECOULER !!!\n\n NOMBRE POPCORN ARRIVÉ : ${data.nombre_de_popcorn_arriver} \n NOMBRE DE POPCORN CAPTURÉ : ${data.nombre_de_popcorn_capturer}`);
       })
       socket.on('update-time', data => {
+        console.log('entrer dans UPDATE-TIME')
         const pseudo = data.pseudo;
         const req = new XMLHttpRequest();
         const time = TEMP_INIT - tempsRestantEnSeconde;
